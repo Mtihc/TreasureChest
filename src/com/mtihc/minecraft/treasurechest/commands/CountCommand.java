@@ -30,6 +30,11 @@ public class CountCommand extends BukkitCommand {
 			sender.sendMessage(getUsage());
 			return false;
 		}
+
+		if(!sender.hasPermission(getPermission())) {
+			sender.sendMessage(ChatColor.RED + "You don't have permission for that command.");
+			return false;
+		}
 		
 		String playerName;
 		try {
@@ -66,5 +71,14 @@ public class CountCommand extends BukkitCommand {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.bukkit.command.Command#getPermission()
+	 */
+	@Override
+	public String getPermission() {
+		return Permission.COUNT.getNode();
+	}
+
+	
 
 }

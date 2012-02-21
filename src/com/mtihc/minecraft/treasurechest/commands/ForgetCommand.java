@@ -46,6 +46,12 @@ public class ForgetCommand extends BukkitCommand {
 			sender.sendMessage("Command must be executed by a player, in game.");
 			return false;
 		}
+		
+		if(!sender.hasPermission(getPermission())) {
+			sender.sendMessage(ChatColor.RED + "You don't have permission to make a chest forget that you have found it.");
+			return false;
+		}
+		
 		boolean other = !sender.getName().equalsIgnoreCase(playerName);
 		if(other && !sender.hasPermission(Permission.FORGET_OTHERS.getNode())) {
 			sender.sendMessage(ChatColor.RED + "You don't have permission to make a chest forget another player.");
@@ -77,6 +83,14 @@ public class ForgetCommand extends BukkitCommand {
 		
 		
 		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bukkit.command.Command#getPermission()
+	 */
+	@Override
+	public String getPermission() {
+		return Permission.FORGET.getNode();
 	}
 
 

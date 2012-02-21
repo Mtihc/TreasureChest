@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.mtihc.minecraft.core1.BukkitCommand;
+import com.mtihc.minecraft.treasurechest.Permission;
 import com.mtihc.minecraft.treasurechest.TreasureChestPlugin;
 import com.mtihc.minecraft.treasurechest.persistance.ChestsYaml;
 
@@ -30,6 +31,11 @@ public class SetCommand extends BukkitCommand {
 		
 		if(!(sender instanceof Player)) {
 			sender.sendMessage("Command must be executed by a player, in game.");
+			return false;
+		}
+
+		if(!sender.hasPermission(getPermission())) {
+			sender.sendMessage(ChatColor.RED + "You don't have permission to create treasure chests.");
 			return false;
 		}
 		
@@ -67,6 +73,14 @@ public class SetCommand extends BukkitCommand {
 			return false;
 		}
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bukkit.command.Command#getPermission()
+	 */
+	@Override
+	public String getPermission() {
+		return Permission.SET.getNode();
 	}
 
 	

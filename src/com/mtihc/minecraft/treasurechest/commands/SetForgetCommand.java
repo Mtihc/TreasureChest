@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.mtihc.minecraft.core1.ArgumentIterator;
 import com.mtihc.minecraft.core1.BukkitCommand;
+import com.mtihc.minecraft.treasurechest.Permission;
 import com.mtihc.minecraft.treasurechest.TreasureChestPlugin;
 
 public class SetForgetCommand extends BukkitCommand {
@@ -30,6 +31,11 @@ public class SetForgetCommand extends BukkitCommand {
 		
 		if(!(sender instanceof Player)) {
 			sender.sendMessage("Command must be executed by a player, in game.");
+			return false;
+		}
+
+		if(!sender.hasPermission(getPermission())) {
+			sender.sendMessage(ChatColor.RED + "You don't have permission for that command.");
 			return false;
 		}
 		
@@ -80,6 +86,14 @@ public class SetForgetCommand extends BukkitCommand {
 		
 		
 		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.bukkit.command.Command#getPermission()
+	 */
+	@Override
+	public String getPermission() {
+		return Permission.SET.getNode();
 	}
 
 

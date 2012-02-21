@@ -4,7 +4,7 @@ description: Place chest that adds some items everytime someone opens it for the
 main: com.mtihc.minecraft.treasurechest.TreasureChestPlugin
 depend: []
 softdepend: []
-version: 6.0.1
+version: 6.0.2
 commands:
     treasurechest:
         aliases: [tchest]
@@ -12,7 +12,7 @@ commands:
         usage: /treasurechest ? or /tchest ?
 permissions:
     treasurechest.set:
-        description: Allows you to turn regular chests into treasure chests and set their messages.
+        description: Allows you to turn regular chests into treasure chests and set their messages. And forget time.
         default: op
     treasurechest.delete:
         description: Allows you to delete treasure chests and turn them into regular chests again.
@@ -33,13 +33,17 @@ permissions:
         description: Allows you to count how many chests you have found
         default: op
     treasurechest.count.others:
-        description: Allows you to count how many chests someone else has found
+        children:
+            treasurechest.count: true
+        description: Allows you to count how many chests you or someone else has found
         default: op
     treasurechest.forget:
         description: Allows you to make a chest forget that you have found it
         default: op
     treasurechest.forget.others:
-        description: Allows you to make a chest forget that a player has found it
+        children:
+            treasurechest.forget: true
+        description: Allows you to make a chest forget that you or someone else has found it
         default: op
     treasurechest.forget.all:
         description: Allows you to make a chest forget that anybody has found it
