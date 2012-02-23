@@ -59,10 +59,6 @@ public class SetMessageCommand extends BukkitCommand {
 			return false;
 		}
 		
-		if(args == null || args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Expected messs");
-		}
-		
 		ArgumentIterator arguments = new ArgumentIterator(args);
 		
 		int msgId;
