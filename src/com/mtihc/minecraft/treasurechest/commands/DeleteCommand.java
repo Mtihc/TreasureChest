@@ -7,7 +7,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.mtihc.minecraft.core1.BukkitCommand;
+import com.mtihc.minecraft.core2.BukkitCommand;
 import com.mtihc.minecraft.treasurechest.Permission;
 import com.mtihc.minecraft.treasurechest.TreasureChestPlugin;
 
@@ -15,25 +15,23 @@ public class DeleteCommand extends BukkitCommand {
 
 	private TreasureChestPlugin plugin;
 
-	public DeleteCommand(TreasureChestPlugin plugin, String name, List<String> aliases) {
-		super(name, "Delete the chest you're looking at", "", aliases);
+	public DeleteCommand(TreasureChestPlugin plugin, BukkitCommand parent, String name, List<String> aliases) {
+		super(parent, name, "", "Delete the chest you're looking at", aliases);
 		this.plugin = plugin;
+		setPermission(Permission.DEL.toString());
+		setPermissionMessage(ChatColor.RED + "You don't have permission to delete treasure chests.");
 	}
-	
+
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
-		if(super.execute(sender, label, args))
-		{
-			return true;
-		}
-		
+	protected boolean onCommand(CommandSender sender, String label,
+			String[] args) {
+
 		if(!(sender instanceof Player)) {
 			sender.sendMessage("Command must be executed by a player, in game.");
 			return false;
 		}
 
-		if(!sender.hasPermission(getPermission())) {
-			sender.sendMessage(ChatColor.RED + "You don't have permission to delete treasure chests.");
+		if(!testPermission(sender)) {
 			return false;
 		}
 		
@@ -62,14 +60,6 @@ public class DeleteCommand extends BukkitCommand {
 			sender.sendMessage(ChatColor.RED + "You are not looking at a chest.");
 			return false;
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.bukkit.command.Command#getPermission()
-	 */
-	@Override
-	public String getPermission() {
-		return Permission.DEL.getNode();
 	}
 
 

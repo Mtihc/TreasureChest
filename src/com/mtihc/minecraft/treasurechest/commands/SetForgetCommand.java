@@ -7,8 +7,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.mtihc.minecraft.core1.ArgumentIterator;
-import com.mtihc.minecraft.core1.BukkitCommand;
+import com.mtihc.minecraft.core2.BukkitCommand;
 import com.mtihc.minecraft.treasurechest.Permission;
 import com.mtihc.minecraft.treasurechest.TreasureChestPlugin;
 
@@ -16,43 +15,39 @@ public class SetForgetCommand extends BukkitCommand {
 
 	private TreasureChestPlugin plugin;
 	
-	public SetForgetCommand(TreasureChestPlugin plugin, String name, List<String> aliases) {
-		super(name, "Define after how long this chest can be accessed again, per player", "<days> <hours> <min> <sec>", aliases);
+	public SetForgetCommand(TreasureChestPlugin plugin, BukkitCommand parent, String name, List<String> aliases) {
+		super(parent, name, "<days> <hours> <min> <sec>", "Define after how long this chest can be accessed again, per player", aliases);
 		this.plugin = plugin;
+		setPermission(Permission.SET.getNode());
+		setPermissionMessage(ChatColor.RED + "You don't have permission for that command.");
 	}
-	
+
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
-		if(super.execute(sender, label, args))
-		{
-			return true;
-		}
-		
-		
+	protected boolean onCommand(CommandSender sender, String label,
+			String[] args) {
+
 		if(!(sender instanceof Player)) {
 			sender.sendMessage("Command must be executed by a player, in game.");
 			return false;
 		}
 
-		if(!sender.hasPermission(getPermission())) {
-			sender.sendMessage(ChatColor.RED + "You don't have permission for that command.");
+		if(!testPermission(sender)) {
 			return false;
 		}
 		
 		int days, hours, minutes, seconds;
-		ArgumentIterator arguments = new ArgumentIterator(args);
 		try {
-			days = arguments.nextInt();
-			hours = arguments.nextInt();
-			minutes = arguments.nextInt();
-			seconds = arguments.nextInt();
+			days = Integer.parseInt(args[0]);
+			hours = Integer.parseInt(args[1]);
+			minutes = Integer.parseInt(args[2]);
+			seconds = Integer.parseInt(args[3]);
 		} catch(Exception e) {
 			sender.sendMessage(ChatColor.RED + "Expected days, hours, minutes, seconds.");
 			sender.sendMessage(getUsage());
 			return false;
 		}
 		
-		if(arguments.hasNext()) {
+		if(args.length > 4) {
 			sender.sendMessage(ChatColor.RED + "Too many arguments.");
 			sender.sendMessage(getUsage());
 			return false;
@@ -87,14 +82,7 @@ public class SetForgetCommand extends BukkitCommand {
 		
 		return true;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.bukkit.command.Command#getPermission()
-	 */
-	@Override
-	public String getPermission() {
-		return Permission.SET.getNode();
-	}
+	
 
 
 }

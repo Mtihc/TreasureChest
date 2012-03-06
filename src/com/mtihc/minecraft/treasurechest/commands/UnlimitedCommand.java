@@ -7,7 +7,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.mtihc.minecraft.core1.BukkitCommand;
+import com.mtihc.minecraft.core2.BukkitCommand;
 import com.mtihc.minecraft.treasurechest.Permission;
 import com.mtihc.minecraft.treasurechest.TreasureChestPlugin;
 
@@ -15,28 +15,24 @@ public class UnlimitedCommand extends BukkitCommand {
 
 	private TreasureChestPlugin plugin;
 	
-	public UnlimitedCommand(TreasureChestPlugin plugin, String name, List<String> aliases) {
-		super(name, "Make a treasure chest unlimited", "", aliases);
+	public UnlimitedCommand(TreasureChestPlugin plugin, BukkitCommand parent, String name, List<String> aliases) {
+		super(parent, name, "", "Make a treasure chest unlimited", aliases);
 		this.plugin = plugin;
+		setPermission(Permission.UNLIMITED.getNode());
+		setPermissionMessage(ChatColor.RED + "You don't have permission to make unlimited treasure chests.");
 	}
-	
+
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
-		if(super.execute(sender, label, args))
-		{
-			return true;
-		}
-		
-		
-		
+	protected boolean onCommand(CommandSender sender, String label,
+			String[] args) {
+
 		
 		if(!(sender instanceof Player)) {
 			sender.sendMessage("Command must be executed by a player, in game.");
 			return false;
 		}
 		
-		if(!sender.hasPermission(getPermission())) {
-			sender.sendMessage(ChatColor.RED + "You don't have permission to create unlimited chests.");
+		if(!testPermission(sender)) {
 			return false;
 		}
 		
@@ -58,15 +54,7 @@ public class UnlimitedCommand extends BukkitCommand {
 		
 		return true;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.bukkit.command.Command#getPermission()
-	 */
-	@Override
-	public String getPermission() {
-		return Permission.UNLIMITED.getNode();
-	}
-
+	
 	
 
 }

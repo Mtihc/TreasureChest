@@ -5,7 +5,7 @@ import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import com.mtihc.minecraft.core1.BukkitCommand;
+import com.mtihc.minecraft.core2.BukkitCommand;
 import com.mtihc.minecraft.treasurechest.Permission;
 import com.mtihc.minecraft.treasurechest.TreasureChestPlugin;
 
@@ -13,26 +13,24 @@ public class CountCommand extends BukkitCommand {
 
 	private TreasureChestPlugin plugin;
 	
-	public CountCommand(TreasureChestPlugin plugin, String name, List<String> aliases) {
-		super(name, "Count how many chest you, or someone else, found", "[player]", aliases);
+	public CountCommand(TreasureChestPlugin plugin, BukkitCommand parent, String name, List<String> aliases) {
+		super(parent, name, "[player]", "Count how many chest you, or someone else, found", aliases);
 		this.plugin = plugin;
+		setPermission(Permission.COUNT.getNode());
+		setPermissionMessage(ChatColor.RED + "You don't have permission for the count command.");
 	}
 	
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
-		if(super.execute(sender, label, args))
-		{
-			return true;
-		}
-		
+	protected boolean onCommand(CommandSender sender, String label,
+			String[] args) {
+
 		if(args.length > 1) {
 			sender.sendMessage(ChatColor.RED + "Expected only the optional player name.");
 			sender.sendMessage(getUsage());
 			return false;
 		}
 
-		if(!sender.hasPermission(getPermission())) {
-			sender.sendMessage(ChatColor.RED + "You don't have permission for that command.");
+		if(!testPermission(sender)) {
 			return false;
 		}
 		
@@ -69,14 +67,6 @@ public class CountCommand extends BukkitCommand {
 		
 		
 		return true;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.bukkit.command.Command#getPermission()
-	 */
-	@Override
-	public String getPermission() {
-		return Permission.COUNT.getNode();
 	}
 
 	

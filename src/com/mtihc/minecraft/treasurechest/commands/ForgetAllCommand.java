@@ -7,7 +7,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.mtihc.minecraft.core1.BukkitCommand;
+import com.mtihc.minecraft.core2.BukkitCommand;
 import com.mtihc.minecraft.treasurechest.Permission;
 import com.mtihc.minecraft.treasurechest.TreasureChestPlugin;
 import com.mtihc.minecraft.treasurechest.persistance.TreasureChest;
@@ -16,25 +16,23 @@ public class ForgetAllCommand extends BukkitCommand {
 
 	private TreasureChestPlugin plugin;
 
-	public ForgetAllCommand(TreasureChestPlugin plugin, String name, List<String> aliases) {
-		super(name, "As if nobody ever found the chest", "", aliases);
+	public ForgetAllCommand(TreasureChestPlugin plugin, BukkitCommand parent, String name, List<String> aliases) {
+		super(parent, name, "", "As if nobody ever found the chest", aliases);
 		this.plugin = plugin;
+		setPermission(Permission.FORGET_ALL.getNode());
+		setPermissionMessage(ChatColor.RED + "You don't have permission to make a chest forget that anybody found it.");
 	}
-	
+
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
-		if(super.execute(sender, label, args))
-		{
-			return true;
-		}
-		
+	protected boolean onCommand(CommandSender sender, String label,
+			String[] args) {
+
 		if(!(sender instanceof Player)) {
 			sender.sendMessage("Command must be executed by a player, in game.");
 			return false;
 		}
 
-		if(!sender.hasPermission(getPermission())) {
-			sender.sendMessage(ChatColor.RED + "You don't have permission to make a chest forget that anybody found it.");
+		if(!testPermission(sender)) {
 			return false;
 		}
 		
@@ -66,15 +64,7 @@ public class ForgetAllCommand extends BukkitCommand {
 		
 		return true;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.bukkit.command.Command#getPermission()
-	 */
-	@Override
-	public String getPermission() {
-		return Permission.FORGET_ALL.getNode();
-	}
-
+	
 
 	
 }

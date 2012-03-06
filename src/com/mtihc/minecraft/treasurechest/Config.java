@@ -2,7 +2,7 @@ package com.mtihc.minecraft.treasurechest;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.mtihc.minecraft.core1.YamlFile;
+import com.mtihc.minecraft.core2.YamlFile;
 
 public class Config extends YamlFile {
 

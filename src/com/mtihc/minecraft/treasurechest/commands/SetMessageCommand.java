@@ -8,10 +8,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.mtihc.minecraft.core1.ArgumentIterator;
-import com.mtihc.minecraft.core1.BukkitCommand;
-import com.mtihc.minecraft.core1.exceptions.ArgumentFormatException;
-import com.mtihc.minecraft.core1.exceptions.ArgumentIndexException;
+import com.mtihc.minecraft.core2.BukkitCommand;
 import com.mtihc.minecraft.treasurechest.Permission;
 import com.mtihc.minecraft.treasurechest.TreasureChestPlugin;
 import com.mtihc.minecraft.treasurechest.persistance.ChestsYaml;
@@ -21,8 +18,8 @@ public class SetMessageCommand extends BukkitCommand {
 
 	private TreasureChestPlugin plugin;
 
-	public SetMessageCommand(TreasureChestPlugin plugin, String name, List<String> aliases) {
-		super(name, "Change one of the messages of the chest you are looking at", "<id> <message>", aliases);
+	public SetMessageCommand(TreasureChestPlugin plugin, BukkitCommand parent, String name, List<String> aliases) {
+		super(parent, name, "<id> <message>", "Change one of the messages of the chest you are looking at", aliases);
 		ArrayList<String> longDescription = new ArrayList<String>();
 		longDescription.add(description);
 		longDescription.add("1" + ChatColor.GRAY + " found for the first time");
@@ -30,23 +27,20 @@ public class SetMessageCommand extends BukkitCommand {
 		longDescription.add("3" + ChatColor.GRAY + " is unlimited");
 		setLongDescription(longDescription);
 		this.plugin = plugin;
+		setPermission(Permission.SET.getNode());
+		setPermissionMessage(ChatColor.RED + "You don't have permission to change a chest's messages.");
 	}
-	
+
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
-		if(super.execute(sender, label, args))
-		{
-			return true;
-		}
-		
-		
+	protected boolean onCommand(CommandSender sender, String label,
+			String[] args) {
+
 		if(!(sender instanceof Player)) {
 			sender.sendMessage("Command must be executed by a player, in game.");
 			return false;
 		}
 
-		if(!sender.hasPermission(getPermission())) {
-			sender.sendMessage(ChatColor.RED + "You don't have permission for that command.");
+		if(!testPermission(sender)) {
 			return false;
 		}
 		
@@ -59,21 +53,30 @@ public class SetMessageCommand extends BukkitCommand {
 			return false;
 		}
 		
-		ArgumentIterator arguments = new ArgumentIterator(args);
-		
 		int msgId;
+		int argIndex = 0;
 		try {
-			msgId = arguments.nextInt();
-		} catch (ArgumentIndexException e) {
-			msgId = 1;
-		} catch (ArgumentFormatException e) {
+			msgId = Integer.parseInt(args[argIndex]);
+			argIndex++;
+			
+		} catch (Exception e) {
 			msgId = 1;
 		}
 		
 		String message;
 		try {
-			message = arguments.nextMessage();
-		} catch (ArgumentIndexException e) {
+			message = "";
+			for (int i = argIndex; i < args.length; i++) {
+				message += " " + args[i];
+			}
+			if(!message.isEmpty()) {
+				message = message.substring(1);
+			}
+			else {
+				message = null;
+			}
+			
+		} catch (Exception e) {
 			message = null;
 		}
 		
@@ -105,17 +108,7 @@ public class SetMessageCommand extends BukkitCommand {
 		}
 		
 		
-		
-		
 		return true;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.bukkit.command.Command#getPermission()
-	 */
-	@Override
-	public String getPermission() {
-		return Permission.SET.getNode();
 	}
 
 

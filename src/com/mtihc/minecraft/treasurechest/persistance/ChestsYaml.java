@@ -6,7 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.mtihc.minecraft.core1.YamlFile;
+import com.mtihc.minecraft.core2.YamlFile;
 import com.mtihc.minecraft.treasurechest.ChestNameFormatter;
 import com.mtihc.minecraft.treasurechest.TreasureChestPlugin;
 

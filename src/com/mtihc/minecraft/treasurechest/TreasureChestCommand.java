@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 
-import com.mtihc.minecraft.core1.BukkitCommand;
+import com.mtihc.minecraft.core2.BukkitCommand;
 import com.mtihc.minecraft.treasurechest.commands.CountCommand;
 import com.mtihc.minecraft.treasurechest.commands.DeleteCommand;
 import com.mtihc.minecraft.treasurechest.commands.ForgetAllCommand;
@@ -22,77 +21,62 @@ public class TreasureChestCommand extends BukkitCommand {
 	private TreasureChestPlugin plugin;
 
 	public TreasureChestCommand(TreasureChestPlugin plugin, String name, List<String> aliases) {
-		super(name, "Reloads the configuration.", "", aliases);
+		super(null, name, "", "Reloads the configuration", aliases);
 		this.plugin = plugin;
-		Server server = plugin.getServer();
 		
 		ArrayList<String> help = new ArrayList<String>();
 		help.add(ChatColor.DARK_AQUA + description);
 		help.add(ChatColor.GREEN + "Nested commands:");
 		
 		// count
-		BukkitCommand count = new CountCommand(plugin, "count", null);
-		addNested(count, server);
+		BukkitCommand count = new CountCommand(plugin, this, "count", null);
 		help.add("  " + count.getUsage());
 		
 		// delete
 		ArrayList<String> aliasesDelete = new ArrayList<String>();
 		aliasesDelete.add("del");
-		BukkitCommand delete = new DeleteCommand(plugin, "delete", aliasesDelete);
-		addNested(delete, server);
+		BukkitCommand delete = new DeleteCommand(plugin, this, "delete", aliasesDelete);
 		help.add("  " + delete.getUsage());
 		
 		// forget
-		BukkitCommand forget = new ForgetCommand(plugin, "forget", null);
+		BukkitCommand forget = new ForgetCommand(plugin, this, "forget", null);
 		// forget -allplayers
 		ArrayList<String> aliasesAllPlayers = new ArrayList<String>();
 		aliases.add("-all");
 		aliases.add("-a");
-		BukkitCommand forgetAll = new ForgetAllCommand(plugin, "-allplayers", aliasesAllPlayers);
-		forget.addNested(forgetAll, server);
-		addNested(forget, server);
+		BukkitCommand forgetAll = new ForgetAllCommand(plugin, forget, "-allplayers", aliasesAllPlayers);
 		help.add("  " + forget.getUsage());
 		help.add("  " + forgetAll.getUsage());
 		
 		// set
-		BukkitCommand set = new SetCommand(plugin, "set", null);
-		addNested(set, server);
+		BukkitCommand set = new SetCommand(plugin, this, "set", null);
 		help.add("  " + set.getUsage());
 		
 		// setforgettime
 		ArrayList<String> aliasesSetForget = new ArrayList<String>();
 		aliasesSetForget.add("setforget");
-		BukkitCommand setForget = new SetForgetCommand(plugin, "setforgettime", aliasesSetForget);
-		addNested(setForget, server);
+		BukkitCommand setForget = new SetForgetCommand(plugin, this, "setforgettime", aliasesSetForget);
 		help.add("  " + setForget.getUsage());
 		
 		// setmessage
 		ArrayList<String> aliasesSetMessage = new ArrayList<String>();
 		aliasesSetMessage.add("setmsg");
-		BukkitCommand setMessage = new SetMessageCommand(plugin, "setmessage", aliasesSetMessage);
-		addNested(setMessage, server);
+		BukkitCommand setMessage = new SetMessageCommand(plugin, this, "setmessage", aliasesSetMessage);
 		help.add("  " + setMessage.getUsage());
 		
 		// unlimited
 		ArrayList<String> aliasesUnlimited = new ArrayList<String>();
 		aliasesUnlimited.add("u");
-		BukkitCommand unlimited = new UnlimitedCommand(plugin, "unlimited", aliasesUnlimited);
-		addNested(unlimited, server);
+		BukkitCommand unlimited = new UnlimitedCommand(plugin, this, "unlimited", aliasesUnlimited);
 		help.add("  " + unlimited.getUsage());
 		
 		// help
 		setLongDescription(help);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.mtihc.minecraft.core1.BukkitCommand#execute(org.bukkit.command.CommandSender, java.lang.String, java.lang.String[])
-	 */
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
-		// try to execute a nested command
-		if(super.execute(sender, label, args)) {
-			return true;
-		}
+	protected boolean onCommand(CommandSender sender, String label,
+			String[] args) {
 		
 		// no nested command
 		if(args.length != 0) {

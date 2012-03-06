@@ -81,70 +81,64 @@ public class TreasureChest implements ConfigurationSerializable {
 					messages[i] = msg;
 				}
 			}
-		}
-		
+			
+			
+			
+			
 
-		//TODO remove try... only keep code in catch
-		try {
-			List<?> itemStackStrings = (List<?>) map.get("items");
-			itemStacks = new ItemStack[itemStackStrings.size()];
-			int index = 0;
-			for (Object object : itemStackStrings) {
-				itemStacks[index] = getItemStack(object.toString());
-				index++;
-			}
-		} catch(ClassCastException e) {
-			Map<?, ?> itemStackSection = (Map<?, ?>) map.get("items");
-			if(itemStackSection != null) {
-				Set<?> keys = itemStackSection.keySet();
-				ArrayList<ItemStack> itemStackList = new ArrayList<ItemStack>();
-				
+			//TODO remove try, keep code in second try
+			try {
+				List<?> itemStackStrings = (List<?>) map.get("items");
+				itemStacks = new ItemStack[itemStackStrings.size()];
 				int index = 0;
-				for (Object key : keys) {
-					int itemStackIndex = getItemStackIndex(itemStackSection.get("index"));
-					if(itemStackIndex == -1) {
-						itemStackIndex = itemStackList.size();
-					}
-					while(itemStackList.size() < itemStackIndex - 1) {
-						itemStackList.add(null);
-					}
-					ItemStack stack = ItemStack.deserialize(toNormalMap(itemStackSection.get(key)));
-					itemStackList.add(itemStackIndex, stack);
+				for (Object object : itemStackStrings) {
+					itemStacks[index] = getItemStack(object.toString());
 					index++;
 				}
-				
-				itemStacks = itemStackList.toArray(new ItemStack[itemStackList.size()]);
+			} catch(ClassCastException e) {
+				try {
+					// this is the current version
+					InventorySerializable itemStackSection = (InventorySerializable) map.get("items");
+					if(itemStackSection != null) {
+						
+						itemStacks = itemStackSection.getContents();
+					}
+					else {
+						itemStacks = new ItemStack[0];
+					}
+					
+				} catch(ClassCastException ex) {
+					Map<?, ?> itemStackSection = (Map<?, ?>) map.get("items");
+					if(itemStackSection != null) {
+						Set<?> keys = itemStackSection.keySet();
+						ArrayList<ItemStack> itemStackList = new ArrayList<ItemStack>();
+						
+						int index = 0;
+						for (Object key : keys) {
+							int itemStackIndex = getItemStackIndex(itemStackSection.get("index"));
+							if(itemStackIndex == -1) {
+								itemStackIndex = itemStackList.size();
+							}
+							while(itemStackList.size() < itemStackIndex - 1) {
+								itemStackList.add(null);
+							}
+							ItemStack stack = ItemStack.deserialize(toNormalMap(itemStackSection.get(key)));
+							itemStackList.add(itemStackIndex, stack);
+							index++;
+						}
+						
+						itemStacks = itemStackList.toArray(new ItemStack[itemStackList.size()]);
+					}
+					else {
+						itemStacks = new ItemStack[0];
+					}
+				}
 			}
-			else {
-				itemStacks = new ItemStack[0];
-			}
 		}
 		
 		
 		
 		
-		
-	}
-	
-	private int getItemStackIndex(Object itemStackIndex) {
-		if(itemStackIndex == null) {
-			return -1;
-		}
-		try {
-			return Integer.parseInt(itemStackIndex.toString());
-		} catch(NumberFormatException e) {
-			return -1;
-		}
-	}
-	
-	private Map<String, Object> toNormalMap(Object object) {
-		Map<?, ?> map = (Map<?, ?>)object;
-		Set<?> keys = map.keySet();
-		Map<String, Object> result = new HashMap<String, Object>();
-		for (Object key : keys) {
-			result.put(key.toString(), map.get(key));
-		}
-		return result;
 	}
 	
 	public boolean hasForgetTime() {
@@ -176,19 +170,6 @@ public class TreasureChest implements ConfigurationSerializable {
 	public Map<String, Object> serialize() {
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		
-		Map<String, Object> itemsSection = new HashMap<String, Object>();
-		int index = 0;
-		for (ItemStack stack : itemStacks) {
-			if(stack == null) {
-				continue;
-			}
-			Map<String, Object> stackSection = stack.serialize();
-			stackSection.put("type", stack.getType().name());
-			stackSection.put("index", index);
-			itemsSection.put("item" + index, stackSection);
-			index++;
-		}
-		result.put("items", itemsSection);
 		
 		if(linkedChest != null) {
 			result.put("link", linkedChest);
@@ -196,6 +177,11 @@ public class TreasureChest implements ConfigurationSerializable {
 		
 		result.put("isPrimary", isPrimary);
 		if(isPrimary) {
+			
+			InventorySerializable itemsSection = new InventorySerializable(itemStacks);
+			result.put("items", itemsSection);
+			
+			
 			result.put("isUnlimited", isUnlimited);
 			
 			if(hasForgetTime()) {
@@ -218,29 +204,68 @@ public class TreasureChest implements ConfigurationSerializable {
 		
 		return result;
 	}
-//
-//	private String getItemStackString(ItemStack itemStack) {
-//		if(itemStack == null) {
-//			return null;
-//		}
-//		String enchantmentString = "";
-//		Map<Enchantment, Integer> enchantments = itemStack.getEnchantments();
-//		Set<Entry<Enchantment, Integer>> entries = enchantments.entrySet();
-//		
-//		for (Entry<Enchantment, Integer> entry : entries) {
-//			enchantmentString += entry.getKey().getId() + "%" + entry.getValue() + ",";
-//		}
-//		if(!enchantmentString.isEmpty()) {
-//			enchantmentString = "[" + enchantmentString;
-//			// remove last comma
-//			enchantmentString = enchantmentString.substring(0, enchantmentString.length() - 1);
-//			enchantmentString = enchantmentString + "]";
-//		}
-//		
-//		return itemStack.getTypeId() + "%" + itemStack.getData().getData() + "#" + itemStack.getAmount() + enchantmentString;
-//	}
-//	
 	
+	public boolean isPrimary() {
+		return isPrimary;
+	}
+	
+	public void setPrimary(boolean value) {
+		this.isPrimary = value;
+	}
+	
+	public boolean isLinkedChest() {
+		return linkedChest != null;
+	}
+	
+	public String getLinkedChest() {
+		return linkedChest;
+	}
+	
+	public void setLinkedTo(String primaryChestName) {
+		linkedChest = primaryChestName;
+	}
+	
+	public String getMessage(Message name) {
+		return messages[name.ordinal()];
+	}
+	
+	public void setMessage(Message name, String message) {
+		messages[name.ordinal()] = message;
+	}
+	
+	public boolean isUnlimited() {
+		return isUnlimited;
+	}
+	
+	public void setUnlimited(boolean isUnlimited) {
+		this.isUnlimited = isUnlimited;
+	}
+	
+	
+	
+
+	private int getItemStackIndex(Object itemStackIndex) {
+		if(itemStackIndex == null) {
+			return -1;
+		}
+		try {
+			return Integer.parseInt(itemStackIndex.toString());
+		} catch(NumberFormatException e) {
+			return -1;
+		}
+	}
+	
+	private Map<String, Object> toNormalMap(Object object) {
+		Map<?, ?> map = (Map<?, ?>)object;
+		Set<?> keys = map.keySet();
+		Map<String, Object> result = new HashMap<String, Object>();
+		for (Object key : keys) {
+			result.put(key.toString(), map.get(key));
+		}
+		return result;
+	}
+	
+
 	private ItemStack getItemStack(String itemStackString) {
 
 		int typeSeperatorIndex = -1;
@@ -374,41 +399,5 @@ public class TreasureChest implements ConfigurationSerializable {
 			itemAmount = 1;
 		}
 		return itemAmount;
-	}
-
-	public boolean isPrimary() {
-		return isPrimary;
-	}
-	
-	public void setPrimary(boolean value) {
-		this.isPrimary = value;
-	}
-	
-	public boolean isLinkedChest() {
-		return linkedChest != null;
-	}
-	
-	public String getLinkedChest() {
-		return linkedChest;
-	}
-	
-	public void setLinkedTo(String primaryChestName) {
-		linkedChest = primaryChestName;
-	}
-	
-	public String getMessage(Message name) {
-		return messages[name.ordinal()];
-	}
-	
-	public void setMessage(Message name, String message) {
-		messages[name.ordinal()] = message;
-	}
-	
-	public boolean isUnlimited() {
-		return isUnlimited;
-	}
-	
-	public void setUnlimited(boolean isUnlimited) {
-		this.isUnlimited = isUnlimited;
 	}
 }

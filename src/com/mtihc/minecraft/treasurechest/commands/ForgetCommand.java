@@ -7,7 +7,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.mtihc.minecraft.core1.BukkitCommand;
+import com.mtihc.minecraft.core2.BukkitCommand;
 import com.mtihc.minecraft.treasurechest.Permission;
 import com.mtihc.minecraft.treasurechest.TreasureChestPlugin;
 import com.mtihc.minecraft.treasurechest.persistance.TreasureChest;
@@ -16,18 +16,17 @@ public class ForgetCommand extends BukkitCommand {
 
 	private TreasureChestPlugin plugin;
 
-	public ForgetCommand(TreasureChestPlugin plugin, String name, List<String> aliases) {
-		super(name, "As if you, or someone else, never found this chest", "[player]", aliases);
+	public ForgetCommand(TreasureChestPlugin plugin, BukkitCommand parent, String name, List<String> aliases) {
+		super(parent, name, "[player]", "As if you, or someone else, never found this chest", aliases);
 		this.plugin = plugin;
+		setPermission(Permission.FORGET.getNode());
+		setPermissionMessage(ChatColor.RED + "You don't have permission for the forget command.");
 	}
 	
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
-		if(super.execute(sender, label, args))
-		{
-			return true;
-		}
-		
+	protected boolean onCommand(CommandSender sender, String label,
+			String[] args) {
+
 		if(args.length > 1) {
 			sender.sendMessage(ChatColor.RED + "Expected only the optional player name.");
 			sender.sendMessage(getUsage());
@@ -47,8 +46,7 @@ public class ForgetCommand extends BukkitCommand {
 			return false;
 		}
 		
-		if(!sender.hasPermission(getPermission())) {
-			sender.sendMessage(ChatColor.RED + "You don't have permission to make a chest forget that you have found it.");
+		if(!testPermission(sender)) {
 			return false;
 		}
 		
@@ -78,20 +76,7 @@ public class ForgetCommand extends BukkitCommand {
 		sender.sendMessage(ChatColor.GOLD + "Treasure chest forgot that " + ChatColor.WHITE + "'" + playerName + "'" + ChatColor.GOLD + " found it :)");
 		
 		
-		
-		
-		
-		
 		return true;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.bukkit.command.Command#getPermission()
-	 */
-	@Override
-	public String getPermission() {
-		return Permission.FORGET.getNode();
-	}
-
 
 }

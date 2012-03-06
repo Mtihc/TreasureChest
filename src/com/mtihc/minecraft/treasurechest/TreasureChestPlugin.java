@@ -16,6 +16,7 @@ import com.mtihc.minecraft.treasurechest.events.ChestBreakListener;
 import com.mtihc.minecraft.treasurechest.events.ChestExplodeListener;
 import com.mtihc.minecraft.treasurechest.events.ChestOpenListener;
 import com.mtihc.minecraft.treasurechest.persistance.ChestsYaml;
+import com.mtihc.minecraft.treasurechest.persistance.InventorySerializable;
 import com.mtihc.minecraft.treasurechest.persistance.MemoryDb;
 import com.mtihc.minecraft.treasurechest.persistance.TreasureChest;
 
@@ -24,6 +25,7 @@ public class TreasureChestPlugin extends JavaPlugin implements ChestNameFormatte
 	
 	static {
 		ConfigurationSerialization.registerClass(TreasureChest.class, "TreasureChest");
+		ConfigurationSerialization.registerClass(InventorySerializable.class);
 	}
 
 	private ChestsYaml chests;
@@ -50,12 +52,17 @@ public class TreasureChestPlugin extends JavaPlugin implements ChestNameFormatte
 		command = new TreasureChestCommand(this, cmd.getLabel(), cmd.getAliases());
 		
 		ChestBreakListener breakListener = new ChestBreakListener(this);
-		ChestOpenListener openListener = new ChestOpenListener(this);
 		ChestExplodeListener explodeListener = new ChestExplodeListener(this);
+		ChestOpenListener openListener = new ChestOpenListener(this);
 		
 		getServer().getPluginManager().registerEvents(breakListener, this);
-		getServer().getPluginManager().registerEvents(openListener, this);
 		getServer().getPluginManager().registerEvents(explodeListener, this);
+		getServer().getPluginManager().registerEvents(openListener, this);
+		
+		//TODO remove this when conversion code in TreasureChest class is removed.
+		chests.save();
+		
+		
 		
 		getLogger().info(getDescription().getVersion() + " enabled.");
 	}
