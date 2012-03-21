@@ -1,4 +1,0 @@
-# disable_chest_access_protection  Whether to disable other plugins' chest protection. Like WorldGuard's region protection.
-#                                  true: Players can access treasure chests, eventhough they are protected.
-#                                  false: Player can't access treasure chests when they are protected, or inside protected regions.
-disable_chest_access_protection: false

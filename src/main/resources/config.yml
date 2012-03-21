@@ -1,0 +1,9 @@
+# disable_chest_access_protection  Whether to disable other plugins' chest protection. Like WorldGuard's region protection.
+#                                  true: Players can access treasure chests, eventhough they are protected.
+#                                  false: Players can't access treasure chests when they are protected
+defaults:
+    messages:
+        found: 'You have found treasure!'
+        found_already: 'You have already looted this treasure...'
+        unlimited: 'Take as much as you want!'
+    ignoreProtection: false

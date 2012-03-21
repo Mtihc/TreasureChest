@@ -1,0 +1,98 @@
+name: TreasureChest
+author: Mtihc
+description: Place chest that adds some items everytime someone opens it for the first time.
+main: com.mtihc.minecraft.treasurechest.TreasureChestPlugin
+depend: []
+softdepend: []
+version: 7.0
+commands:
+    treasurechest:
+        aliases: [tchest]
+        description: Type /tchest ? for more info
+        usage: /treasurechest ? or /tchest ?
+permissions:
+    treasurechest.admin:
+        description: Grants all permissions, except for treasurechest.reload
+        default: op
+        children:
+            treasurechest.set: true
+            treasurechest.delete: true
+            treasurechest.reload: false
+            treasurechest.unlimited: true
+            treasurechest.random: true
+            treasurechest.access: true
+            treasurechest.count.others: true
+            treasurechest.forget.others: true
+            treasurechest.forget.all: true
+            treasurechest.ignoreprotection: true
+            treasurechest.list.all: true
+    
+    treasurechest.player:
+        description: Grants all permissions that a regular player usually gets
+        default: false
+        children:
+            treasurechest.access: true
+            treasurechest.count.others: true
+            treasurechest.list: true
+    
+    treasurechest.set:
+        description: Allows you to turn regular chests into treasure chests and set their messages. And forget time.
+        default: false
+    treasurechest.delete:
+        description: Allows you to delete treasure chests and turn them into regular chests again.
+        default: false
+    treasurechest.reload:
+        description: Allows you to reload the configuration files.
+        default: false
+    treasurechest.unlimited:
+        description: Allows you to turn treasure chests into unlimited chests.
+        default: false
+    treasurechest.random:
+        description: Allows you to turn treasure chests into random chests.
+        default: false
+    treasurechest.ignoreprotection:
+        description: Allows you to disable/enable 3rd party protection plugins
+        default: false
+    treasurechest.list:
+        description: Allows you to see a list of locations of all the treasures you found
+        default: false
+    treasurechest.list.all:
+        description: Allows you to see a list of locations of all the treasures on the server
+        default: false
+        children:
+            treasurechest.list: true
+    
+    treasurechest.access:
+        description: Allows you to access any type of treasure chest
+        default: false
+        children:
+            treasurechest.access.treasure: true
+            treasurechest.access.unlimited: true
+    treasurechest.access.treasure:
+        description: Allows opening treasure chests
+        default: false
+    treasurechest.access.unlimited:
+        description: Allows opening unlimited chests
+        default: false
+    
+    treasurechest.count:
+        description: Allows you to count how many chests you have found
+        default: false
+    treasurechest.count.others:
+        description: Allows you to count how many chests you or someone else has found
+        default: false
+        children:
+            treasurechest.count: true
+    
+    treasurechest.forget:
+        description: Allows you to make a chest forget that you have found it
+        default: false
+    treasurechest.forget.others:
+        description: Allows you to make a chest forget that you or someone else has found it
+        default: false
+        children:
+            treasurechest.forget: true
+    treasurechest.forget.all:
+        description: Allows you to make a chest forget that anybody has found it
+        default: false
+    
