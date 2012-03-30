@@ -1,12 +1,12 @@
-package com.mtihc.minecraft.treasurechest.core;
+package com.mtihc.minecraft.teamfactory.core.commands;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.SimpleCommandMap;
 
 
 public abstract class BukkitCommand extends Command {
@@ -24,8 +24,7 @@ public abstract class BukkitCommand extends Command {
 			return result;
 		}
 	}
-	
-	private SimpleCommandMap nested;
+	private Map<String, BukkitCommand> nested;
 	private BukkitCommand parent;
 	private String argumentSyntax;
 	private List<String> descriptionLong;
@@ -38,9 +37,9 @@ public abstract class BukkitCommand extends Command {
 		
 		if(parent != null) {
 			if(parent.nested == null) {
-				parent.nested = new SimpleCommandMap(Bukkit.getServer());
+				parent.nested = new HashMap<String, BukkitCommand>();
 			}
-			parent.nested.register(getLabel().toLowerCase(), "", this);
+			parent.nested.put(name.toLowerCase(), this);
 		}
 	}
 	
@@ -53,7 +52,7 @@ public abstract class BukkitCommand extends Command {
 	}
 	
 	public final BukkitCommand getNested(String label) {
-		return (BukkitCommand) nested.getCommand(label.toLowerCase());
+		return nested.get(label.toLowerCase());
 	}
 
 	public boolean hasLongDescription()
@@ -121,8 +120,16 @@ public abstract class BukkitCommand extends Command {
 			return true;
 		}
 		else {
-			if(nested != null && nested.dispatch(sender, joinArguments(args))) {
-				return true;
+			BukkitCommand nestedCommand;
+			try {
+				nestedCommand = nested.get(args[0].toLowerCase());
+			} catch(NullPointerException e) {
+				nestedCommand = null;
+			} catch(IndexOutOfBoundsException e) {
+				nestedCommand = null;
+			}
+			if(nestedCommand != null) {
+				return nestedCommand.execute(sender, args[0].toLowerCase(), unshiftArgument(args));
 			}
 			else {
 				return onCommand(sender, label.toLowerCase(), args);
@@ -130,20 +137,22 @@ public abstract class BukkitCommand extends Command {
 		}
 	}
 
-	
-	private String joinArguments(String[] args) {
-		String result = "";
-		for (String element : args) {
-			result += " " + element;
+	private String[] unshiftArgument(String[] args) {
+		String[] result = new String[args.length - 1];
+		for (int i = 1; i < args.length; i++) {
+			result[i - 1] = args[i];
 		}
-		if(result.isEmpty()) {
-			return result;
-		}
-		else {
-			return result.substring(1);
-		}
-		
+		return result;
 	}
+//	
+//	private String joinArguments(String label, String[] args) {
+//		String result = label;
+//		for (String element : args) {
+//			result += " " + element;
+//		}
+//		return result;
+//		
+//	}
 
 	/**
 	 * @return the argument syntax
