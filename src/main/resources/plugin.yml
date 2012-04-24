@@ -4,7 +4,7 @@ description: Place chest that adds some items everytime someone opens it for the
 main: com.mtihc.minecraft.treasurechest.TreasureChestPlugin
 depend: []
 softdepend: []
-version: 7.0
+version: 7.1
 commands:
     treasurechest:
         aliases: [tchest]

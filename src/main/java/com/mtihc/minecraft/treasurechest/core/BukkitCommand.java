@@ -1,4 +1,4 @@
-package com.mtihc.minecraft.teamfactory.core.commands;
+package com.mtihc.minecraft.treasurechest.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

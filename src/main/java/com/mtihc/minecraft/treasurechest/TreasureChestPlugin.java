@@ -125,6 +125,8 @@ public class TreasureChestPlugin extends JavaPlugin {
 		}
 	}
 	
+	
+	
 	//TODO
 	public Block getTargetedContainerBlock(Player player) {
 		HashSet<Byte> invisible = new HashSet<Byte>();
@@ -135,13 +137,19 @@ public class TreasureChestPlugin extends JavaPlugin {
 		invisible.add((byte)Material.FIRE.getId());
 		invisible.add((byte)Material.GLASS.getId());
 		invisible.add((byte)Material.THIN_GLASS.getId());
+		
 		Block block = player.getTargetBlock(null, 5);
+		
 		if(block != null && block.getState() instanceof InventoryHolder) {
-			InventoryHolder holder = ((InventoryHolder)block.getState()).getInventory().getHolder();
+			
+			InventoryHolder holder = (InventoryHolder) block.getState();
+			holder = holder.getInventory().getHolder();
 			if(holder instanceof DoubleChest) {
 				return ((DoubleChest)holder).getLocation().getBlock();
 			}
-			return block;
+			else {
+				return block;
+			}
 		}
 		else {
 			return null;

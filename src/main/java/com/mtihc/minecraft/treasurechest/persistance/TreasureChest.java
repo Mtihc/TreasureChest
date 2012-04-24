@@ -11,6 +11,7 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,7 +25,7 @@ public class TreasureChest implements ConfigurationSerializable {
 	}
 	
 	
-	private ItemStack[] inventory;
+	private ItemStack[] contents;
 	private Location location;
 	
 	private Map<Message, String> messages;
@@ -38,14 +39,14 @@ public class TreasureChest implements ConfigurationSerializable {
 			throw new IllegalArgumentException("Parameter block must have a state of type InventoryHolder.");
 		}
 		this.location = block.getLocation();
-		this.inventory = ((InventoryHolder) block.getState()).getInventory().getContents();
+		this.contents = ((InventoryHolder) block.getState()).getInventory().getContents();
 		this.messages = new HashMap<TreasureChest.Message, String>();
 	}
 	
 
 	public TreasureChest(Location location, ItemStack[] inventory) {
 		this.location = location;
-		this.inventory = inventory;
+		this.contents = inventory;
 		this.messages = new HashMap<TreasureChest.Message, String>();
 	}
 	
@@ -67,11 +68,11 @@ public class TreasureChest implements ConfigurationSerializable {
 	}
 	
 	public ItemStack[] getContents() {
-		return inventory;
+		return contents;
 	}
 	
 	public void setContents(ItemStack[] contents) {
-		inventory = contents;
+		this.contents = contents;
 	}
 	
 	public Location getLocation() {
@@ -154,7 +155,7 @@ public class TreasureChest implements ConfigurationSerializable {
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		
 		result.put("location", new LocationSerializable(location));
-		result.put("inventory", new InventorySerializable(inventory));
+		result.put("inventory", new InventorySerializable(contents));
 		result.put("isUnlimited", isUnlimited);
 		result.put("randomness", randomAmount);
 		result.put("forgetTime", forgetTime);
@@ -212,11 +213,11 @@ public class TreasureChest implements ConfigurationSerializable {
 		 
 	}
 
-	public void toInventoryHolder(InventoryHolder holder) {
+	public void toInventory(Inventory inventory) {
 		
-		ItemStack[] tchest = getRandomizedInventory(inventory, randomAmount);
+		ItemStack[] tchest = getRandomizedInventory(this.contents, randomAmount);
 		int size = tchest.length;
-		int sizeTarget = holder.getInventory().getSize();
+		int sizeTarget = inventory.getSize();
 		
 		ItemStack[] result = new ItemStack[sizeTarget];
 		
@@ -239,7 +240,7 @@ public class TreasureChest implements ConfigurationSerializable {
 			}
 		}
 		
-		holder.getInventory().setContents(result);
+		inventory.setContents(result);
 		
 	}
 
