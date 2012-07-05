@@ -3,7 +3,7 @@ package com.mtihc.minecraft.treasurechest;
 public enum Permission {
 	MAIN("treasurechest"),
 	SET("treasurechest.set"),
-	DEL("treasurechest.del"),
+	DEL("treasurechest.delete"),
 	FORGET("treasurechest.forget"),
 	FORGET_OTHERS("treasurechest.forget.others"),
 	FORGET_ALL("treasurechest.forget.all"),
