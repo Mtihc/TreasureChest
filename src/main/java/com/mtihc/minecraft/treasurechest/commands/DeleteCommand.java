@@ -19,7 +19,7 @@ public class DeleteCommand extends BukkitCommand {
 	public DeleteCommand(TreasureChestPlugin plugin, BukkitCommand parent, String name, List<String> aliases) {
 		super(parent, name, "", "Delete the chest you're looking at", aliases);
 		this.plugin = plugin;
-		setPermission(Permission.DEL.toString());
+		setPermission(Permission.DEL.getNode());
 		setPermissionMessage(ChatColor.RED + "You don't have permission to delete treasure chests.");
 	}
 
