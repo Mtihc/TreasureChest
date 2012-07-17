@@ -10,9 +10,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.inventory.InventoryHolder;
 
+import com.mtihc.minecraft.treasurechest.persistance.TChestCollection;
+import com.mtihc.minecraft.treasurechest.persistance.TreasureChest;
 import com.mtihc.minecraft.treasurechest.v7.TreasureChestPlugin;
-import com.mtihc.minecraft.treasurechest.v7.persistance.TChestCollection;
-import com.mtihc.minecraft.treasurechest.v7.persistance.TreasureChest;
 
 public class ChestBreakListener implements Listener {
 

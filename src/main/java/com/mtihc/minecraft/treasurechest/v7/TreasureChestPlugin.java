@@ -14,16 +14,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.mtihc.minecraft.treasurechest.persistance.ChestsYaml;
+import com.mtihc.minecraft.treasurechest.persistance.InventorySerializable;
+import com.mtihc.minecraft.treasurechest.persistance.LocationSerializable;
+import com.mtihc.minecraft.treasurechest.persistance.Memory;
+import com.mtihc.minecraft.treasurechest.persistance.MemoryYaml;
+import com.mtihc.minecraft.treasurechest.persistance.TChestCollection;
+import com.mtihc.minecraft.treasurechest.persistance.TreasureChest;
 import com.mtihc.minecraft.treasurechest.v7.events.ChestBreakListener;
 import com.mtihc.minecraft.treasurechest.v7.events.ChestExplodeListener;
 import com.mtihc.minecraft.treasurechest.v7.events.ChestOpenListener;
-import com.mtihc.minecraft.treasurechest.v7.persistance.ChestsYaml;
-import com.mtihc.minecraft.treasurechest.v7.persistance.InventorySerializable;
-import com.mtihc.minecraft.treasurechest.v7.persistance.LocationSerializable;
-import com.mtihc.minecraft.treasurechest.v7.persistance.Memory;
-import com.mtihc.minecraft.treasurechest.v7.persistance.MemoryYaml;
-import com.mtihc.minecraft.treasurechest.v7.persistance.TChestCollection;
-import com.mtihc.minecraft.treasurechest.v7.persistance.TreasureChest;
 
 public class TreasureChestPlugin extends JavaPlugin {
 

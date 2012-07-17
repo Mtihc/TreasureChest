@@ -1,4 +1,4 @@
-package com.mtihc.minecraft.treasurechest.v7.persistance;
+package com.mtihc.minecraft.treasurechest.persistance;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

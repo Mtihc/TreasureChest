@@ -19,10 +19,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
+import com.mtihc.minecraft.treasurechest.persistance.TChestCollection;
+import com.mtihc.minecraft.treasurechest.persistance.TreasureChest;
 import com.mtihc.minecraft.treasurechest.v7.Permission;
 import com.mtihc.minecraft.treasurechest.v7.TreasureChestPlugin;
-import com.mtihc.minecraft.treasurechest.v7.persistance.TChestCollection;
-import com.mtihc.minecraft.treasurechest.v7.persistance.TreasureChest;
 
 public class ChestOpenListener implements Listener{
 

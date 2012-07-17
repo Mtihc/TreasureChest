@@ -1,4 +1,4 @@
-package com.mtihc.minecraft.treasurechest.v7.persistance;
+package com.mtihc.minecraft.treasurechest.persistance;
 
 import com.mtihc.minecraft.treasurechest.v7.TreasureChestPlugin;
 import com.mtihc.minecraft.treasurechest.v7.core.YamlFile;

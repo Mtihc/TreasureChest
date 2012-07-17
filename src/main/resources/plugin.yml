@@ -1,10 +1,10 @@
 name: TreasureChest
 author: Mtihc
 description: Place chest that adds some items everytime someone opens it for the first time.
-main: com.mtihc.minecraft.treasurechest.v7.TreasureChestPlugin
+main: com.mtihc.minecraft.treasurechest.v8.plugin.TreasureChestPlugin
 depend: []
 softdepend: []
-version: 7.2
+version: 8.0
 commands:
     treasurechest:
         aliases: [tchest]

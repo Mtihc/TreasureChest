@@ -7,11 +7,11 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.mtihc.minecraft.treasurechest.persistance.TChestCollection;
+import com.mtihc.minecraft.treasurechest.persistance.TreasureChest;
 import com.mtihc.minecraft.treasurechest.v7.Permission;
 import com.mtihc.minecraft.treasurechest.v7.TreasureChestPlugin;
 import com.mtihc.minecraft.treasurechest.v7.core.BukkitCommand;
-import com.mtihc.minecraft.treasurechest.v7.persistance.TChestCollection;
-import com.mtihc.minecraft.treasurechest.v7.persistance.TreasureChest;
 
 public class SetForgetCommand extends BukkitCommand {
 

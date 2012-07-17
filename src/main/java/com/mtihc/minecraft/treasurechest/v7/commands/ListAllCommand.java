@@ -7,10 +7,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 
+import com.mtihc.minecraft.treasurechest.persistance.TreasureChest;
 import com.mtihc.minecraft.treasurechest.v7.Permission;
 import com.mtihc.minecraft.treasurechest.v7.TreasureChestPlugin;
 import com.mtihc.minecraft.treasurechest.v7.core.BukkitCommand;
-import com.mtihc.minecraft.treasurechest.v7.persistance.TreasureChest;
 
 public class ListAllCommand extends BukkitCommand {
 
