@@ -10,6 +10,12 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Only required to convert from v7 to v8
+ * @author Mitch
+ *
+ */
+@Deprecated
 public class InventorySerializable implements ConfigurationSerializable {
 
 	private int size;

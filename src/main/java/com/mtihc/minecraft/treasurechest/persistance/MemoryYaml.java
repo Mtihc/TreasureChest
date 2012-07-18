@@ -8,8 +8,12 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.mtihc.minecraft.treasurechest.v7.core.YamlFile;
-
+/**
+ * Only required to convert from v7 to v8
+ * @author Mitch
+ *
+ */
+@Deprecated
 public class MemoryYaml extends YamlFile implements Memory {
 
 	public MemoryYaml(JavaPlugin plugin, String name) {

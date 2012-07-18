@@ -4,6 +4,12 @@ import java.util.Collection;
 
 import org.bukkit.OfflinePlayer;
 
+/**
+ * Only required to convert from v7 to v8
+ * @author Mitch
+ *
+ */
+@Deprecated
 public interface Memory {
 	Collection<String> getAllPlayerFound(OfflinePlayer player);
 	

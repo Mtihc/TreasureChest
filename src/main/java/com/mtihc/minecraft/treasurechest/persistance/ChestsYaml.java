@@ -1,11 +1,16 @@
 package com.mtihc.minecraft.treasurechest.persistance;
 
-import com.mtihc.minecraft.treasurechest.v7.TreasureChestPlugin;
-import com.mtihc.minecraft.treasurechest.v7.core.YamlFile;
+import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * Only required to convert from v7 to v8
+ * @author Mitch
+ *
+ */
+@Deprecated
 public class ChestsYaml extends YamlFile {
 
-	public ChestsYaml(TreasureChestPlugin plugin) {
+	public ChestsYaml(JavaPlugin plugin) {
 		super(plugin, "chests");
 		
 	}

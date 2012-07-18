@@ -20,6 +20,29 @@ public class BlockInventory implements IBlockInventory {
 	private InventoryType type;
 	private int size;
 	private ItemStack[] contents;
+	
+	/**
+	 * @deprecated This constructor is only required to convert from v7 to v8
+	 */
+	@Deprecated
+	public BlockInventory(Location location, ItemStack[] contents) {
+		this.location = location;
+		this.type = InventoryType.CHEST;
+		this.contents = contents;
+		this.size = Math.min(type.getDefaultSize() * 2, contents.length);
+		if(contents.length > size) {
+			ItemStack[] newContents = new ItemStack[size];
+			int index = 0;
+			for (int i = 0; i < contents.length; i++) {
+				if(contents[i] == null || contents[i].getTypeId() == 0) {
+					continue;
+				}
+				newContents[index] = contents[i];
+				index++;
+			}
+			this.contents = newContents;
+		}
+	}
 
 	public BlockInventory(Location location, Inventory inventory) {
 		if(inventory instanceof DoubleChestInventory) {

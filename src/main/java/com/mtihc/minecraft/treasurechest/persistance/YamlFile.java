@@ -1,4 +1,4 @@
-package com.mtihc.minecraft.treasurechest.v7.core;
+package com.mtihc.minecraft.treasurechest.persistance;
 
 
 import java.io.File;
@@ -9,6 +9,12 @@ import java.util.logging.Level;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * Only required to convert from v7 to v8
+ * @author Mitch
+ *
+ */
+@Deprecated
 public class YamlFile {
 
 	private JavaPlugin plugin;
