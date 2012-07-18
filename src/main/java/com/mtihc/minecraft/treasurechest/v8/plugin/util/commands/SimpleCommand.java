@@ -255,16 +255,16 @@ public class SimpleCommand implements ICommand {
 
 	public static void sendHelp(CommandSender sender, ICommand cmd, int page) throws CommandException {
 		
-		sender.sendMessage(ChatColor.GREEN + "Command:" + ChatColor.WHITE + " " + cmd.getUsage());
+		sender.sendMessage(ChatColor.GOLD + "Command:" + ChatColor.WHITE + " " + cmd.getUsage());
 		
 		if(cmd.getDescription() != null) {
-			sender.sendMessage(ChatColor.LIGHT_PURPLE + cmd.getDescription());
+			sender.sendMessage(ChatColor.YELLOW + cmd.getDescription());
 		}
 		
 		String[] help = cmd.getHelp();
 		if(help != null) {
 			for (String string : help) {
-				sender.sendMessage(ChatColor.LIGHT_PURPLE + string);
+				sender.sendMessage(ChatColor.YELLOW + string);
 			}
 		}
 		
@@ -291,13 +291,13 @@ public class SimpleCommand implements ICommand {
 			if (page > totalPages || page < 1) {
 				return;
 			}
-			sender.sendMessage(ChatColor.GREEN + "Nested commands: (page "
+			sender.sendMessage(ChatColor.GOLD + "Nested commands: (page "
 					+ page + "/" + totalPages + "):");
 			
 			for (int i = startIndex; i < endIndex && i < total; i++) {
 				String lbl = labels[i];
 				ICommand nested = cmd.getNested(lbl);
-				sender.sendMessage(nested.getUsage() + ChatColor.LIGHT_PURPLE + " " + nested.getDescription());
+				sender.sendMessage(nested.getUsage() + ChatColor.YELLOW + " " + nested.getDescription());
 			}
 			
 		}

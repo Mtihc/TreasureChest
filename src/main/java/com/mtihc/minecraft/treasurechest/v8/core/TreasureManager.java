@@ -35,6 +35,10 @@ import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundAlreadyEven
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundUnlimitedEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestOpenEvent;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactoryManager;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
 public class TreasureManager {
 	
@@ -76,6 +80,8 @@ public class TreasureManager {
 	private String permAccessNormal;
 	private String permAccessUnlimited;
 	
+	private RewardFactoryManager rewardManager;
+	
 	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited) {
 		this.plugin = plugin;
 		this.config = config;
@@ -84,6 +90,8 @@ public class TreasureManager {
 		
 		this.permAccessNormal = permAccessNormal;
 		this.permAccessUnlimited = permAccessUnlimited;
+		
+		this.rewardManager = new RewardFactoryManager();
 		
 		Listener listener = new TreasureChestListener(this);
 		plugin.getServer().getPluginManager().registerEvents(listener, plugin);
@@ -95,6 +103,10 @@ public class TreasureManager {
 	
 	public ITreasureManagerConfiguration getConfig() {
 		return config;
+	}
+	
+	public RewardFactoryManager getRewardManager() {
+		return rewardManager;
 	}
 	
 	public ITreasureChest load(Location location) {
@@ -282,6 +294,8 @@ public class TreasureManager {
 				return;
 			}
 			
+			giveRewards(player, tchest);
+			
 			String message = tchest.getMessage(TreasureChest.Message.UNLIMITED);
 			if(message != null) {
 				player.sendMessage(ChatColor.GOLD + message);
@@ -325,6 +339,7 @@ public class TreasureManager {
 				// remember that this player found it at this time
 				rememberPlayerFound((OfflinePlayer)player, id);
 				
+				giveRewards(player, tchest);
 				
 				String foundMessage = tchest.getMessage(TreasureChest.Message.FOUND);
 				if(foundMessage != null) {
@@ -506,7 +521,21 @@ public class TreasureManager {
 		}
 	}
 	
-	
+	private void giveRewards(Player player, ITreasureChest tchest) {
+		List<RewardInfo> infos = tchest.getRewards();
+		for (RewardInfo r : infos) {
+			if(r == null) {
+				continue;
+			}
+			IReward reward;
+			try {
+				reward = rewardManager.create(r);
+				reward.give(player);
+			} catch (RewardException e) {
+				player.sendMessage(ChatColor.RED + e.getMessage());
+			}
+		}
+	}
 	
 	abstract class TreasureInventory implements Runnable {
 

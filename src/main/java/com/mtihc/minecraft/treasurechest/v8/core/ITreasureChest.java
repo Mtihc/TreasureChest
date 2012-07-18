@@ -1,6 +1,10 @@
 package com.mtihc.minecraft.treasurechest.v8.core;
 
+import java.util.List;
+
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
 /**
  * Interface representing a Treasure Chest
@@ -86,5 +90,10 @@ public interface ITreasureChest extends ConfigurationSerializable {
 	 * @param value whether third party protection is ignored
 	 */
 	public void ignoreProtection(boolean value);
-	
+
+	boolean hasRewards();
+	public List<RewardInfo> getRewards();
+	public void setRewards(List<RewardInfo> values);
+	public int getRewardTotal();
+
 }

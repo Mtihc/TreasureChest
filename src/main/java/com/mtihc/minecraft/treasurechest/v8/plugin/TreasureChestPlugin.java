@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mtihc.minecraft.treasurechest.v8.core.BlockInventory;
@@ -16,20 +17,61 @@ import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManagerConfiguration;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.SimpleCommand;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.LevelRewardFactory;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.MoneyRewardFactory;
 
-public class TreasureChestPlugin extends JavaPlugin {
-
+public class TreasureChestPlugin extends JavaPlugin implements Listener {
+	
+	
+	
+	
+	
 	static {
 		ConfigurationSerialization.registerClass(TreasureChest.class);
 		ConfigurationSerialization.registerClass(BlockInventory.class);
 		ConfigurationSerialization.registerClass(DoubleBlockInventory.class);
+		ConfigurationSerialization.registerClass(RewardInfo.class, "RewardInfo");
 	}
 	
 	
 	
+	
+	
+	private TreasureManagerConfiguration config;
 	private TreasureManager manager;
 	private SimpleCommand cmd;
-	private TreasureManagerConfiguration config;
+	
+	
+	
+	
+	
+	@Override
+	public void onEnable() {
+		
+		// create config
+		config = new TreasureManagerConfiguration(this, "config");
+		config.reload();
+		
+		// create manager
+		manager = new TreasureManager(
+				this, config, 
+				new TreasureChestRepository(getDataFolder() + "/treasure"), 
+				new TreasureChestMemory(getDataFolder() + "/players"), 
+				Permission.ACCESS_TREASURE.getNode(), 
+				Permission.ACCESS_UNLIMITED.getNode());
+		
+		// register factories
+		manager.getRewardManager().setFactory(new LevelRewardFactory());
+		manager.getRewardManager().setFactory(new MoneyRewardFactory());
+		
+		// create command
+		cmd = new TreasureChestCommand(manager, null);
+	}
+	
+	
+	
+	
 	
 	/**
 	 * 
@@ -39,15 +81,10 @@ public class TreasureChestPlugin extends JavaPlugin {
 		return manager;
 	}
 	
-	@Override
-	public void onEnable() {
-		
-		config = new TreasureManagerConfiguration(this, "config");
-		config.reload();
-		manager = new TreasureManager(this, config, new TreasureChestRepository(getDataFolder() + "/treasure"), new TreasureChestMemory(getDataFolder() + "/players"), Permission.ACCESS_TREASURE.getNode(), Permission.ACCESS_UNLIMITED.getNode());
-		cmd = new TreasureChestCommand(manager, null);
-	}
-
+	
+	
+	
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
@@ -64,11 +101,7 @@ public class TreasureChestPlugin extends JavaPlugin {
 			return false;
 		}
 	}
-
-
-
-
-
+	
 	private boolean search(String[] array, String string) {
 		for (String e : array) {
 			if(e.equalsIgnoreCase(string)) {
@@ -81,30 +114,22 @@ public class TreasureChestPlugin extends JavaPlugin {
 	
 	
 	
-
-	/* (non-Javadoc)
-	 * @see org.bukkit.plugin.java.JavaPlugin#getConfig()
-	 */
+	
 	@Override
 	public FileConfiguration getConfig() {
 		return config.getConfig();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.bukkit.plugin.java.JavaPlugin#reloadConfig()
-	 */
 	@Override
 	public void reloadConfig() {
 		config.reload();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.bukkit.plugin.java.JavaPlugin#saveConfig()
-	 */
 	@Override
 	public void saveConfig() {
 		config.save();
 	}
+	
 	
 	
 	

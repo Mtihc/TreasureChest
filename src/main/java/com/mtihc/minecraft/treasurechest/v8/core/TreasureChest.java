@@ -1,7 +1,10 @@
 package com.mtihc.minecraft.treasurechest.v8.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,6 +12,8 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.InventoryHolder;
+
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
 
 public class TreasureChest implements ITreasureChest {
@@ -21,6 +26,8 @@ public class TreasureChest implements ITreasureChest {
 	private int random;
 	private long forgetTime;
 	private boolean ignoreProtection;
+	
+	private List<RewardInfo> rewards = new ArrayList<RewardInfo>();
 	
 	public TreasureChest(BlockState blockState) {
 		if(!(blockState instanceof InventoryHolder)) {
@@ -39,25 +46,39 @@ public class TreasureChest implements ITreasureChest {
 		random = 0;
 		forgetTime = 0;
 		ignoreProtection = false;
+		
 	}
 	
 	public TreasureChest(Map<String, Object> values) {
-		// TODO
+		
 		container = (IBlockInventory) values.get("container");
 		
 		Map<?, ?> msgSection = (Map<?, ?>) values.get("messages");
-		Set<?> msgEntries = msgSection.entrySet();
-		for (Object object : msgEntries) {
-			Map.Entry<?, ?> entry = (Map.Entry<?, ?>) object;
-			messages.put(
-					Message.valueOf((String) entry.getKey()), 
-					(String) entry.getValue());
+		
+		if(msgSection != null) {
+			Set<?> msgEntries = msgSection.entrySet();
+			for (Object object : msgEntries) {
+				Map.Entry<?, ?> entry = (Map.Entry<?, ?>) object;
+				messages.put(
+						Message.valueOf((String) entry.getKey()), 
+						(String) entry.getValue());
+			}
 		}
+		
 		
 		unlimited = (Boolean) values.get("unlimited");
 		random = (Integer) values.get("random");
 		forgetTime = (long) (Integer) values.get("forget-time");
 		ignoreProtection = (Boolean) values.get("ignore-protection");
+		
+		Map<?, ?> rewardSection = (Map<?, ?>) values.get("rewards");
+		if(rewardSection != null) {
+			Collection<?> rewardsValues = rewardSection.values();
+			for (Object object : rewardsValues) {
+				rewards.add((RewardInfo) object);
+			}
+		}
+		
 	}
 
 	@Override
@@ -77,6 +98,15 @@ public class TreasureChest implements ITreasureChest {
 		values.put("random", random);
 		values.put("forget-time", forgetTime);
 		values.put("ignore-protection", ignoreProtection);
+		
+		
+		Map<String, Object> rewardSection = new LinkedHashMap<String, Object>();
+		int i = 0;
+		for (RewardInfo info : rewards) {
+			rewardSection.put("reward" + i, info);
+			i++;
+		}
+		values.put("rewards", rewardSection);
 		
 		return values;
 	}
@@ -146,7 +176,29 @@ public class TreasureChest implements ITreasureChest {
 		this.ignoreProtection = value;
 	}
 
+
+	@Override
+	public boolean hasRewards() {
+		return rewards != null && !rewards.isEmpty();
+	}
+
+	@Override
+	public List<RewardInfo> getRewards() {
+		return rewards;
+	}
+
+	@Override
+	public void setRewards(List<RewardInfo> values) {
+		this.rewards = values;
+		if(this.rewards == null) {
+			this.rewards = new ArrayList<RewardInfo>();
+		}
+	}
 	
+	@Override
+	public int getRewardTotal() {
+		return rewards.size();
+	}
 	
 	
 	
