@@ -98,29 +98,34 @@ public class LocationRepository<T extends ConfigurationSerializable> {
 		
 		File dir = getWorldDirectory(worldName);
 		if(!dir.exists()) {
+			Bukkit.getLogger().info("dir " + worldName + " doesn't exist");
 			return result;
 		}
+		Bukkit.getLogger().info("dir " + worldName + " exists");
 		final World world = Bukkit.getWorld(worldName);
 		if(world == null) {
+			Bukkit.getLogger().info("world " + worldName + " doesn't exist");
 			return result;
 		}
+		Bukkit.getLogger().info("world " + worldName + " exists");
 		
-		directory.list(new FilenameFilter() {
+		dir.list(new FilenameFilter() {
 			
 			@Override
 			public boolean accept(File dir, String name) {
-				String[] split = name.split("_");
-				if(split.length != 3) {
+				String[] split = name.split("[_.]");
+				if(split.length != 4) {
 					return false;
 				}
 				
 				try {
-					int x = Integer.parseInt(split[1]);
-					int y = Integer.parseInt(split[2]);
-					int z = Integer.parseInt(split[3]);
+					int x = Integer.parseInt(split[0]);
+					int y = Integer.parseInt(split[1]);
+					int z = Integer.parseInt(split[2]);
 					result.add(new Location(world, x, y, z));
 					return false;
 				} catch(NumberFormatException e) {
+					Bukkit.getLogger().info("error "+ e.getCause().getMessage() + ": " + e.getMessage());
 					return false;
 				}
 				

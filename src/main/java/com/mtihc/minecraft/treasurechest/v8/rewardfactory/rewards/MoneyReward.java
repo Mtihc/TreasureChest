@@ -1,5 +1,8 @@
 package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.bukkit.entity.Player;
 
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
@@ -11,9 +14,16 @@ public class MoneyReward implements IReward {
 	private RewardInfo info;
 	private MoneyRewardFactory factory;
 
-	public MoneyReward(MoneyRewardFactory factory, RewardInfo info) {
+	protected MoneyReward(MoneyRewardFactory factory, RewardInfo info) {
 		this.factory = factory;
 		this.info = info;
+	}
+	
+	public MoneyReward(MoneyRewardFactory factory, double money) {
+		Map<String, Object> data = new LinkedHashMap<String, Object>();
+		data.put("money", money);
+		this.factory = factory;
+		this.info = new RewardInfo("money", data);
 	}
 
 	@Override

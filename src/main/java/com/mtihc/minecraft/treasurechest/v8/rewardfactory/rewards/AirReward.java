@@ -3,25 +3,25 @@ package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
-public class LevelReward implements IReward {
-	
+public class AirReward implements IReward {
+
 	private RewardInfo info;
 
-	protected LevelReward(RewardInfo info) {
+	protected AirReward(RewardInfo info) {
 		this.info = info;
 	}
 	
-	public LevelReward(int levels) {
-		
+	public AirReward(int air) {
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("levels", levels);
-		this.info = new RewardInfo("level", data);
+		data.put("air", air);
+		this.info = new RewardInfo("air", data);
 	}
 
 	@Override
@@ -29,22 +29,30 @@ public class LevelReward implements IReward {
 		return info;
 	}
 	
-	public int getLevels() {
-		return (Integer) info.getData("levels");
+	public int getAir() {
+		return (int) info.getData("air");
 	}
 	
-	public void setLevels(int value) {
-		info.setData("levels", value);
+	public void setAir(int value) {
+		this.info.setData("air", value);
 	}
 
 	@Override
 	public String getDescription() {
-		return getLevels() + " levels";
+		return getAir() + " air";
 	}
 
 	@Override
 	public void give(Player player) throws RewardException {
-		player.setLevel(player.getLevel() + getLevels());
+		int air = player.getRemainingAir() + getAir() * player.getMaximumAir() / 100;
+		if(air > player.getMaximumAir()) {
+			air = player.getMaximumAir();
+		}
+		else if(air < 0) {
+			air = 0;
+		}
+		Bukkit.getLogger().info("air " + air + " max " + player.getMaximumAir());
+		player.setRemainingAir(air);
 	}
 
 }

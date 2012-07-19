@@ -9,19 +9,18 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
-public class LevelReward implements IReward {
-	
+public class FoodReward implements IReward {
+
 	private RewardInfo info;
 
-	protected LevelReward(RewardInfo info) {
+	protected FoodReward(RewardInfo info) {
 		this.info = info;
 	}
 	
-	public LevelReward(int levels) {
-		
+	public FoodReward(int food) {
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("levels", levels);
-		this.info = new RewardInfo("level", data);
+		data.put("food", food);
+		this.info = new RewardInfo("food", data);
 	}
 
 	@Override
@@ -29,22 +28,31 @@ public class LevelReward implements IReward {
 		return info;
 	}
 	
-	public int getLevels() {
-		return (Integer) info.getData("levels");
+	public int getFoodPoints() {
+		return (int) info.getData("food");
 	}
 	
-	public void setLevels(int value) {
-		info.setData("levels", value);
+	public void setFoodPoints(int value) {
+		this.info.setData("food", value);
 	}
 
 	@Override
 	public String getDescription() {
-		return getLevels() + " levels";
+		return getFoodPoints() + " food points";
 	}
 
+	private static final int MAX_FOOD_LEVEL = 20;
+	
 	@Override
 	public void give(Player player) throws RewardException {
-		player.setLevel(player.getLevel() + getLevels());
+		int food = player.getFoodLevel() + getFoodPoints() * MAX_FOOD_LEVEL / 100;
+		if(food > MAX_FOOD_LEVEL) {
+			food = MAX_FOOD_LEVEL;
+		}
+		else if(food < 0) {
+			food = 0;
+		}
+		player.setFoodLevel(food);
 	}
 
 }

@@ -16,14 +16,14 @@ public abstract class RewardFactory {
 	public abstract IReward createReward(
 			RewardInfo info) throws RewardException;
 	
-	public abstract void createRewardInfo(
+	public abstract void createReward(
 			CommandSender sender, 
 			String[] args, 
 			CreateCallback callback);
 
 
 	public interface CreateCallback {
-		void onCreate(CommandSender sender, String[] args, RewardInfo info);
+		void onCreate(CommandSender sender, String[] args, IReward info);
 		void onCreateException(CommandSender sender, String[] args, RewardException e);
 	}
 

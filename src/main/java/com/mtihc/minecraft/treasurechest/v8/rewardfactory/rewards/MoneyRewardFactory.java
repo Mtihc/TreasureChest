@@ -1,8 +1,5 @@
 package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
@@ -35,7 +32,7 @@ public class MoneyRewardFactory extends RewardFactory {
 
 	@Override
 	public String getGeneralDescription() {
-		return "Some amount of money.";
+		return "some amount of money.";
 	}
 
 	@Override
@@ -44,7 +41,7 @@ public class MoneyRewardFactory extends RewardFactory {
 	}
 
 	@Override
-	public void createRewardInfo(CommandSender sender, String[] args,
+	public void createReward(CommandSender sender, String[] args,
 			CreateCallback callback) {
 		
 		double money;
@@ -65,10 +62,7 @@ public class MoneyRewardFactory extends RewardFactory {
 			callback.onCreateException(sender, args, new RewardException("Expected a number, larget than zero."));
 		}
 		
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("money", money);
-		RewardInfo info = new RewardInfo(getLabel(), data);
-		callback.onCreate(sender, args, info);
+		callback.onCreate(sender, args, new MoneyReward(this, money));
 	}
 
 	@Override

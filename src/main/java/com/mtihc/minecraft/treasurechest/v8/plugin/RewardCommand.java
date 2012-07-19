@@ -101,7 +101,7 @@ public class RewardCommand extends SimpleCommand {
 			newArgs = new String[0];
 		}
 		
-		f.createRewardInfo(sender, newArgs, new CreateCallback() {
+		f.createReward(sender, newArgs, new CreateCallback() {
 			
 			@Override
 			public void onCreateException(CommandSender sender, String[] args, RewardException e) {
@@ -109,8 +109,8 @@ public class RewardCommand extends SimpleCommand {
 			}
 			
 			@Override
-			public void onCreate(CommandSender sender, String[] args, RewardInfo info) {
-				tchest.getRewards().add(info);
+			public void onCreate(CommandSender sender, String[] args, IReward reward) {
+				tchest.getRewards().add(reward.getInfo());
 				manager.save(loc, tchest);
 				sender.sendMessage(ChatColor.GOLD + "Reward saved.");
 			}

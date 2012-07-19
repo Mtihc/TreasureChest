@@ -5,14 +5,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.mtihc.minecraft.treasurechest.persistance.InventorySerializable;
-import com.mtihc.minecraft.treasurechest.persistance.LocationSerializable;
-import com.mtihc.minecraft.treasurechest.persistance.TChestCollection;
-import com.mtihc.minecraft.treasurechest.persistance.TreasureChestConverter;
 import com.mtihc.minecraft.treasurechest.v8.core.BlockInventory;
 import com.mtihc.minecraft.treasurechest.v8.core.DoubleBlockInventory;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureChest;
@@ -23,6 +18,10 @@ import com.mtihc.minecraft.treasurechest.v8.core.TreasureManagerConfiguration;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.SimpleCommand;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.AirRewardFactory;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.FlyRewardFactory;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.FoodRewardFactory;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.HealthRewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.LevelRewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.MoneyRewardFactory;
 
@@ -34,12 +33,6 @@ public class TreasureChestPlugin extends JavaPlugin implements Listener {
 	
 	static {
 		
-		// TODO remove v7 stuff
-		ConfigurationSerialization.registerClass(TChestCollection.class);
-		ConfigurationSerialization.registerClass(com.mtihc.minecraft.treasurechest.persistance.TreasureChest.class);
-		ConfigurationSerialization.registerClass(InventorySerializable.class);
-		ConfigurationSerialization.registerClass(LocationSerializable.class);
-		// ----------------------
 		
 		ConfigurationSerialization.registerClass(TreasureChest.class);
 		ConfigurationSerialization.registerClass(BlockInventory.class);
@@ -77,6 +70,10 @@ public class TreasureChestPlugin extends JavaPlugin implements Listener {
 		// register factories
 		manager.getRewardManager().setFactory(new LevelRewardFactory());
 		manager.getRewardManager().setFactory(new MoneyRewardFactory());
+		manager.getRewardManager().setFactory(new AirRewardFactory());
+		manager.getRewardManager().setFactory(new HealthRewardFactory());
+		manager.getRewardManager().setFactory(new FoodRewardFactory());
+		manager.getRewardManager().setFactory(new FlyRewardFactory(this));
 		
 		// create command
 		cmd = new TreasureChestCommand(manager, null);
@@ -104,18 +101,6 @@ public class TreasureChestPlugin extends JavaPlugin implements Listener {
 		String lbl = label.toLowerCase();
 		if(cmd.getLabel().equals(lbl) || search(cmd.getAliases(), lbl)) {
 			
-			// --------------------------
-			// TODO remove converter code
-			if(args != null && args.length > 0 && args[0] != null) {
-				if(sender.isOp() && args[0].equalsIgnoreCase("convert")) {
-					if(!(sender instanceof Player)) {
-						sender.sendMessage(ChatColor.RED + "Expected player.");
-					}
-					new TreasureChestConverter(manager).start((Player) sender);
-					return true;
-				}
-			}
-			// --------------------------
 			
 			try {
 				cmd.execute(sender, args);

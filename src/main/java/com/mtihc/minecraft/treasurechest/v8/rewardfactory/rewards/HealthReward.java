@@ -9,19 +9,18 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
-public class LevelReward implements IReward {
-	
+public class HealthReward implements IReward {
+
 	private RewardInfo info;
 
-	protected LevelReward(RewardInfo info) {
+	protected HealthReward(RewardInfo info) {
 		this.info = info;
 	}
 	
-	public LevelReward(int levels) {
-		
+	public HealthReward(int health) {
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("levels", levels);
-		this.info = new RewardInfo("level", data);
+		data.put("health", health);
+		this.info = new RewardInfo("health", data);
 	}
 
 	@Override
@@ -29,22 +28,29 @@ public class LevelReward implements IReward {
 		return info;
 	}
 	
-	public int getLevels() {
-		return (Integer) info.getData("levels");
+	public int getHealth() {
+		return (int) info.getData("health");
 	}
 	
-	public void setLevels(int value) {
-		info.setData("levels", value);
+	public void setHealth(int value) {
+		this.info.setData("health", value);
 	}
 
 	@Override
 	public String getDescription() {
-		return getLevels() + " levels";
+		return getHealth() + " health";
 	}
 
 	@Override
 	public void give(Player player) throws RewardException {
-		player.setLevel(player.getLevel() + getLevels());
+		int health = player.getHealth() + getHealth() * player.getMaxHealth() / 100;
+		if(health > player.getMaxHealth()) {
+			health = player.getMaxHealth();
+		}
+		else if(health < 0) {
+			health = 0;
+		}
+		player.setHealth(health);
 	}
 
 }

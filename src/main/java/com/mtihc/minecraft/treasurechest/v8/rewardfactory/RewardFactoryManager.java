@@ -51,7 +51,7 @@ public class RewardFactoryManager {
 		if(f == null) {
 			throw new RewardException("There is no factory for reward type \"" + label + "\".");
 		}
-		f.createRewardInfo(sender, args, callback);
+		f.createReward(sender, args, callback);
 	}
 	
 	

@@ -43,6 +43,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		addNested("setforget");
 		addNested("forget");
 		addNested("forgetAll");
+		addNested("reload");
 		
 		addNested(RewardCommand.class, manager, this);
 		
@@ -56,7 +57,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		}
 	}
 	
-	@Command(aliases = { "count" }, args = "[player]", desc = "Count treasures you/someone else found.", help = { "Counts how many treasures you, or someone else, found in this world.", "Specify a player name to count another player's found treasures." })
+	@Command(aliases = { "count" }, args = "[player]", desc = "Count found treasures.", help = { "Counts how many treasures you, or someone else, found in this world.", "Specify a player name to count another player's found treasures." })
 	public void count(CommandSender sender, String[] args) throws CommandException {
 		
 		
@@ -237,15 +238,15 @@ public class TreasureChestCommand extends SimpleCommand {
 					+ " does not exist.");
 		}
 	
-		sender.sendMessage(ChatColor.GOLD
-				+ "List of all treasures on this server (page " + page + "/" + pageTotal
-				+ "):");
+		
 	
 		if (allChests == null || allChests.isEmpty()) {
 			sender.sendMessage(ChatColor.RED
 					+ "There are no treasures yet.");
 		} else {
-	
+			sender.sendMessage(ChatColor.GOLD
+					+ "List of all treasures on this server (page " + page + "/" + pageTotal
+					+ "):");
 			Location[] idArray = allChests.toArray(new Location[total]);
 			int startIndex = (page - 1) * totalPerPage;
 			int endIndex = startIndex + totalPerPage;
@@ -746,6 +747,24 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		
 		
+		
+	}
+	
+	@Command(aliases = { "reload" }, args = "", desc = "Reload the config", help = { "" })
+	public void reload(CommandSender sender, String[] args) throws CommandException {
+
+		if(!sender.hasPermission(Permission.FORGET_ALL.getNode())) {
+			throw new CommandException("You don't have permission to reload the config.");
+		}
+		
+		
+		if(args != null && args.length > 0) {
+			throw new CommandException("Expected no arguments");
+		}
+		
+		manager.getPlugin().reloadConfig();
+		
+		sender.sendMessage(ChatColor.GOLD + "Configuration reloaded.");
 		
 	}
 	
