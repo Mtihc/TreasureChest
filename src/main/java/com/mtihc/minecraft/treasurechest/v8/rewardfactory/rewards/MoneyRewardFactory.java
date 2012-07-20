@@ -16,13 +16,16 @@ public class MoneyRewardFactory extends RewardFactory {
 	private Economy economy;
 
 	public MoneyRewardFactory() {
-		RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
-		if(economyProvider == null) {
-			economy = null;
-		}
-		else {
-			economy = economyProvider.getProvider();
-		}
+		if (Bukkit.getServer().getPluginManager().getPlugin("Vault") != null) {
+			RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+			if(economyProvider == null) {
+				economy = null;
+			}
+			else {
+				economy = economyProvider.getProvider();
+			}
+        }
+		
 	}
 
 	@Override
