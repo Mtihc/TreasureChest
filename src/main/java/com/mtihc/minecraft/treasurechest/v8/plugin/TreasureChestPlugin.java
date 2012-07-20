@@ -19,6 +19,8 @@ import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandExceptio
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.SimpleCommand;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.AirRewardFactory;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.BankRobberRewardFactory;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.BroadcastRewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.ExplosionRewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.FlyRewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.FoodRewardFactory;
@@ -76,13 +78,15 @@ public class TreasureChestPlugin extends JavaPlugin implements Listener {
 		cmd = new TreasureChestCommand(manager, null);
 		
 		// register factories
+		manager.getRewardManager().setFactory(new BankRobberRewardFactory(this));
+		manager.getRewardManager().setFactory(new BroadcastRewardFactory(this));
+		manager.getRewardManager().setFactory(new ExplosionRewardFactory(this));
+		manager.getRewardManager().setFactory(new AirRewardFactory());
+		manager.getRewardManager().setFactory(new FlyRewardFactory(this));
+		manager.getRewardManager().setFactory(new FoodRewardFactory());
+		manager.getRewardManager().setFactory(new HealthRewardFactory());
 		manager.getRewardManager().setFactory(new LevelRewardFactory());
 		manager.getRewardManager().setFactory(new MoneyRewardFactory());
-		manager.getRewardManager().setFactory(new AirRewardFactory());
-		manager.getRewardManager().setFactory(new HealthRewardFactory());
-		manager.getRewardManager().setFactory(new FoodRewardFactory());
-		manager.getRewardManager().setFactory(new FlyRewardFactory(this));
-		manager.getRewardManager().setFactory(new ExplosionRewardFactory(this));
 		manager.getRewardManager().setFactory(new RedstoneRewardFactory(this));
 		
 		int subregionSize = config.getSubregionSize();
@@ -90,7 +94,6 @@ public class TreasureChestPlugin extends JavaPlugin implements Listener {
 		manager.getRewardManager().setFactory(new RestoreRewardFactory(this, subregionTicks, subregionSize));
 		
 		manager.getRewardManager().setFactory(new SpawnRewardFactory(this));
-		
 	}
 	
 	

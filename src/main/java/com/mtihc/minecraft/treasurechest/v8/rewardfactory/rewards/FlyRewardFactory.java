@@ -22,7 +22,7 @@ public class FlyRewardFactory extends RewardFactory {
 	public FlyRewardFactory(JavaPlugin plugin) {
 		this.plugin = plugin;
 		
-		Listener listener = new FlyRewardFactoryListener(this);
+		Listener listener = new FlyListener(this);
 		plugin.getServer().getPluginManager().registerEvents(listener, plugin);
 	}
 

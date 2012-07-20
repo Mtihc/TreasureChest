@@ -6,11 +6,11 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 
-class FlyRewardFactoryListener implements Listener {
+class FlyListener implements Listener {
 
 	private FlyRewardFactory factory;
 
-	FlyRewardFactoryListener(FlyRewardFactory factory) {
+	FlyListener(FlyRewardFactory factory) {
 		this.factory = factory;
 	}
 	
@@ -20,12 +20,12 @@ class FlyRewardFactoryListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerDisconnect(PlayerQuitEvent event) {
+	public void onPlayerQuit(PlayerQuitEvent event) {
 		factory.cancelFlight(event.getPlayer());
 	}
 	
 	@EventHandler
-	public void onPlayerKicked(PlayerKickEvent event) {
+	public void onPlayerKick(PlayerKickEvent event) {
 		factory.cancelFlight(event.getPlayer());
 	}
 }

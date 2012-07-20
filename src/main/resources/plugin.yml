@@ -3,8 +3,8 @@ author: Mtihc
 description: Place chest that adds some items everytime someone opens it for the first time.
 main: com.mtihc.minecraft.treasurechest.v8.plugin.TreasureChestPlugin
 depend: []
-softdepend: [Vault]
-version: 8.2
+softdepend: [Vault, WorldEdit]
+version: 8.2.1
 commands:
     treasurechest:
         aliases: [tchest]
