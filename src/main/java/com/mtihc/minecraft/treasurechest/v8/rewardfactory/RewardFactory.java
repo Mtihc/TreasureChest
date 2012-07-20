@@ -23,7 +23,7 @@ public abstract class RewardFactory {
 
 
 	public interface CreateCallback {
-		void onCreate(CommandSender sender, String[] args, IReward info);
+		void onCreate(CommandSender sender, String[] args, IReward reward);
 		void onCreateException(CommandSender sender, String[] args, RewardException e);
 	}
 

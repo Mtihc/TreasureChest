@@ -1,13 +1,20 @@
 # 
-# Configure default settings for new Treasure Chests
+# defaults: 
+#     messages: 
+#         The messages that are displayed when a player opens the chest
 # 
-# messages
-#     The messages that are displayed when a player opens the chest
+#     ignoreProtection: 
+#         Whether to disable other plugins' chest protection. Like WorldGuard's region protection.
+#         true: Players can access treasure chests, eventhough they are protected.
+#         false: Players can't access treasure chests when they are protected
 # 
-# ignoreProtection
-#     Whether to disable other plugins' chest protection. Like WorldGuard's region protection.
-#     true: Players can access treasure chests, eventhough they are protected.
-#     false: Players can't access treasure chests when they are protected
+# rewards: 
+#     restore: When a region is restored, it's done in small pieces.
+#              Fast servers have large size, and few ticks.
+#              Slow servers have small size, and many ticks.
+# 
+#         subregion-size: How big will one piece be?
+#         subregion-ticks: How many ticks before the next piece is restored?
 # 
 defaults:
     messages:
@@ -15,3 +22,7 @@ defaults:
         found_already: 'You have already looted this treasure...'
         unlimited: 'Take as much as you want!'
     ignoreProtection: false
+rewards:
+    restore:
+        subregion-size: 50
+        subregion-ticks: 10

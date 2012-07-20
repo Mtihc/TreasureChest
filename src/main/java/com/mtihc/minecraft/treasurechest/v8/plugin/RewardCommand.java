@@ -3,7 +3,6 @@ package com.mtihc.minecraft.treasurechest.v8.plugin;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -11,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.conversations.Prompt;
-import org.bukkit.conversations.ValidatingPrompt;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 
@@ -24,9 +22,10 @@ import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.SimpleCommand;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactory;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactory.CreateCallback;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactoryManager;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
-import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactory.CreateCallback;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.prompts.SelectRewardTypePrompt;
 
 public class RewardCommand extends SimpleCommand {
 
@@ -80,7 +79,35 @@ public class RewardCommand extends SimpleCommand {
 		if(args.length == 0) {
 			
 			new ConversationFactory(manager.getPlugin())
-			.withFirstPrompt(new SelectRewardTypePrompt())
+			.withFirstPrompt(new SelectRewardTypePrompt(rewardManager) {
+
+
+				@Override
+				protected String getMessage(ConversationContext context) {
+					return "What kind of reward will it be?";
+				}
+				
+				@Override
+				protected Prompt onFinish(ConversationContext context,
+						RewardFactory f) {
+					
+					context.getForWhom().sendRawMessage(ChatColor.YELLOW + "> Use this command to create the reward:");
+					
+					String usage = "/" + getNested("add").getUniqueLabel() + " " + f.getLabel() + " " + f.args();
+					context.getForWhom().sendRawMessage(ChatColor.YELLOW + "> Command: " + ChatColor.WHITE + usage);
+					
+					String[] help = f.help();
+					if(help != null && help.length > 0) {
+						context.getForWhom().sendRawMessage(ChatColor.YELLOW + "> Command help: " + ChatColor.WHITE + help[0]);
+						for (int i = 1; i < help.length; i++) {
+							context.getForWhom().sendRawMessage(ChatColor.WHITE + help[i]);
+						}
+					}
+					
+					return END_OF_CONVERSATION;
+				}
+				
+			})
 			.withLocalEcho(false)
 			.withModality(false)
 			.buildConversation((Player) sender)
@@ -112,70 +139,9 @@ public class RewardCommand extends SimpleCommand {
 			public void onCreate(CommandSender sender, String[] args, IReward reward) {
 				tchest.getRewards().add(reward.getInfo());
 				manager.save(loc, tchest);
-				sender.sendMessage(ChatColor.GOLD + "Reward saved.");
+				sender.sendMessage(ChatColor.GREEN + "Reward saved.");
 			}
 		});
-	}
-	
-	private class SelectRewardTypePrompt extends ValidatingPrompt {
-
-		@Override
-		public String getPromptText(ConversationContext context) {
-			String[] types = rewardManager.getFactoryLabels();
-			String typeString = "";
-			for (String type : types) {
-				typeString += ", " + type;
-			}
-			if(!typeString.isEmpty()) {
-				typeString = typeString.substring(2);
-			}
-			else {
-				return ChatColor.RED + "There are no registered reward factories.";
-			}
-			context.getForWhom().sendRawMessage(ChatColor.GOLD + "> What kind of reward will it be?");
-			return typeString;
-		}
-
-		@Override
-		protected Prompt acceptValidatedInput(ConversationContext context,
-				String input) {
-			if(rewardManager.getFactoryTotal() == 0) {
-				return END_OF_CONVERSATION;
-			}
-			RewardFactory f = rewardManager.getFactory(input);
-			
-			context.getForWhom().sendRawMessage(ChatColor.GOLD + "> Use this command to create the reward:");
-			
-			String usage = "/" + getNested("add").getUniqueLabel() + " " + input + " " + f.args();
-			context.getForWhom().sendRawMessage(ChatColor.GOLD + "> Command: " + ChatColor.WHITE + usage);
-			
-			String[] help = f.help();
-			if(help != null && help.length > 0) {
-				context.getForWhom().sendRawMessage(ChatColor.GOLD + "> Command help: " + ChatColor.WHITE + help[0]);
-				for (int i = 1; i < help.length; i++) {
-					context.getForWhom().sendRawMessage(ChatColor.WHITE + help[i]);
-				}
-			}
-			
-			return END_OF_CONVERSATION;
-		}
-
-		@Override
-		protected boolean isInputValid(ConversationContext context, String input) {
-			if(input.startsWith("/")) {
-				Bukkit.dispatchCommand((CommandSender) context.getForWhom(), input);
-				return false;
-			}
-			String[] types = rewardManager.getFactoryLabels();
-			for (String type : types) {
-				if(type.equals(input)) {
-					return true;
-				}
-			}
-			context.getForWhom().sendRawMessage(ChatColor.RED + "Invalid input: \"" + input + "\". Type, for example: " + ChatColor.WHITE + types[0]);
-			return false;
-		}
-		
 	}
 	
 	@Command(aliases = { "remove" }, args = "<number>", desc = "Remove a reward.", help = { "The number corresponds to the number of the reward in the list."})
@@ -227,7 +193,7 @@ public class RewardCommand extends SimpleCommand {
 		tchest.setRewards(rewards);
 		manager.save(loc, tchest);
 		
-		sender.sendMessage(ChatColor.GOLD + "Reward " + ChatColor.WHITE + String.valueOf(number) + ChatColor.GOLD + " removed from this treasure.");
+		sender.sendMessage(ChatColor.GREEN + "Reward " + ChatColor.WHITE + String.valueOf(number) + ChatColor.GREEN + " removed.");
 		
 	}
 
@@ -259,7 +225,7 @@ public class RewardCommand extends SimpleCommand {
 		}
 		tchest.setRewards(null);
 		manager.save(loc, tchest);
-		sender.sendMessage(ChatColor.GOLD + "Cleared all rewards from this treasure.");
+		sender.sendMessage(ChatColor.GREEN + "Cleared all rewards from this treasure.");
 	}
 
 	@Command(aliases = { "list" }, args = "", desc = "List rewards in a treasure.", help = { "" })
@@ -296,7 +262,7 @@ public class RewardCommand extends SimpleCommand {
 			return;
 		}
 		
-		sender.sendMessage(ChatColor.GOLD + "List of rewards at " + ChatColor.WHITE + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + ChatColor.GOLD + ":");
+		sender.sendMessage(ChatColor.GREEN + "List of rewards at " + ChatColor.WHITE + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + ChatColor.GREEN + ":");
 		int index = 0;
 		for (RewardInfo info : rewards) {
 			String prefix = ChatColor.GRAY + String.valueOf(index + 1) + ". " + ChatColor.GOLD;
@@ -356,7 +322,7 @@ public class RewardCommand extends SimpleCommand {
 		if (page > totalPages || page < 1) {
 			return;
 		}
-		sender.sendMessage(ChatColor.GOLD + "Reward types:" + " (page "
+		sender.sendMessage(ChatColor.GREEN + "Reward types:" + " (page "
 				+ page + "/" + totalPages + "):");
 		
 		for (int i = startIndex; i < endIndex && i < total; i++) {
