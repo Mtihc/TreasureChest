@@ -29,7 +29,7 @@ public class FoodReward implements IReward {
 	}
 	
 	public int getFoodPoints() {
-		return (int) info.getData("food");
+		return (Integer) info.getData("food");
 	}
 	
 	public void setFoodPoints(int value) {

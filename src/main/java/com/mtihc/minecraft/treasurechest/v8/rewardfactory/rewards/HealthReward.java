@@ -29,7 +29,7 @@ public class HealthReward implements IReward {
 	}
 	
 	public int getHealth() {
-		return (int) info.getData("health");
+		return (Integer) info.getData("health");
 	}
 	
 	public void setHealth(int value) {

@@ -22,7 +22,7 @@ public class RestoreTaskQueue {
 	
 	private LinkedHashMap<String, RestoreTask> queue = new LinkedHashMap<String, RestoreTask>();
 	private RestoreTask currentTask;
-	private ArrayBlockingQueue<RestoreTask> q = new ArrayBlockingQueue<>(10, true);
+	private ArrayBlockingQueue<RestoreTask> q = new ArrayBlockingQueue<RestoreTask>(10, true);
 	
 	private Set<Observer> observers = new LinkedHashSet<Observer>();
 	

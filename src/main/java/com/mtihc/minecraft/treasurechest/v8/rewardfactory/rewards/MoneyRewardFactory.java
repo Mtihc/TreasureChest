@@ -50,7 +50,10 @@ public class MoneyRewardFactory extends RewardFactory {
 		double money;
 		try {
 			money = Double.parseDouble(args[0]);
-		} catch(IndexOutOfBoundsException | NullPointerException e) {
+		} catch(NullPointerException e) {
+			callback.onCreateException(sender, args, new RewardException("Not enough arguments. Expected the amount of money.", e));
+			return;
+		} catch(IndexOutOfBoundsException e) {
 			callback.onCreateException(sender, args, new RewardException("Not enough arguments. Expected the amount of money.", e));
 			return;
 		} catch(NumberFormatException e) {

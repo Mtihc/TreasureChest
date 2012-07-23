@@ -22,10 +22,12 @@ public class TreasureChest implements ITreasureChest {
 	
 	private IBlockInventory container;
 	private final Map<Message, String> messages = new HashMap<Message, String>();
+	private Rank rank = Rank.DEFAULT;
 	private boolean unlimited;
 	private int random;
 	private long forgetTime;
 	private boolean ignoreProtection;
+	
 	
 	private List<RewardInfo> rewards = new ArrayList<RewardInfo>();
 	
@@ -65,6 +67,11 @@ public class TreasureChest implements ITreasureChest {
 			}
 		}
 		
+		try {
+			rank = Rank.valueOf((String) values.get("rank"));
+		} catch(Exception e) {
+			rank = Rank.DEFAULT;
+		}
 		
 		unlimited = (Boolean) values.get("unlimited");
 		random = (Integer) values.get("random");
@@ -93,7 +100,7 @@ public class TreasureChest implements ITreasureChest {
 			msgSection.put(entry.getKey().name(), entry.getValue());
 		}
 		values.put("messages", msgSection);
-		
+		values.put("rank", rank.name());
 		values.put("unlimited", unlimited);
 		values.put("random", random);
 		values.put("forget-time", forgetTime);
@@ -198,6 +205,16 @@ public class TreasureChest implements ITreasureChest {
 	@Override
 	public int getRewardTotal() {
 		return rewards.size();
+	}
+
+	@Override
+	public Rank getRank() {
+		return rank;
+	}
+
+	@Override
+	public void setRank(Rank rank) {
+		this.rank = rank;
 	}
 	
 	

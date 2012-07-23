@@ -19,7 +19,7 @@ public abstract class StringListPrompt extends ValidatingPrompt {
 	public String getPromptText(ConversationContext context) {
 		int line;
 		try {
-			line = (int) context.getSessionData("line");
+			line = (Integer) context.getSessionData("line");
 		} catch(NullPointerException e) {
 			line = 0;
 			context.setSessionData("line", line);
@@ -45,7 +45,7 @@ public abstract class StringListPrompt extends ValidatingPrompt {
 			return true;
 		}
 		else if(input.equalsIgnoreCase("OK")) {
-			int line = (int) context.getSessionData("line");
+			int line = (Integer) context.getSessionData("line");
 			if(line == 0) {
 				context.getForWhom().sendRawMessage(ChatColor.RED + "You didn't type anything yet.");
 				return false;
@@ -53,7 +53,7 @@ public abstract class StringListPrompt extends ValidatingPrompt {
 			return true;
 		}
 		else if(input.equalsIgnoreCase("BACK")) {
-			int line = (int) context.getSessionData("line");
+			int line = (Integer) context.getSessionData("line");
 			if(line > 0) {
 				line--;
 				getList(context).remove(line);
@@ -65,7 +65,7 @@ public abstract class StringListPrompt extends ValidatingPrompt {
 			ArrayList<String> list = getList(context);
 			list.add(input);
 			onLineAdd(context, list.size(), input);
-			int line = (int) context.getSessionData("line");
+			int line = (Integer) context.getSessionData("line");
 			context.setSessionData("line", line + 1);
 			return false;
 		}

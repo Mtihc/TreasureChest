@@ -45,7 +45,9 @@ public class ExplosionRewardFactory extends RewardFactory {
 		int p;
 		try {
 			p = Integer.parseInt(args[0]);
-		} catch(IndexOutOfBoundsException | NullPointerException e) {
+		} catch(NullPointerException e) {
+			p = 4;
+		} catch(IndexOutOfBoundsException e) {
 			p = 4;
 		} catch(NumberFormatException e) {
 			callback.onCreateException(sender, args, new RewardException("Expected explosion power, instead of text."));

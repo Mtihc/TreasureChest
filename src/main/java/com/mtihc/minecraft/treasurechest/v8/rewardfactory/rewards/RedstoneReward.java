@@ -51,7 +51,7 @@ public class RedstoneReward implements IReward {
 	}
 	
 	public Material getAttachedBlockType() {
-		return Material.getMaterial((int) info.getData("block-type"));
+		return Material.getMaterial((Integer) info.getData("block-type"));
 	}
 	
 	public void setAttachedBlockType(Material type) {

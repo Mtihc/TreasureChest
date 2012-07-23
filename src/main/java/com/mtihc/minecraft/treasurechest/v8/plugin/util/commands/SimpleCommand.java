@@ -199,11 +199,18 @@ public class SimpleCommand implements ICommand {
 	}
 	
 	protected void addNested(String methodName) {
-		Method method;
+		Method method = null;
+		Exception exception = null;
 		try {
 			method = getClass().getMethod(methodName, CommandSender.class, String[].class);
-		} catch (NoSuchMethodException | SecurityException e) {
-			Bukkit.getLogger().log(Level.SEVERE, "Couldn't add method \"" + methodName + "\" as subcommand of \"" + getUsage() + "\"", e);
+		} catch (NoSuchMethodException e) {
+			exception = e;
+		} catch(SecurityException e) {
+			exception = e;
+		}
+		
+		if(exception != null) {
+			Bukkit.getLogger().log(Level.SEVERE, "Couldn't add method \"" + methodName + "\" as subcommand of \"" + getUsage() + "\"", exception);
 			return;
 		}
 		addNested(method);
@@ -378,18 +385,24 @@ public class SimpleCommand implements ICommand {
 
 		private ICommand newInstance(Constructor<?> constructor) {
 			constructor.setAccessible(true);
+			Exception exception = null;
 			try {
 				return (ICommand) constructor.newInstance(args);
-			} catch (InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException e) {
-
-				Logger.getLogger(getClass().getCanonicalName()).log(
-						Level.SEVERE,
-						"Failed to create command class \""
-								+ commandClass.getCanonicalName() + "\".", e);
-
-				return null;
+			} catch (InstantiationException e) {
+				exception = e;
+			} catch (IllegalAccessException e) {
+				exception = e;
+			} catch (IllegalArgumentException e) {
+				exception = e;
+			} catch (InvocationTargetException e) {
+				exception = e;
 			}
+			Logger.getLogger(getClass().getCanonicalName()).log(
+					Level.SEVERE,
+					"Failed to create command class \""
+							+ commandClass.getCanonicalName() + "\".", exception);
+
+			return null;
 		}
 
 		@Override
@@ -480,22 +493,31 @@ public class SimpleCommand implements ICommand {
 				throws CommandException {
 			
 			Object instance = parent;
+			Exception exception = null;
 			try {
 				method.invoke(instance, sender, args);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				if(e.getCause() instanceof CommandException) {
-					throw (CommandException)e.getCause();
-				}
-				else {
-					Logger.getLogger(getClass().getCanonicalName()).log(
-							Level.SEVERE,
-							"Failed to invoke command method \"" + method.getName()
-									+ "\" of class \""
-									+ instance.getClass().getCanonicalName() + "\"", e);
-				}
-				
+			} catch (IllegalAccessException e) {
+				exception = e;
+			} catch (IllegalArgumentException e) {
+				exception = e;
+			} catch (InvocationTargetException e) {
+				exception = e;
 			}
-			return;
+			
+			if(exception == null) {
+				return;
+			}
+			
+			if(exception.getCause() != null && exception.getCause() instanceof CommandException) {
+				throw (CommandException) exception.getCause();
+			}
+			else {
+				Logger.getLogger(getClass().getCanonicalName()).log(
+						Level.SEVERE,
+						"Failed to invoke command method \"" + method.getName()
+								+ "\" of class \""
+								+ instance.getClass().getCanonicalName() + "\"", exception);
+			}
 		}
 
 		@Override

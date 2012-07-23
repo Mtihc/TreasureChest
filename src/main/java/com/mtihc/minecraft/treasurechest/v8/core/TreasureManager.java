@@ -29,6 +29,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest.Rank;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundAlreadyEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundEvent;
@@ -78,10 +79,11 @@ public class TreasureManager {
 	private LinkedHashMap<String, TreasureInventory> inventories = new LinkedHashMap<String, TreasureInventory>();
 	private String permAccessNormal;
 	private String permAccessUnlimited;
+	private String permRank;
 	
 	private RewardFactoryManager rewardManager;
 	
-	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited) {
+	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited, String permRank) {
 		this.plugin = plugin;
 		this.config = config;
 		this.chests = chests;
@@ -89,6 +91,7 @@ public class TreasureManager {
 		
 		this.permAccessNormal = permAccessNormal;
 		this.permAccessUnlimited = permAccessUnlimited;
+		this.permRank = permRank;
 		
 		this.rewardManager = new RewardFactoryManager();
 		
@@ -230,6 +233,16 @@ public class TreasureManager {
 		}
 		// deny anyway, because the player will open a "fake inventory"
 		event.setUseInteractedBlock(Result.DENY);
+		
+		// check rank permission
+		Rank rank = tchest.getRank();
+		if(!rank.equals(Rank.DEFAULT)) {
+			String perm = permRank + "." + rank.name().toLowerCase();
+			if(!player.hasPermission(perm)) {
+				player.sendMessage(ChatColor.RED + "This treasure can only be accessed by " + ChatColor.WHITE + rank.name().toLowerCase() + "s" + ChatColor.RED + ".");
+				return;
+			}
+		}
 		
 		
 		// check permission

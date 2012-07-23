@@ -29,7 +29,7 @@ public class FlyReward implements IReward {
 	}
 
 	public int getSeconds() {
-		return (int) info.getData("seconds");
+		return (Integer) info.getData("seconds");
 	}
 	
 	public void setSeconds(int value) {

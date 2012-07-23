@@ -71,7 +71,8 @@ public class TreasureChestPlugin extends JavaPlugin implements Listener {
 				new TreasureChestRepository(getDataFolder() + "/treasure"), 
 				new TreasureChestMemory(getDataFolder() + "/players"), 
 				Permission.ACCESS_TREASURE.getNode(), 
-				Permission.ACCESS_UNLIMITED.getNode());
+				Permission.ACCESS_UNLIMITED.getNode(),
+				Permission.RANK.getNode());
 
 		
 		// create command

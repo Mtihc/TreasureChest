@@ -13,7 +13,11 @@ public enum Permission {
 	RELOAD("treasurechest.reload"),
 	ACCESS_TREASURE("treasurechest.access.treasure"),
 	ACCESS_UNLIMITED("treasurechest.access.unlimited"), 
-	RANDOM("treasurechest.random"), IGNORE_PROTECTION("treasurechest.ignoreprotection"), LIST("treasurechest.list"), LIST_ALL("treasurechest.list.all");
+	RANDOM("treasurechest.random"), 
+	IGNORE_PROTECTION("treasurechest.ignoreprotection"), 
+	LIST("treasurechest.list"), 
+	LIST_ALL("treasurechest.list.all"), 
+	RANK("treasurechest.rank");
 	
 	private String node;
 

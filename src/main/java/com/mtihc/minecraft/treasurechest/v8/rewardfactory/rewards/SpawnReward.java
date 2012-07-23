@@ -38,7 +38,7 @@ public class SpawnReward implements IReward {
 	}
 	
 	public EntityType getEntityType() {
-		return EntityType.fromId((int) info.getData("type"));
+		return EntityType.fromId((Integer) info.getData("type"));
 	}
 	
 	public void setEntityType(EntityType type) {
@@ -71,7 +71,7 @@ public class SpawnReward implements IReward {
 	}
 	
 	public int getAmount() {
-		return (int) info.getData("amount");
+		return (Integer) info.getData("amount");
 	}
 	
 	public void setAmount(int value) {

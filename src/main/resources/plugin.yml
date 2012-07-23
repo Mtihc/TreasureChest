@@ -4,7 +4,7 @@ description: Place chest that adds some items everytime someone opens it for the
 main: com.mtihc.minecraft.treasurechest.v8.plugin.TreasureChestPlugin
 depend: []
 softdepend: [Vault, WorldEdit]
-version: 8.2.1
+version: 8.3
 commands:
     treasurechest:
         aliases: [tchest]
@@ -34,6 +34,21 @@ permissions:
             treasurechest.access: true
             treasurechest.count.others: true
             treasurechest.list: true
+    
+    treasurechest.rank.member:
+        description: Allows you to access treasures that are meant for members and default players
+        default: false
+    treasurechest.rank.vip:
+        description: Allows you to access treasures that are meant for vips and below
+        default: false
+        children:
+            treasurechest.rank.member: true
+    treasurechest.rank.admin:
+        description: Allows you to access treasures that are meant for admins and below
+        default: false
+        children:
+            treasurechest.rank.member: true
+            treasurechest.rank.vip: true
     
     treasurechest.set:
         description: Allows you to turn regular chests into treasure chests and set their messages. And forget time.

@@ -138,7 +138,7 @@ public class SpawnRewardFactory extends RewardFactory {
 		@Override
 		protected Prompt acceptValidatedInput(ConversationContext context,
 				String input) {
-			int amount = (int) context.getSessionData("amount");
+			int amount = (Integer) context.getSessionData("amount");
 			return onFinish(context, amount);
 		}
 

@@ -187,7 +187,9 @@ abstract class RestoreTask implements Runnable {
 		
 		try {
 			restore.restore(new EditSession(region.getWorld(), -1));
-		} catch (NullPointerException | MaxChangedBlocksException e) {
+		} catch (NullPointerException e) {
+			
+		} catch (MaxChangedBlocksException e) {
 			
 		}
 	}

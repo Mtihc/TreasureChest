@@ -50,7 +50,7 @@ public class ExplosionReward implements IReward {
 	}
 	
 	public int getPower() {
-		return (int) info.getData("power");
+		return (Integer) info.getData("power");
 	}
 	
 	public void setPower(int value) {

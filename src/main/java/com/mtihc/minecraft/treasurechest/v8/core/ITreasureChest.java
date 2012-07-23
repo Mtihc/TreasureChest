@@ -26,6 +26,19 @@ public interface ITreasureChest extends ConfigurationSerializable {
 		UNLIMITED;
 	}
 	
+	/**
+	 * Enum representing the types of ranks a Treasure Chest can allow/deny
+	 * 
+	 * @author Mitch
+	 *
+	 */
+	public enum Rank {
+		DEFAULT,
+		MEMBER,
+		VIP,
+		ADMIN;
+	}
+	
 	public IBlockInventory getContainer();
 	
 	/**
@@ -41,6 +54,20 @@ public interface ITreasureChest extends ConfigurationSerializable {
 	 * @param message the message string
 	 */
 	public void setMessage(Message id, String message);
+	
+	/**
+	 * Get the rank that can access this treasure
+	 * 
+	 * @return the Rank enum value
+	 */
+	public Rank getRank();
+	
+	/**
+	 * Set the rank that can access this treasure
+	 * 
+	 * @param rank the Rank enum value
+	 */
+	public void setRank(Rank rank);
 	
 	/**
 	 * Returns whether one of the messages is defined

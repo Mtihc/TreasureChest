@@ -30,7 +30,7 @@ public class AirReward implements IReward {
 	}
 	
 	public int getAir() {
-		return (int) info.getData("air");
+		return (Integer) info.getData("air");
 	}
 	
 	public void setAir(int value) {
