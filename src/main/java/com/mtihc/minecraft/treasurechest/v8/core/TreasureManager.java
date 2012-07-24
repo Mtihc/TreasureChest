@@ -198,9 +198,24 @@ public class TreasureManager {
 			
 			// adjust holder and block to be DoubleChest's
 			holder = holder.getInventory().getHolder();
-			block = ((DoubleChest)holder).getLocation().getBlock();
+			DoubleChest dchest = (DoubleChest) holder;
+			block = dchest.getLocation().getBlock();
+			
+			// check if the right-side of the double chest
+			// is blocked by the block above
+			if(!((BlockState)dchest.getRightSide()).getBlock().getRelative(0, 1, 0).isEmpty()) {
+				return;
+			}
 		}
 		
+		// check if the block is a Chest, 
+		// and if it's blocked by the block above
+		if(block.getType().equals(Material.CHEST)) {
+			Block above = block.getRelative(0, 1, 0);
+			if(!above.isEmpty()) {
+				return;
+			}
+		}
 		
 		
 		ITreasureChest tchest;
@@ -218,7 +233,7 @@ public class TreasureManager {
 		//
 		// right clicked a treasure chest !
 		//
-
+		
 		Player player = event.getPlayer();
 		
 		if(player.getItemInHand().getType().equals(Material.CHEST)) {
