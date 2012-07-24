@@ -30,6 +30,7 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.MoneyRewardFac
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.RedstoneRewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.RestoreRewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.SpawnRewardFactory;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.TeleportRewardFactory;
 
 public class TreasureChestPlugin extends JavaPlugin implements Listener {
 	
@@ -89,6 +90,7 @@ public class TreasureChestPlugin extends JavaPlugin implements Listener {
 		manager.getRewardManager().setFactory(new LevelRewardFactory());
 		manager.getRewardManager().setFactory(new MoneyRewardFactory());
 		manager.getRewardManager().setFactory(new RedstoneRewardFactory(this));
+		manager.getRewardManager().setFactory(new TeleportRewardFactory(this));
 		
 		int subregionSize = config.getSubregionSize();
 		int subregionTicks = config.getSubregionTicks();
