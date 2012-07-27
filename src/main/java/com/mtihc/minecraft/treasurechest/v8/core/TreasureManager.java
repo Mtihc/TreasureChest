@@ -203,7 +203,9 @@ public class TreasureManager {
 			
 			// check if the right-side of the double chest
 			// is blocked by the block above
-			if(!((BlockState)dchest.getRightSide()).getBlock().getRelative(0, 1, 0).isEmpty()) {
+			BlockState rightSideState = (BlockState) dchest.getRightSide();
+			Block aboveRightSide = rightSideState.getBlock().getRelative(0, 1, 0);
+			if(!getInvisibleBlocks().contains((byte)aboveRightSide.getTypeId())) {
 				return;
 			}
 		}
@@ -212,7 +214,7 @@ public class TreasureManager {
 		// and if it's blocked by the block above
 		if(block.getType().equals(Material.CHEST)) {
 			Block above = block.getRelative(0, 1, 0);
-			if(!above.isEmpty()) {
+			if(!getInvisibleBlocks().contains((byte) above.getTypeId())) {
 				return;
 			}
 		}
@@ -525,17 +527,38 @@ public class TreasureManager {
 		
 	}
 	
+	private static HashSet<Byte> invisibleBlocks;
+	
 	private static HashSet<Byte> getInvisibleBlocks() {
-		HashSet<Byte> result = new HashSet<Byte>();
-		result.add((byte) Material.AIR.getId());
+		if(invisibleBlocks == null) {
+			invisibleBlocks  = new HashSet<Byte>();
+			invisibleBlocks.add((byte) Material.AIR.getId());
+			
+			invisibleBlocks.add((byte) Material.LAVA.getId());
+			invisibleBlocks.add((byte) Material.WATER.getId());
+			invisibleBlocks.add((byte) Material.STATIONARY_LAVA.getId());
+			invisibleBlocks.add((byte) Material.STATIONARY_WATER.getId());
+			invisibleBlocks.add((byte) Material.BROWN_MUSHROOM.getId());
+			invisibleBlocks.add((byte) Material.RED_MUSHROOM.getId());
+			invisibleBlocks.add((byte) Material.RED_ROSE.getId());
+			invisibleBlocks.add((byte) Material.YELLOW_FLOWER.getId());
+			invisibleBlocks.add((byte) Material.CROPS.getId());
+			invisibleBlocks.add((byte) Material.LADDER.getId());
+			invisibleBlocks.add((byte) Material.LEVER.getId());
+			invisibleBlocks.add((byte) Material.STONE_BUTTON.getId());
+			invisibleBlocks.add((byte) Material.PAINTING.getId());
+			invisibleBlocks.add((byte) Material.PORTAL.getId());
+			invisibleBlocks.add((byte) Material.REDSTONE_TORCH_OFF.getId());
+			invisibleBlocks.add((byte) Material.REDSTONE_TORCH_ON.getId());
+			invisibleBlocks.add((byte) Material.REDSTONE_WIRE.getId());
+			invisibleBlocks.add((byte) Material.SNOW.getId());
+			invisibleBlocks.add((byte) Material.SIGN_POST.getId());
+			invisibleBlocks.add((byte) Material.TORCH.getId());
+			invisibleBlocks.add((byte) Material.VINE.getId());
+			invisibleBlocks.add((byte) Material.WALL_SIGN.getId());
+		}
 		
-		result.add((byte) Material.LAVA.getId());
-		result.add((byte) Material.WATER.getId());
-		result.add((byte) Material.STATIONARY_LAVA.getId());
-		result.add((byte) Material.STATIONARY_WATER.getId());
-		result.add((byte) Material.VINE.getId());
-		
-		return result;
+		return invisibleBlocks;
 	}
 
 	public static Block getTargetedContainerBlock(Player player) {

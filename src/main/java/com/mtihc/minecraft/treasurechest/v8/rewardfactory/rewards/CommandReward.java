@@ -74,7 +74,7 @@ public class CommandReward implements IReward {
 	public void give(Player player) throws RewardException {
 		Type type = getType();
 		String commandLine = getCommandLine().substring(1);
-		
+		commandLine = commandLine.replace("%player%", player.getName());
 		
 		
 		if(type == Type.OP) {
