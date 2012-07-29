@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,7 +30,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest.Rank;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundAlreadyEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundEvent;
@@ -252,6 +252,36 @@ public class TreasureManager {
 		event.setUseInteractedBlock(Result.DENY);
 		
 		// check rank permission
+		boolean hasRank = false;
+		String rankString = "";
+		List<String> ranks = config.getRanks();
+		List<String> chestRanks = tchest.getRanks();
+		if(chestRanks != null) {
+			for (String rank : chestRanks) {
+				if(rank == null) {
+					continue;
+				}
+				String r = rank.trim().toLowerCase();
+				if(ranks.contains(r)) {
+					rankString += ", " + rank;
+					
+					String perm = permRank + "." + rank.trim().toLowerCase();
+					Bukkit.getLogger().info("perm " + perm);
+					if(player.isPermissionSet(perm) && player.hasPermission(perm)) {
+						Bukkit.getLogger().info("has perm " + perm);
+						hasRank = true;
+						break;
+					}
+				}
+			}
+		}
+		
+		if(!hasRank && !rankString.isEmpty()) {
+			rankString = rankString.substring(2);//remove comma and space
+			player.sendMessage(ChatColor.RED + "This treasure can only be accessed by players with one of the ranks: \"" + rankString + "\"");
+			return;
+		}
+		/*
 		Rank rank = tchest.getRank();
 		if(!rank.equals(Rank.DEFAULT)) {
 			String perm = permRank + "." + rank.name().toLowerCase();
@@ -260,7 +290,7 @@ public class TreasureManager {
 				return;
 			}
 		}
-		
+		*/
 		
 		// check permission
 		if(!allowAccess(player, tchest.isUnlimited())) {

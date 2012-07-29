@@ -22,12 +22,12 @@ public class TreasureChest implements ITreasureChest {
 	
 	private IBlockInventory container;
 	private final Map<Message, String> messages = new HashMap<Message, String>();
-	private Rank rank = Rank.DEFAULT;
 	private boolean unlimited;
 	private int random;
 	private long forgetTime;
 	private boolean ignoreProtection;
 	
+	private List<String> ranks;
 	
 	private List<RewardInfo> rewards = new ArrayList<RewardInfo>();
 	
@@ -49,6 +49,7 @@ public class TreasureChest implements ITreasureChest {
 		forgetTime = 0;
 		ignoreProtection = false;
 		
+		ranks = new ArrayList<String>();
 	}
 	
 	public TreasureChest(Map<String, Object> values) {
@@ -67,11 +68,25 @@ public class TreasureChest implements ITreasureChest {
 			}
 		}
 		
+		
+		
+		this.ranks = castToStringList(values.get("ranks"));
+		
+		//--------------------------------
+		// [BEGIN] pre-customizable ranks
+		//--------------------------------
 		try {
-			rank = Rank.valueOf((String) values.get("rank"));
+			String rank = (String) values.get("rank");
+			if(rank != null) {
+				ranks.add(rank);
+			}
 		} catch(Exception e) {
-			rank = Rank.DEFAULT;
+			
 		}
+		//--------------------------------
+		// [END] pre-customizable ranks
+		//--------------------------------
+		
 		
 		unlimited = (Boolean) values.get("unlimited");
 		random = (Integer) values.get("random");
@@ -87,6 +102,20 @@ public class TreasureChest implements ITreasureChest {
 		}
 		
 	}
+	
+	@SuppressWarnings("unchecked")
+	private List<String> castToStringList(Object value) {
+		List<String> result;
+		try {
+			result = (List<String>) value;
+		} catch(Exception e) {
+			result = null;
+		}
+		if(result == null) {
+			return new ArrayList<String>();
+		}
+		return result;
+	}
 
 	@Override
 	public Map<String, Object> serialize() {
@@ -100,7 +129,7 @@ public class TreasureChest implements ITreasureChest {
 			msgSection.put(entry.getKey().name(), entry.getValue());
 		}
 		values.put("messages", msgSection);
-		values.put("rank", rank.name());
+		values.put("ranks", ranks);
 		values.put("unlimited", unlimited);
 		values.put("random", random);
 		values.put("forget-time", forgetTime);
@@ -208,13 +237,13 @@ public class TreasureChest implements ITreasureChest {
 	}
 
 	@Override
-	public Rank getRank() {
-		return rank;
+	public List<String> getRanks() {
+		return ranks;
 	}
 
 	@Override
-	public void setRank(Rank rank) {
-		this.rank = rank;
+	public void setRanks(List<String> value) {
+		this.ranks = value;
 	}
 	
 	

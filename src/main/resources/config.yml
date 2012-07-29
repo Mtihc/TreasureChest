@@ -16,6 +16,13 @@
 #         subregion-size: How big will one piece be?
 #         subregion-ticks: How many ticks before the next piece is restored?
 # 
+# ranks:  Configure ranks, that can be added to treasrures.
+#         Give players ranks using permission treasurechest.rank.RANK_NAME
+#         Use all lowercase letters. For example:
+#   - member
+#   - vip
+#   - admin
+# 
 defaults:
     messages:
         found: 'You have found treasure!'
@@ -26,3 +33,4 @@ rewards:
     restore:
         subregion-size: 50
         subregion-ticks: 10
+ranks: []

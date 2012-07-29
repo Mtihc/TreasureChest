@@ -2,17 +2,12 @@ package com.mtihc.minecraft.treasurechest.v8.plugin;
 
 import java.util.Collection;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.conversations.ConversationContext;
-import org.bukkit.conversations.ConversationFactory;
-import org.bukkit.conversations.Prompt;
-import org.bukkit.conversations.ValidatingPrompt;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -21,7 +16,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureChest;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
-import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest.Rank;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.Command;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.ICommand;
@@ -47,12 +41,12 @@ public class TreasureChestCommand extends SimpleCommand {
 		addNested("ignoreProtection");
 		addNested("setmessage");
 		addNested("setforget");
-		addNested("setrank");
 		addNested("forget");
 		addNested("forgetAll");
 		addNested("reload");
 		
 		addNested(RewardCommand.class, manager, this);
+		addNested(RankCommand.class, manager, this);
 		
 	}
 	
@@ -603,93 +597,6 @@ public class TreasureChestCommand extends SimpleCommand {
 		manager.save(loc, tchest);
 	}
 	
-	@Command(aliases = { "setrank", "rank" }, args = "", desc = "Set rank that can access", help = { "The plugin will list the ranks to choose from." })
-	public void setrank(CommandSender sender, String[] args) throws CommandException {
-	
-		if(!(sender instanceof Player)) {
-			throw new CommandException("Command must be executed by a player, in game.");
-		}
-	
-	
-		if(!sender.hasPermission(Permission.SET.getNode())) {
-			throw new CommandException("You don't have permission to set a treasure's rank.");
-		}
-		
-
-		Player player = (Player) sender;
-		Block block = TreasureManager.getTargetedContainerBlock(player);
-		if(block == null) {
-			throw new CommandException("You're not looking at a container block.");
-		}
-		
-		final Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
-		
-		final ITreasureChest tchest = manager.load(loc);
-		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
-		}
-		
-		new ConversationFactory(manager.getPlugin())
-		.withFirstPrompt(new ValidatingPrompt() {
-			
-			@Override
-			public String getPromptText(ConversationContext context) {
-				context.getForWhom().sendRawMessage(ChatColor.GOLD + "This treasure can be accessed by " + ChatColor.WHITE + tchest.getRank().name().toLowerCase() + "s" + ChatColor.GOLD + ".");
-				context.getForWhom().sendRawMessage(ChatColor.GOLD + "Choose a different rank for this treasure:");
-				String rankString = "";
-				Rank[] ranks = Rank.values();
-				for (Rank rank : ranks) {
-					rankString += ", " + rank.name().toLowerCase();
-				}
-				rankString = rankString.substring(2);
-				context.getForWhom().sendRawMessage(rankString);
-				return ChatColor.GOLD + "Type a rank name, or type " + ChatColor.WHITE + "CANCEL" + ChatColor.GOLD + " to stop";
-			}
-			
-			@Override
-			protected boolean isInputValid(ConversationContext context, String input) {
-				if(input.startsWith("/")) {
-					Bukkit.dispatchCommand((CommandSender) context.getForWhom(), input.substring(1));
-					return false;
-				}
-				else if(input.equalsIgnoreCase("CANCEL")) {
-					return true;
-				}
-				else {
-					Rank rank = Rank.valueOf(input.toUpperCase());
-					if(rank == null) {
-						context.getForWhom().sendRawMessage(ChatColor.RED + "Rank \"" + input + "\" doesn't exist.");
-						return false;
-					}
-					context.setSessionData("rank", rank);
-					return true;
-				}
-			}
-			
-			@Override
-			protected Prompt acceptValidatedInput(ConversationContext context, String input) {
-				if(input.equalsIgnoreCase("CANCEL")) {
-					context.getForWhom().sendRawMessage(ChatColor.RED + "Cancelled setting rank.");
-					return END_OF_CONVERSATION;
-				}
-				else {
-					Rank rank = (Rank) context.getSessionData("rank");
-
-					tchest.setRank(rank);
-					context.getForWhom().sendRawMessage(ChatColor.GREEN + "Rank set to " + ChatColor.WHITE + rank.name() + ChatColor.GREEN + ".");
-					
-					manager.save(loc, tchest);
-					return END_OF_CONVERSATION;
-					
-				}
-			}
-		})
-		.withLocalEcho(false)
-		.withModality(false)
-		.buildConversation(player)
-		.begin();
-		
-	}
 	@Command(aliases = { "setforget", "setforgettime" }, args = "<days> <hours> <min> <sec>", desc = "Set forget-time", help = { "Defines after how long a treasure can be looted again, per player." })
 	public void setforget(CommandSender sender, String[] args) throws CommandException {
 	
