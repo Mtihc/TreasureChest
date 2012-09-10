@@ -21,10 +21,10 @@ public class BlockInventory implements IBlockInventory {
 	private int size;
 	private ItemStack[] contents;
 	
-	/**
+	/*
 	 * @deprecated This constructor is only required to convert from v7 to v8
 	 */
-	@Deprecated
+	/*@Deprecated
 	public BlockInventory(Location location, ItemStack[] contents) {
 		this.location = location;
 		this.type = InventoryType.CHEST;
@@ -42,7 +42,7 @@ public class BlockInventory implements IBlockInventory {
 			}
 			this.contents = newContents;
 		}
-	}
+	}*/
 
 	public BlockInventory(Location location, Inventory inventory) {
 		if(inventory instanceof DoubleChestInventory) {
@@ -69,8 +69,18 @@ public class BlockInventory implements IBlockInventory {
 			Map.Entry<?, ?> entry = (Map.Entry<?, ?>) object;
 			String key = (String) entry.getKey();
 			
-			ItemStack item = (ItemStack) entry.getValue();
+			ItemStack item;
+			if(entry.getValue() instanceof ItemStack) {
+				item = (ItemStack) entry.getValue();
+			}
+			else if(entry.getValue() instanceof ItemStackWrapper){
+				item = ((ItemStackWrapper) entry.getValue()).getItemStack();
+			}
+			else {
+				item = null;
+			}
 			int index = Integer.parseInt(key.substring(substringBeginIndex));
+			
 			contents[index] = item;
 		}
 		
@@ -91,7 +101,10 @@ public class BlockInventory implements IBlockInventory {
 			if(item == null || item.getTypeId() == 0) {
 				continue;
 			}
-			contentsSection.put("item" + i, item);
+			
+			Object element = item;
+			element = new ItemStackWrapper(item);
+			contentsSection.put("item" + i, element);
 		}
 		values.put("contents", contentsSection);
 		

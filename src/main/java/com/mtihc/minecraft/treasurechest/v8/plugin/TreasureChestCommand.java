@@ -305,7 +305,9 @@ public class TreasureChestCommand extends SimpleCommand {
 			throw new CommandException("Treasure chest doesn't exist, or is already deleted.");
 		}
 		else {
-			manager.delete(loc);
+			if(!manager.delete(loc)) {
+				throw new CommandException("Deletion of the Treasure Chest was cancelled.");
+			}
 			sender.sendMessage(ChatColor.YELLOW + "Treasure chest deleted.");
 			return;
 		}
@@ -343,7 +345,6 @@ public class TreasureChestCommand extends SimpleCommand {
 		if(tchest != null) {
 			
 			tchest.getContainer().setContents(holder.getInventory().getContents());
-			holder.getInventory().clear();
 			
 			sender.sendMessage(ChatColor.GOLD + "Treasure chest contents updated.");
 			
@@ -355,11 +356,11 @@ public class TreasureChestCommand extends SimpleCommand {
 			}
 			tchest.ignoreProtection(manager.getConfig().getDefaultIgnoreProtection());
 			
-			holder.getInventory().clear();
 	
 			sender.sendMessage(ChatColor.GOLD + "Treasure chest saved");
 		}
 		manager.save(loc, tchest);
+		//holder.getInventory().clear();
 	}
 
 	@Command(aliases = { "random", "setrandom", "r" }, args = "[amount]", desc = "Make a treasure randomized.", help = { "The argument is the amount of item-stacks that will be included in the treasure at random." })

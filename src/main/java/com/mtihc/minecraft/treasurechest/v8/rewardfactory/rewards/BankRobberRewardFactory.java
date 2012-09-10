@@ -18,9 +18,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest;
-import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundUnlimitedEvent;
+import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestInventoryEvent;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactory;
@@ -119,7 +119,7 @@ public class BankRobberRewardFactory extends RewardFactory {
 	}
 
 
-	private void onTreasureFound(TreasureChestEvent event) {
+	private void onTreasureFound(TreasureChestInventoryEvent event) {
 		Player player = event.getPlayer();
 		Location loc = event.getLocation();
 		String locString = loc.toString();

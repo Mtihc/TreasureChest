@@ -7,19 +7,17 @@ import org.bukkit.inventory.Inventory;
 
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest;
 
-public class TreasureChestFoundEvent extends TreasureChestEvent implements Cancellable {
-
-	private boolean cancelled;
+public class TreasureChestFoundEvent extends TreasureChestInventoryEvent implements Cancellable {
 	
+	private boolean cancelled;
+
 	public TreasureChestFoundEvent(Player player, ITreasureChest tchest,
 			Inventory inventory) {
-		super(player, tchest, inventory);
+		super(tchest, player, inventory);
 	}
 
 	private static final HandlerList handlers = new HandlerList();
 	
-	
-	 
     public HandlerList getHandlers() {
         return handlers;
     }

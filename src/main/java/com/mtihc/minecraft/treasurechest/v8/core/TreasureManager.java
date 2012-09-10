@@ -18,6 +18,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.DoubleChest;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -30,6 +31,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestDeleteEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundAlreadyEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundEvent;
@@ -41,6 +43,14 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactoryManager;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
 public class TreasureManager {
+	
+	static {
+		ConfigurationSerialization.registerClass(ItemStackWrapper.class);
+		ConfigurationSerialization.registerClass(TreasureChest.class);
+		ConfigurationSerialization.registerClass(BlockInventory.class);
+		ConfigurationSerialization.registerClass(DoubleBlockInventory.class);
+		ConfigurationSerialization.registerClass(RewardInfo.class, "RewardInfo");
+	}
 	
 	public static boolean isInventoryHolder(Block block) {
 		return block.getState() instanceof InventoryHolder;
@@ -79,11 +89,12 @@ public class TreasureManager {
 	private LinkedHashMap<String, TreasureInventory> inventories = new LinkedHashMap<String, TreasureInventory>();
 	private String permAccessNormal;
 	private String permAccessUnlimited;
+	private String permAccessReal;
 	private String permRank;
 	
 	private RewardFactoryManager rewardManager;
 	
-	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited, String permRank) {
+	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited, String permAccessReal, String permRank) {
 		this.plugin = plugin;
 		this.config = config;
 		this.chests = chests;
@@ -91,6 +102,7 @@ public class TreasureManager {
 		
 		this.permAccessNormal = permAccessNormal;
 		this.permAccessUnlimited = permAccessUnlimited;
+		this.permAccessReal = permAccessReal;
 		this.permRank = permRank;
 		
 		this.rewardManager = new RewardFactoryManager();
@@ -111,6 +123,10 @@ public class TreasureManager {
 		return rewardManager;
 	}
 	
+	
+	
+	
+	
 	public ITreasureChest load(Location location) {
 		return chests.load(location);
 	}
@@ -123,15 +139,24 @@ public class TreasureManager {
 		return chests.has(location);
 	}
 
-	public void delete(Location location) {
+	public boolean delete(Location location) {
+		ITreasureChest tchest = load(location);
+		if(tchest == null || !dispatchTreasureDelete(tchest)) {
+			return false;
+		}
 		memory.forgetChest(location);
 		chests.delete(location);
+		return true;
 	}
-
+	
 	public Set<Location> getLocations(String worldName) {
 		return chests.getLocations(worldName);
 	}
-
+	
+	
+	
+	
+	
 	public Collection<Location> getAllPlayerFound(OfflinePlayer player, World world) {
 		return memory.getAllPlayerFound(player, world);
 	}
@@ -159,6 +184,8 @@ public class TreasureManager {
 	public void forgetChest(Location location) {
 		memory.forgetChest(location);
 	}
+	
+	
 	
 	
 	
@@ -239,8 +266,11 @@ public class TreasureManager {
 		Player player = event.getPlayer();
 		
 		if(player.getItemInHand().getType().equals(Material.CHEST)) {
-			// open the treasure chest normally, without "fake inventory"
-			return;
+			if(player.hasPermission(permAccessReal)) {
+				// open the treasure chest normally, without "fake inventory"
+				return;
+			}
+			
 		}
 		
 		// check/ignore protection
@@ -268,7 +298,6 @@ public class TreasureManager {
 					String perm = permRank + "." + rank.trim().toLowerCase();
 					Bukkit.getLogger().info("perm " + perm);
 					if(player.isPermissionSet(perm) && player.hasPermission(perm)) {
-						Bukkit.getLogger().info("has perm " + perm);
 						hasRank = true;
 						break;
 					}
@@ -443,6 +472,12 @@ public class TreasureManager {
 	private boolean dispatchTreasureFoundUnlimited(Player player,
 			ITreasureChest tchest, Inventory inventory) {
 		TreasureChestFoundUnlimitedEvent event = new TreasureChestFoundUnlimitedEvent(player, tchest, inventory);
+		plugin.getServer().getPluginManager().callEvent(event);
+		return !event.isCancelled();
+	}
+	
+	private boolean dispatchTreasureDelete(ITreasureChest tchest) {
+		TreasureChestDeleteEvent event = new TreasureChestDeleteEvent(tchest);
 		plugin.getServer().getPluginManager().callEvent(event);
 		return !event.isCancelled();
 	}
