@@ -9,17 +9,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.Listener;
@@ -89,12 +88,11 @@ public class TreasureManager {
 	private LinkedHashMap<String, TreasureInventory> inventories = new LinkedHashMap<String, TreasureInventory>();
 	private String permAccessNormal;
 	private String permAccessUnlimited;
-	private String permAccessReal;
 	private String permRank;
 	
 	private RewardFactoryManager rewardManager;
 	
-	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited, String permAccessReal, String permRank) {
+	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited, String permRank) {
 		this.plugin = plugin;
 		this.config = config;
 		this.chests = chests;
@@ -102,7 +100,6 @@ public class TreasureManager {
 		
 		this.permAccessNormal = permAccessNormal;
 		this.permAccessUnlimited = permAccessUnlimited;
-		this.permAccessReal = permAccessReal;
 		this.permRank = permRank;
 		
 		this.rewardManager = new RewardFactoryManager();
@@ -189,6 +186,8 @@ public class TreasureManager {
 	
 	
 	
+	
+	
 	void onPlayerInteract(final PlayerInteractEvent event) {
 		
 		// check action
@@ -205,57 +204,22 @@ public class TreasureManager {
 		// The block will be DoubleChest.getLocation().getBlock() (which is always the left side)
 		//
 		
-		Block block;
-		InventoryHolder holder;
 		
-		block = event.getClickedBlock();
-		
+		Block block = event.getClickedBlock();
 		if(!(block.getState() instanceof InventoryHolder)) {
 			// block is not an InventoryHolder
 			return;
 		}
 		
-
-		// block is an InventoryHolder
-		holder = (InventoryHolder) block.getState();
+		ITreasureChest tchest = getTreasureChest(block);
 		
-		if(holder.getInventory().getHolder() instanceof DoubleChest) {
-			
-			// block is part of a DoubleChest
-			
-			// adjust holder and block to be DoubleChest's
-			holder = holder.getInventory().getHolder();
-			DoubleChest dchest = (DoubleChest) holder;
-			block = dchest.getLocation().getBlock();
-			
-			// check if the right-side of the double chest
-			// is blocked by the block above
-			BlockState rightSideState = (BlockState) dchest.getRightSide();
-			Block aboveRightSide = rightSideState.getBlock().getRelative(0, 1, 0);
-			if(!getInvisibleBlocks().contains((byte)aboveRightSide.getTypeId())) {
-				return;
-			}
-		}
-		
-		// check if the block is a Chest, 
-		// and if it's blocked by the block above
-		if(block.getType().equals(Material.CHEST)) {
-			Block above = block.getRelative(0, 1, 0);
-			if(!getInvisibleBlocks().contains((byte) above.getTypeId())) {
-				return;
-			}
-		}
-		
-		
-		ITreasureChest tchest;
-		
-		// get treasure chest id for that location
-		Location id = block.getLocation();
-		
-		// get the treasure chest object
-		tchest = load(id);
 		if(tchest == null) {
-			// not a treasure chest
+			// didn't click a treasure chest
+			return;
+		}
+		
+		if(isBlockedByBlockAbove(block)) {
+			// there's a block on top that is blocking the chest from opening
 			return;
 		}
 		
@@ -265,14 +229,6 @@ public class TreasureManager {
 		
 		Player player = event.getPlayer();
 		
-		if(player.getItemInHand().getType().equals(Material.CHEST)) {
-			if(player.hasPermission(permAccessReal)) {
-				// open the treasure chest normally, without "fake inventory"
-				return;
-			}
-			
-		}
-		
 		// check/ignore protection
 		if(!tchest.ignoreProtection() && event.useInteractedBlock().equals(Result.DENY)) {
 			// protected, and protection is not ignored
@@ -280,89 +236,28 @@ public class TreasureManager {
 		}
 		// deny anyway, because the player will open a "fake inventory"
 		event.setUseInteractedBlock(Result.DENY);
-		
-		// check rank permission
-		boolean hasRank = false;
-		String rankString = "";
-		List<String> ranks = config.getRanks();
-		List<String> chestRanks = tchest.getRanks();
-		if(chestRanks != null) {
-			for (String rank : chestRanks) {
-				if(rank == null) {
-					continue;
-				}
-				String r = rank.trim().toLowerCase();
-				if(ranks.contains(r)) {
-					rankString += ", " + rank;
-					
-					String perm = permRank + "." + rank.trim().toLowerCase();
-					Bukkit.getLogger().info("perm " + perm);
-					if(player.isPermissionSet(perm) && player.hasPermission(perm)) {
-						hasRank = true;
-						break;
-					}
-				}
-			}
-		}
-		
-		if(!hasRank && !rankString.isEmpty()) {
-			rankString = rankString.substring(2);//remove comma and space
-			player.sendMessage(ChatColor.RED + "This treasure can only be accessed by players with one of the ranks: \"" + rankString + "\"");
-			return;
-		}
-		/*
-		Rank rank = tchest.getRank();
-		if(!rank.equals(Rank.DEFAULT)) {
-			String perm = permRank + "." + rank.name().toLowerCase();
-			if(!player.hasPermission(perm)) {
-				player.sendMessage(ChatColor.RED + "This treasure can only be accessed by " + ChatColor.WHITE + rank.name().toLowerCase() + "s" + ChatColor.RED + ".");
-				return;
-			}
-		}
-		*/
+
 		
 		// check permission
-		if(!allowAccess(player, tchest.isUnlimited())) {
-			player.sendMessage(ChatColor.RED + "You don't have permission to access this Treasure Chest.");
+		if(!checkPermission(player, tchest)) {
+			return;
+		}
+		// check rank (configured permission)
+		if(!checkRank(player, tchest)) {
 			return;
 		}
 		
-		Inventory inventory;
 		
-		// get unique key for player @ inventory location
-		final String KEY = player.getName()+"@"+block.getLocation().toString();
-		
-		// get remembered inventory for player, or null
-		TreasureInventory tInventory = inventories.get(KEY);
-		
-		if(tInventory != null) {
-			// inventory still remembered, maybe there's still some old items in there
-			inventory = tInventory.getInventory();
-		}
-		else {
-			// create new Inventory
-			if(holder instanceof DoubleChest) {
-				inventory = plugin.getServer().createInventory(holder, holder.getInventory().getSize());
-			}
-			else {
-				inventory = plugin.getServer().createInventory(holder, holder.getInventory().getType());
-			}
-			
-			// wrap inventory in an object that will clear itself from memory
-			tInventory = new TreasureInventory(plugin, 600L, inventory) {
-				
-				@Override
-				protected void execute() {
-					inventories.remove(KEY);
-				}
-			};
-			inventories.put(KEY, tInventory);
-		}
-		
-		// inventory will clear itself from the map
-		tInventory.schedule();
+		openTreasureInventory(player, tchest);
 		
 		
+	}
+	
+	public void openTreasureInventory(Player player, ITreasureChest tchest) {
+
+		Inventory inventory = createTreasureInventory(player, tchest);
+		
+		Location loc = tchest.getContainer().getLocation();
 		
 		//
 		// copy the contents from the treasure chest, 
@@ -396,7 +291,7 @@ public class TreasureManager {
 		//
 		else {
 			// when has player found before
-			long time = whenHasPlayerFound((OfflinePlayer)player, id);
+			long time = whenHasPlayerFound((OfflinePlayer)player, loc);
 			
 			
 			if(time != 0 && !hasForgotten(time, tchest.getForgetTime())) {
@@ -418,14 +313,14 @@ public class TreasureManager {
 				
 				// set items to chest
 				toInventory(tchest.getContainer().getContents(), tchest.getAmountOfRandomlyChosenStacks(), inventory);
-				
+
 				// message found treasure!
 				if(!dispatchTreasureFound(player, tchest, inventory)) {
 					return;
 				}
 				
 				// remember that this player found it at this time
-				rememberPlayerFound((OfflinePlayer)player, id);
+				rememberPlayerFound((OfflinePlayer)player, loc);
 				
 				giveRewards(player, tchest);
 				
@@ -443,11 +338,155 @@ public class TreasureManager {
 
 		dispatchTreasureOpen(player, tchest, inventory);
 		player.openInventory(inventory);
-		
-		
 	}
 	
+	public Inventory createTreasureInventory(Player player, ITreasureChest tchest) {
+		Location loc = tchest.getContainer().getLocation();
+		Block block = loc.getBlock();
+		
+		if(!(block.getState() instanceof InventoryHolder)) {
+			throw new IllegalArgumentException("There's no InventoryHolder at the location of the specified ITreasureChest object.");
+		}
+		
+		InventoryHolder holder = (InventoryHolder) block.getState();
+		holder = holder.getInventory().getHolder();
+		
+		// get unique key for player @ inventory location
+		final String KEY = player.getName() + "@" + loc.getWorld().getName() + "@" + loc.toVector().toString();
+		// get remembered inventory for player, or null
+		TreasureInventory tInventory = inventories.get(KEY);
+		
+		Inventory inventory;
+		if(tInventory != null) {
+			// inventory still remembered, maybe there's still some old items in there
+			inventory = tInventory.getInventory();
+		}
+		else {
+			// create new Inventory
+			if(holder instanceof DoubleChest) {
+				inventory = plugin.getServer().createInventory(holder, holder.getInventory().getSize());
+			}
+			else {
+				inventory = plugin.getServer().createInventory(holder, holder.getInventory().getType());
+			}
+			
+			// wrap inventory in an object that will clear itself from memory
+			tInventory = new TreasureInventory(plugin, 600L, inventory) {
+				
+				@Override
+				protected void execute() {
+					inventories.remove(KEY);
+				}
+			};
+			inventories.put(KEY, tInventory);
+		}
+		
+		// inventory will clear itself from the map
+		tInventory.schedule();
+		
+		return inventory;
+		
+	}
+
 	
+	public ITreasureChest getTreasureChest(Block clickedBlock) {
+		
+		if(!(clickedBlock.getState() instanceof InventoryHolder)) {
+			// block is not an InventoryHolder
+			return null;
+		}
+		
+		// get inventory holder
+		InventoryHolder holder = (InventoryHolder) clickedBlock.getState();
+		// get inventory holder's location
+		Location location = getLocation(holder);
+		
+		// get the treasure chest object
+		return load(location);
+	}
+	
+	public boolean isBlock(Block block) {
+		return block.getType().isBlock() && block.getType() != Material.CHEST && !getInvisibleBlocks().contains((byte)block.getTypeId());
+	}
+	
+	public boolean isBlockedByBlockAbove(Block block) {
+		if(!(block.getState() instanceof InventoryHolder)) {
+			return false;
+		}
+		if(block.getType() != Material.CHEST && block.getType() != Material.ENDER_CHEST) {
+			return false;
+		}
+		InventoryHolder holder = (InventoryHolder) block.getState();
+		Block above = block;
+		if(holder.getInventory() instanceof DoubleChestInventory) {
+			DoubleChest dchest = (DoubleChest) holder.getInventory().getHolder();
+			
+			Block rightSide = ((BlockState)dchest.getRightSide()).getBlock();
+			Block rightAbove = rightSide.getRelative(BlockFace.UP);
+			if(isBlock(rightAbove)) {
+				return true;
+			}
+			Block leftSide = ((BlockState)dchest.getLeftSide()).getBlock();
+			above = leftSide.getRelative(BlockFace.UP);
+		}
+		
+		return isBlock(above);
+	}
+	
+	public Set<String> getRanks(ITreasureChest tchest) {
+		HashSet<String> result = new HashSet<String>();
+		List<String> chestRanks = tchest.getRanks();
+		if(chestRanks == null || chestRanks.isEmpty()) {
+			return result;
+		}
+		List<String> configRanks = config.getRanks();
+		for (String rank : chestRanks) {
+			
+			for (String r : configRanks) {
+				if(rank.equalsIgnoreCase(r)) {
+					result.add(r);
+				}
+			}
+		}
+		return result;
+	}
+	
+	private boolean checkPermission(Player player, ITreasureChest tchest) {
+		if(tchest.isUnlimited()) {
+			if(!player.hasPermission(permAccessUnlimited)) {
+				player.sendMessage(ChatColor.RED + "You don't have permission \"" + permAccessUnlimited + "\".");
+				return false;
+			}
+		}
+		else {
+			if(!player.hasPermission(permAccessNormal)) {
+				player.sendMessage(ChatColor.RED + "You don't have permission \"" + permAccessNormal + "\".");
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private boolean checkRank(Player player, ITreasureChest tchest) {
+		// check rank permission
+		String rankPerms = "";
+		Set<String> ranks = getRanks(tchest);
+		for (String rank : ranks) {
+			String perm = permRank + "." + rank.toLowerCase();
+			if(player.isPermissionSet(perm) && player.hasPermission(perm)) {
+				return true;
+			}
+			rankPerms += ", " + perm;
+		}
+		if(rankPerms.isEmpty()) {
+			return true;
+		}
+		else {
+			rankPerms = rankPerms.substring(2);//remove comma and string
+			player.sendMessage(ChatColor.RED + "You require one of the following permissions, to open that treasure: " + ChatColor.GRAY + rankPerms);
+			return false;
+		}
+	}
 
 	private void dispatchTreasureOpen(Player player, ITreasureChest tchest,
 			Inventory inventory) {
@@ -507,16 +546,6 @@ public class TreasureManager {
 		// is "now" later than "forgot"? Then yes, is forgotten
 		return now.compareTo(forgot) > 0;
 	}
-	
-	private boolean allowAccess(HumanEntity humanEntity, boolean isUnlimitedChest) {
-		if(isUnlimitedChest) {
-			return humanEntity.hasPermission(permAccessUnlimited);
-		}
-		else {
-			return humanEntity.hasPermission(permAccessNormal);
-		}
-	}
-	
 	
 
 	private ItemStack[] getRandomizedInventory(ItemStack[] inventory, int randomAmount) {

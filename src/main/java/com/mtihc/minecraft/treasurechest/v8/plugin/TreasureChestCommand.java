@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -344,8 +345,8 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		if(tchest != null) {
 			
-			tchest.getContainer().setContents(holder.getInventory().getContents());
-			
+			Inventory inventory = manager.createTreasureInventory(player, tchest);
+			tchest.getContainer().setContents(inventory.getContents());
 			sender.sendMessage(ChatColor.GOLD + "Treasure chest contents updated.");
 			
 		}
@@ -355,7 +356,7 @@ public class TreasureChestCommand extends SimpleCommand {
 				tchest.setMessage(messageId, manager.getConfig().getDefaultMessage(messageId));
 			}
 			tchest.ignoreProtection(manager.getConfig().getDefaultIgnoreProtection());
-			
+			holder.getInventory().clear();
 	
 			sender.sendMessage(ChatColor.GOLD + "Treasure chest saved");
 		}
