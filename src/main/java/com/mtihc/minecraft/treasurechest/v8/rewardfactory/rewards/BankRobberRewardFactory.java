@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundEvent;
@@ -224,7 +225,8 @@ public class BankRobberRewardFactory extends RewardFactory {
 			if(isRunning()) {
 				return;
 			}
-			taskId = plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, this, 1200L);
+			BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, this, 1200L);
+			taskId = task.getTaskId();
 		}
 
 		public void cancel() {

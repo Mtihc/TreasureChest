@@ -1,18 +1,18 @@
 package com.mtihc.minecraft.treasurechest.v8.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagString;
+import net.minecraft.server.v1_4_6.Item;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 
 public class ItemStackWrapper implements ConfigurationSerializable {
 
@@ -25,13 +25,13 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 	
 	public void setItemStack(ItemStack stack) {
 		if(stack == null) {
-			this.stack = new CraftItemStack(0);
+			this.stack = CraftItemStack.asNewCraftStack(Item.byId[0]);
 		}
 		else if(stack instanceof CraftItemStack) {
 			this.stack  = (CraftItemStack) stack;
 		}
 		else {
-			this.stack = new CraftItemStack(stack);
+			this.stack = CraftItemStack.asCraftCopy(stack);
 		}
 	}
 	
@@ -44,13 +44,12 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 		
 		Map<?, ?> extra = (Map<?, ?>) values.get("tag");
 		if(extra != null) {
-			CraftItemStack craftItem = new CraftItemStack(stack);
-			NBTTagCompound tag = new NBTTagCompound("tag");
+			CraftItemStack craftItem = CraftItemStack.asCraftCopy(stack);
 			if(stack.getType() == Material.WRITTEN_BOOK || stack.getType() == Material.BOOK_AND_QUILL) {
-				writtenBook(tag, extra);
+				BookMeta meta = (BookMeta)craftItem.getItemMeta();
+				writtenBook(meta, extra);
 				stack = craftItem;
-				craftItem.getHandle().setTag(tag);
-				
+				craftItem.setItemMeta(meta);
 			}
 		}
 		
@@ -63,28 +62,25 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 		Map<String, Object> values = new LinkedHashMap<String, Object>();
 		values.put("stack", stack);
 		
-		NBTTagCompound tag = ((CraftItemStack)stack).getHandle().getTag();
-		if(tag == null) {
+		BookMeta meta = (BookMeta)stack.getItemMeta();
+		if (meta == null) {
 			return values;
 		}
-		
-		Bukkit.getLogger().info("tag name: " + tag.getName());
 		
 		if(stack.getType() == Material.WRITTEN_BOOK || stack.getType() == Material.BOOK_AND_QUILL) {
 			Map<String, Object> extra = new LinkedHashMap<String, Object>();
 			
-			extra.put("author", tag.getString("author"));
-			extra.put("title", tag.getString("title"));
+			extra.put("author", meta.getAuthor());
+			extra.put("title", meta.getTitle());
 			
 			LinkedHashMap<String, Object> pageSection = new LinkedHashMap<String, Object>();
 			extra.put("pages", pageSection);
-			NBTTagList pages = tag.getList("pages");
+			List<String> pages = meta.getPages();
 			
 			int size = pages.size();
 			int index = 0;
 			while(index < size) {
-				NBTTagString page = (NBTTagString) pages.get(index);
-				pageSection.put("page" + index, page.data);
+				pageSection.put("page" + index, pages.get(index));
 				index++;
 			}
 			
@@ -99,20 +95,17 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 	
 
 	
-	private void writtenBook(NBTTagCompound tag, Map<?, ?> values) {
-		tag.setString("author", (String) values.get("author"));
-		tag.setString("title", (String) values.get("title"));
-		
-		NBTTagList pageListTag = new NBTTagList("pages");
+	private void writtenBook(BookMeta meta, Map<?, ?> values) {
+		meta.setAuthor((String) values.get("author"));
+		meta.setTitle((String) values.get("title"));
 		
 		Map<?, ?> pageSection = (Map<?, ?>) values.get("pages");
+		ArrayList<String> pages = new ArrayList<String>();
 		Collection<?> pageValues = pageSection.values();
-		int index = 0;
 		for (Object page : pageValues) {
-			pageListTag.add(new NBTTagString(String.valueOf(index), page.toString()));
-			index++;
+			pages.add(page.toString());
 		}
 		
-		tag.set("pages", pageListTag);
+		meta.setPages(pages);
 	}
 }
