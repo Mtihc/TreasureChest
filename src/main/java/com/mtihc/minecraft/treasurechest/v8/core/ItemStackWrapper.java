@@ -1,9 +1,7 @@
 package com.mtihc.minecraft.treasurechest.v8.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.minecraft.server.v1_4_6.Item;
@@ -16,7 +14,6 @@ import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 
 public class ItemStackWrapper implements ConfigurationSerializable {
 
