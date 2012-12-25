@@ -3,6 +3,7 @@ package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 import java.util.List;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
@@ -120,7 +121,8 @@ abstract class RestoreTask implements Runnable {
 			}
 			
 			if(this.chunkStore != null) {
-				taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this, delay, delay);
+				BukkitTask task = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this, delay, delay);
+				taskId = task.getTaskId();
 			}
 			else {
 				run();
