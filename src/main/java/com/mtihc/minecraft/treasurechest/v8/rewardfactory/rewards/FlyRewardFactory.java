@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
@@ -75,12 +76,6 @@ public class FlyRewardFactory extends RewardFactory {
 		};
 	}
 
-	
-	
-	
-	
-	
-	
 	protected void startFlight(Player player, FlyReward flyReward) {
 		new FlyTimer(player).schedule(flyReward.getSeconds());
 	}
@@ -120,7 +115,8 @@ public class FlyRewardFactory extends RewardFactory {
 		public void schedule(int seconds) {
 			// reschedule without changing anything
 			doCancel();
-			taskId = plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, this, seconds * 20L);
+			BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, this, seconds * 20L);
+			taskId = task.getTaskId();
 
 			player.setAllowFlight(true);
 			player.setFlying(true);

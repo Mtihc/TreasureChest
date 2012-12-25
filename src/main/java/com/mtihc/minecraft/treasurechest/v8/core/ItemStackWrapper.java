@@ -4,14 +4,15 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagString;
+import net.minecraft.server.v1_4_6.Item;
+import net.minecraft.server.v1_4_6.NBTTagCompound;
+import net.minecraft.server.v1_4_6.NBTTagList;
+import net.minecraft.server.v1_4_6.NBTTagString;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemStackWrapper implements ConfigurationSerializable {
@@ -25,13 +26,13 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 	
 	public void setItemStack(ItemStack stack) {
 		if(stack == null) {
-			this.stack = new CraftItemStack(0);
+			this.stack = CraftItemStack.asNewCraftStack(Item.byId[0]);
 		}
 		else if(stack instanceof CraftItemStack) {
 			this.stack  = (CraftItemStack) stack;
 		}
 		else {
-			this.stack = new CraftItemStack(stack);
+			this.stack = CraftItemStack.asCraftCopy(stack);
 		}
 	}
 	
@@ -44,18 +45,15 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 		
 		Map<?, ?> extra = (Map<?, ?>) values.get("tag");
 		if(extra != null) {
-			CraftItemStack craftItem = new CraftItemStack(stack);
+			CraftItemStack craftItem = CraftItemStack.asCraftCopy(stack);
 			NBTTagCompound tag = new NBTTagCompound("tag");
 			if(stack.getType() == Material.WRITTEN_BOOK || stack.getType() == Material.BOOK_AND_QUILL) {
+				net.minecraft.server.v1_4_6.ItemStack nmsItem = CraftItemStack.asNMSCopy(craftItem);
 				writtenBook(tag, extra);
-				stack = craftItem;
-				craftItem.getHandle().setTag(tag);
-				
+				nmsItem.setTag(tag);
+				stack = CraftItemStack.asCraftMirror(nmsItem);
 			}
 		}
-		
-		
-		
 	}
 
 	@Override
@@ -63,8 +61,9 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 		Map<String, Object> values = new LinkedHashMap<String, Object>();
 		values.put("stack", stack);
 		
-		NBTTagCompound tag = ((CraftItemStack)stack).getHandle().getTag();
-		if(tag == null) {
+		net.minecraft.server.v1_4_6.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+		NBTTagCompound tag = nmsStack.getTag();
+		if (tag == null) {
 			return values;
 		}
 		
@@ -94,11 +93,6 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 		return values;
 	}
 	
-	
-	
-	
-
-	
 	private void writtenBook(NBTTagCompound tag, Map<?, ?> values) {
 		tag.setString("author", (String) values.get("author"));
 		tag.setString("title", (String) values.get("title"));
@@ -106,8 +100,8 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 		NBTTagList pageListTag = new NBTTagList("pages");
 		
 		Map<?, ?> pageSection = (Map<?, ?>) values.get("pages");
-		Collection<?> pageValues = pageSection.values();
 		int index = 0;
+		Collection<?> pageValues = pageSection.values();
 		for (Object page : pageValues) {
 			pageListTag.add(new NBTTagString(String.valueOf(index), page.toString()));
 			index++;

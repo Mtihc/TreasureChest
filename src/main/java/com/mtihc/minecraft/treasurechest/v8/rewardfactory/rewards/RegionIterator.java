@@ -1,8 +1,5 @@
 package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 
-
-
-
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.regions.CuboidRegion;
 
