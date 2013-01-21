@@ -4,15 +4,15 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import net.minecraft.server.v1_4_6.Item;
-import net.minecraft.server.v1_4_6.NBTTagCompound;
-import net.minecraft.server.v1_4_6.NBTTagList;
-import net.minecraft.server.v1_4_6.NBTTagString;
+import net.minecraft.server.v1_4_R1.Item;
+import net.minecraft.server.v1_4_R1.NBTTagCompound;
+import net.minecraft.server.v1_4_R1.NBTTagList;
+import net.minecraft.server.v1_4_R1.NBTTagString;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemStackWrapper implements ConfigurationSerializable {
@@ -48,7 +48,7 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 			CraftItemStack craftItem = CraftItemStack.asCraftCopy(stack);
 			NBTTagCompound tag = new NBTTagCompound("tag");
 			if(stack.getType() == Material.WRITTEN_BOOK || stack.getType() == Material.BOOK_AND_QUILL) {
-				net.minecraft.server.v1_4_6.ItemStack nmsItem = CraftItemStack.asNMSCopy(craftItem);
+				net.minecraft.server.v1_4_R1.ItemStack nmsItem = CraftItemStack.asNMSCopy(craftItem);
 				writtenBook(tag, extra);
 				nmsItem.setTag(tag);
 				stack = CraftItemStack.asCraftMirror(nmsItem);
@@ -61,7 +61,7 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 		Map<String, Object> values = new LinkedHashMap<String, Object>();
 		values.put("stack", stack);
 		
-		net.minecraft.server.v1_4_6.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+		net.minecraft.server.v1_4_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
 		NBTTagCompound tag = nmsStack.getTag();
 		if (tag == null) {
 			return values;
