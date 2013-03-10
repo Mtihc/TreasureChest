@@ -90,7 +90,7 @@ public class TreasureChest implements ITreasureChest {
 		
 		unlimited = (Boolean) values.get("unlimited");
 		random = (Integer) values.get("random");
-		forgetTime = (Integer) values.get("forget-time");
+		forgetTime = Long.parseLong(String.valueOf(values.get("forget-time")));
 		ignoreProtection = (Boolean) values.get("ignore-protection");
 		
 		Map<?, ?> rewardSection = (Map<?, ?>) values.get("rewards");
