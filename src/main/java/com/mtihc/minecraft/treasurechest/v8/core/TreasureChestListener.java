@@ -24,9 +24,9 @@ class TreasureChestListener implements Listener {
 
 
 	
-	@EventHandler(priority=EventPriority.HIGHEST)
+	@EventHandler(priority=EventPriority.LOWEST)
 	public void onPlayerInteract(final PlayerInteractEvent event) {
-		control.onPlayerInteract(event);
+		event.setCancelled(control.onPlayerInteract(event));
 	}
 	
 	

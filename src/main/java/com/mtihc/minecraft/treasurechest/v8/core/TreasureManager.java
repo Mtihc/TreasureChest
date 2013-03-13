@@ -188,11 +188,11 @@ public class TreasureManager {
 	
 	
 	
-	void onPlayerInteract(final PlayerInteractEvent event) {
+	boolean onPlayerInteract(final PlayerInteractEvent event) {
 		
 		// check action
 		if(!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-			return;
+			return false;
 		}
 		
 		
@@ -208,19 +208,19 @@ public class TreasureManager {
 		Block block = event.getClickedBlock();
 		if(!(block.getState() instanceof InventoryHolder)) {
 			// block is not an InventoryHolder
-			return;
+			return false;
 		}
 		
 		ITreasureChest tchest = getTreasureChest(block);
 		
 		if(tchest == null) {
 			// didn't click a treasure chest
-			return;
+			return false;
 		}
 		
 		if(isBlockedByBlockAbove(block)) {
 			// there's a block on top that is blocking the chest from opening
-			return;
+			return true;
 		}
 		
 		//
@@ -232,7 +232,7 @@ public class TreasureManager {
 		// check/ignore protection
 		if(!tchest.ignoreProtection() && event.useInteractedBlock().equals(Result.DENY)) {
 			// protected, and protection is not ignored
-			return;
+			return true;
 		}
 		// deny anyway, because the player will open a "fake inventory"
 		event.setUseInteractedBlock(Result.DENY);
@@ -240,16 +240,16 @@ public class TreasureManager {
 		
 		// check permission
 		if(!checkPermission(player, tchest)) {
-			return;
+			return true;
 		}
 		// check rank (configured permission)
 		if(!checkRank(player, tchest)) {
-			return;
+			return true;
 		}
 		
 		
 		openTreasureInventory(player, tchest);
-		
+		return true;
 		
 	}
 	
