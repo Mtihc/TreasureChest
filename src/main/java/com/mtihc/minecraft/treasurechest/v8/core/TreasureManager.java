@@ -41,6 +41,7 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactoryManager;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
+
 public class TreasureManager {
 	
 	static {
@@ -188,11 +189,11 @@ public class TreasureManager {
 	
 	
 	
-	boolean onPlayerInteract(final PlayerInteractEvent event) {
+	void onPlayerInteract(final PlayerInteractEvent event) {
 		
 		// check action
 		if(!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-			return false;
+			return;
 		}
 		
 		
@@ -208,19 +209,19 @@ public class TreasureManager {
 		Block block = event.getClickedBlock();
 		if(!(block.getState() instanceof InventoryHolder)) {
 			// block is not an InventoryHolder
-			return false;
+			return;
 		}
 		
 		ITreasureChest tchest = getTreasureChest(block);
 		
 		if(tchest == null) {
 			// didn't click a treasure chest
-			return false;
+			return;
 		}
 		
 		if(isBlockedByBlockAbove(block)) {
 			// there's a block on top that is blocking the chest from opening
-			return true;
+			return;
 		}
 		
 		//
@@ -232,7 +233,7 @@ public class TreasureManager {
 		// check/ignore protection
 		if(!tchest.ignoreProtection() && event.useInteractedBlock().equals(Result.DENY)) {
 			// protected, and protection is not ignored
-			return true;
+			return;
 		}
 		// deny anyway, because the player will open a "fake inventory"
 		event.setUseInteractedBlock(Result.DENY);
@@ -240,16 +241,16 @@ public class TreasureManager {
 		
 		// check permission
 		if(!checkPermission(player, tchest)) {
-			return true;
+			return;
 		}
 		// check rank (configured permission)
 		if(!checkRank(player, tchest)) {
-			return true;
+			return;
 		}
 		
 		
 		openTreasureInventory(player, tchest);
-		return true;
+		
 		
 	}
 	
@@ -413,11 +414,11 @@ public class TreasureManager {
 		if(!(block.getState() instanceof InventoryHolder)) {
 			return false;
 		}
-		if(block.getType() != Material.CHEST && block.getType() != Material.ENDER_CHEST) {
+		if(block.getType() != Material.CHEST && block.getType() != Material.ENDER_CHEST && block.getType() != Material.TRAPPED_CHEST) {
 			return false;
 		}
 		InventoryHolder holder = (InventoryHolder) block.getState();
-		Block above = block;
+		Block above = block.getRelative(BlockFace.UP);
 		if(holder.getInventory() instanceof DoubleChestInventory) {
 			DoubleChest dchest = (DoubleChest) holder.getInventory().getHolder();
 			

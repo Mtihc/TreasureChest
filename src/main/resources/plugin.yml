@@ -6,7 +6,7 @@ startup: postworld
 url: http://dev.bukkit.org/server-mods/treasurechest/
 depend: []
 softdepend: [Vault, WorldEdit]
-version: 8.4
+version: 8.4.1
 commands:
     treasurechest:
         aliases: [tchest]
