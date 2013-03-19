@@ -68,9 +68,9 @@ public class TreasureManager {
 	}
 	
 	public static Location getLocation(InventoryHolder holder) {
-		DoubleChest doubleChest = getDoubleChest(holder);
-		if(doubleChest != null) {
-			return doubleChest.getLocation();
+		InventoryHolder invHolder = holder.getInventory().getHolder();
+		if(invHolder instanceof DoubleChest) {
+			return ((DoubleChest)invHolder).getLocation();
 		}
 		else if(holder instanceof BlockState) {
 			return ((BlockState)holder).getLocation();
