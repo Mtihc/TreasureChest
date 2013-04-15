@@ -47,6 +47,7 @@ public class TreasureManager {
 	static {
 		ConfigurationSerialization.registerClass(ItemStackWrapper.class);
 		ConfigurationSerialization.registerClass(TreasureChest.class);
+		ConfigurationSerialization.registerClass(TreasureChestGroup.class);
 		ConfigurationSerialization.registerClass(BlockInventory.class);
 		ConfigurationSerialization.registerClass(DoubleBlockInventory.class);
 		ConfigurationSerialization.registerClass(RewardInfo.class, "RewardInfo");
@@ -84,6 +85,7 @@ public class TreasureManager {
 	private JavaPlugin plugin;
 	private ITreasureManagerConfiguration config;
 	private ITreasureChestRepository chests;
+	private ITreasureChestGroupRepository groups;
 	private ITreasureChestMemory memory;
 	
 	private LinkedHashMap<String, TreasureInventory> inventories = new LinkedHashMap<String, TreasureInventory>();
@@ -93,10 +95,11 @@ public class TreasureManager {
 	
 	private RewardFactoryManager rewardManager;
 	
-	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited, String permRank) {
+	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestGroupRepository groups, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited, String permRank) {
 		this.plugin = plugin;
 		this.config = config;
 		this.chests = chests;
+		this.groups = groups;
 		this.memory = memory;
 		
 		this.permAccessNormal = permAccessNormal;
@@ -680,6 +683,27 @@ public class TreasureManager {
 				player.sendMessage(ChatColor.RED + e.getMessage());
 			}
 		}
+	}
+
+	public ITreasureChestGroup loadGroup(String name) {
+		return groups.load(name);
+	}
+
+	public void saveGroup(String name, ITreasureChestGroup value) {
+		groups.save(name, value);
+	}
+	
+	public boolean groupExists(String name) {
+		return groups.exists(name);
+	}
+
+	public boolean groupDelete(String name) {
+		ITreasureChestGroup tcgroup = loadGroup(name);
+		if(tcgroup == null) {
+			return false;
+		}
+		groups.delete(name);
+		return true;
 	}
 	
 	abstract class TreasureInventory implements Runnable {
