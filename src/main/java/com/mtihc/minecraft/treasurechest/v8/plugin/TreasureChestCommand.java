@@ -41,6 +41,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		addNested("listAll");
 		addNested("delete");
 		addNested("set");
+		addNested("setSingle");
 		addNested("random");
 		addNested("unlimited");
 		addNested("ignoreProtection");
@@ -360,10 +361,10 @@ public class TreasureChestCommand extends SimpleCommand {
 			Inventory inventory = manager.createTreasureInventory(player, tchest);
 			tchest.getContainer().setContents(inventory.getContents());
 			sender.sendMessage(ChatColor.GOLD + "Treasure chest contents updated.");
-			
+			tchest.setSingleton(false);
 		}
 		else {
-			tchest = new TreasureChest(block.getState());
+			tchest = new TreasureChest(block.getState(), false);
 			for (ITreasureChest.Message messageId : ITreasureChest.Message.values()) {
 				tchest.setMessage(messageId, manager.getConfig().getDefaultMessage(messageId));
 			}
@@ -376,6 +377,57 @@ public class TreasureChestCommand extends SimpleCommand {
 		//holder.getInventory().clear();
 	}
 
+	@Command(aliases = { "set-single" }, args = "", desc = "Create/update a treasure making it a single invertory.", help = { "Put items in a container block, ", "look at it, then execute this command." })
+	public void setSingle(CommandSender sender, String[] args) throws CommandException {
+	
+		if(!(sender instanceof Player)) {
+			throw new CommandException("Command must be executed by a player, in game.");
+		}
+	
+	
+		if(!sender.hasPermission(Permission.SET.getNode())) {
+			throw new CommandException("You don't have permission to create treasures.");
+		}
+		
+		
+		if(args != null && args.length > 0) {
+			throw new CommandException("Expected no arguments");
+		}
+		
+		Player player = (Player) sender;
+		
+		Block block = TreasureManager.getTargetedContainerBlock(player);
+		if(block == null) {
+			throw new CommandException("You're not looking at a container block.");
+		}
+		
+		InventoryHolder holder = (InventoryHolder) block.getState();
+		Location loc = TreasureManager.getLocation(holder);
+		
+		ITreasureChest tchest = manager.load(loc);
+		
+		if(tchest != null) {
+			
+			Inventory inventory = manager.createTreasureInventory(player, tchest);
+			tchest.getContainer().setContents(inventory.getContents());
+			tchest.setSingleton(true);
+			sender.sendMessage(ChatColor.GOLD + "Treasure chest contents updated.");
+			
+		}
+		else {
+			tchest = new TreasureChest(block.getState(), true);
+			for (ITreasureChest.Message messageId : ITreasureChest.Message.values()) {
+				tchest.setMessage(messageId, manager.getConfig().getDefaultMessage(messageId));
+			}
+			tchest.ignoreProtection(manager.getConfig().getDefaultIgnoreProtection());
+			holder.getInventory().clear();
+	
+			sender.sendMessage(ChatColor.GOLD + "Treasure chest saved");
+		}
+		manager.save(loc, tchest);
+		//holder.getInventory().clear();
+	}
+	
 	@Command(aliases = { "random", "setrandom", "r" }, args = "[amount]", desc = "Make a treasure randomized.", help = { "The argument is the amount of item-stacks that will be included in the treasure at random." })
 	public void random(CommandSender sender, String[] args) throws CommandException {
 	

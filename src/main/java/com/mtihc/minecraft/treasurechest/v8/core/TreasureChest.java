@@ -26,12 +26,13 @@ public class TreasureChest implements ITreasureChest {
 	private int random;
 	private long forgetTime;
 	private boolean ignoreProtection;
+	private boolean singleton;
 	
 	private List<String> ranks;
 	
 	private List<RewardInfo> rewards = new ArrayList<RewardInfo>();
 	
-	public TreasureChest(BlockState blockState) {
+	public TreasureChest(BlockState blockState, boolean singleton) {
 		if(!(blockState instanceof InventoryHolder)) {
 			throw new IllegalArgumentException("Parameter blockState must be an InventoryHolder.");
 		}
@@ -48,6 +49,7 @@ public class TreasureChest implements ITreasureChest {
 		random = 0;
 		forgetTime = 0;
 		ignoreProtection = false;
+		this.singleton = singleton;  
 		
 		ranks = new ArrayList<String>();
 	}
@@ -92,6 +94,12 @@ public class TreasureChest implements ITreasureChest {
 		random = (Integer) values.get("random");
 		forgetTime = Long.parseLong(String.valueOf(values.get("forget-time")));
 		ignoreProtection = (Boolean) values.get("ignore-protection");
+		/* Older chests won't have singleton in their config in which case they aren't */
+		try {
+			singleton = (Boolean) values.get("singleton");
+		} catch (Exception e) {
+			singleton = false;
+		}
 		
 		Map<?, ?> rewardSection = (Map<?, ?>) values.get("rewards");
 		if(rewardSection != null) {
@@ -134,7 +142,7 @@ public class TreasureChest implements ITreasureChest {
 		values.put("random", random);
 		values.put("forget-time", forgetTime);
 		values.put("ignore-protection", ignoreProtection);
-		
+		values.put("singleton", singleton);
 		
 		Map<String, Object> rewardSection = new LinkedHashMap<String, Object>();
 		int i = 0;
@@ -246,9 +254,15 @@ public class TreasureChest implements ITreasureChest {
 		this.ranks = value;
 	}
 	
+	@Override
+	public boolean isSingleton() {
+		return singleton;
+	}
 	
-	
-	
+	@Override
+	public void setSingleton(boolean singleton) {
+		this.singleton = singleton;
+	}
 	
 	
 	
