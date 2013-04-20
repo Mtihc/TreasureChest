@@ -56,6 +56,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		addNested("groupForget");
 		addNested("groupForgetAll");
 		addNested("groupCopy");
+		addNested("groupRandom");
 		
 		addNested(RewardCommand.class, manager, this);
 		addNested(RankCommand.class, manager, this);
@@ -1107,6 +1108,94 @@ public class TreasureChestCommand extends SimpleCommand {
 		sender.sendMessage(ChatColor.GOLD + "Treasure chest(s) in group " + name + " have been copied.");
 	}
 
+	@Command(aliases = { "group-random" }, args = "[groupName] [amount]", desc = "Make all treasure chests in a group randomized.", help = { "" })
+	public void groupRandom(CommandSender sender, String[] args) throws CommandException {
+	
+		if(!(sender instanceof Player)) {
+			sender.sendMessage("Command must be executed by a player, in game.");
+			return;
+		}
+	
+		if(!sender.hasPermission(Permission.RANDOM.getNode())) {
+			throw new CommandException("You don't have permission to make a treasure randomized.");
+		}
+	
+		if(args != null && args.length != 2) {
+			throw new CommandException("Expected group name and amount");
+		}
+		
+		String name = args[0];
+		String amount = args[1];
+
+		if (!manager.groupExists(name)) {
+			throw new CommandException("Group " + name + " doesn't exist!");
+		}
+
+		ITreasureChestGroup tcgroup = manager.loadGroup(name);
+		
+		if (tcgroup == null) {
+			throw new CommandException("Failed to load group " + name);
+		}
+		
+		
+		int randomness;
+		try {
+			randomness = Integer.parseInt(amount);
+			if(randomness < 1) {
+				sendIllegalArgumentMessage(sender);
+				return;
+			}
+		} catch(NullPointerException e) {
+			randomness = 0;
+		} catch(IndexOutOfBoundsException e) {
+			randomness = 0;
+		} catch(Exception e) {
+			sendIllegalArgumentMessage(sender);
+			return;
+		}
+		
+		Set<Location> locs = tcgroup.getLocations();
+		Iterator<Location> i = locs.iterator();
+
+		/* Loop through all chests setting them to random */
+		while(i.hasNext()) {
+			Location locTmp = i.next();
+			ITreasureChest chestTmp = manager.load(locTmp);
+
+			manager.forgetChest(locTmp);
+			ItemStack[] contents = chestTmp.getContainer().getContents();
+			int total = 0;
+			for (ItemStack item : contents) {
+				if(item == null || item.getTypeId() == 0) {
+					continue;
+				}
+				total++;
+			}
+
+			if(randomness >= total) {
+				sender.sendMessage(ChatColor.RED + "Unable to make a random chest @ " + locTmp.getBlockX() + "," + locTmp.getBlockY() + "," + locTmp.getBlockZ() + ".");
+				if(total <= 1) {
+					throw new CommandException("This treasure chest contains " + total + " items.");
+				}
+				else {
+					throw new CommandException("Expected a number from 1 to " + (total - 1) + ", including.");
+				}
+			}
+
+
+			chestTmp.setAmountOfRandomlyChosenStacks(randomness);
+
+			manager.save(locTmp, chestTmp);
+		}
+
+		if(randomness > 0) {
+			sender.sendMessage(ChatColor.GOLD + "All chests in the group " + name + " are now random!");
+		}
+		else {
+			sender.sendMessage(ChatColor.YELLOW + "All chests in the group " + name + " are no longer random.");
+		}
+		return;
+	}
 	
 	private void sendIllegalArgumentMessage(CommandSender sender) throws CommandException {
 		throw new CommandException("Expected a number that represents how many item stacks should be chosen randomly. Or expected no arguments, to indicate the chest should not be random.");
