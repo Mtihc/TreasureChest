@@ -268,8 +268,20 @@ public class TreasureManager {
 	
 	public void openTreasureInventory(Player player, ITreasureChest tchest) {
 
-		Inventory inventory = createTreasureInventory(player, tchest);
+		Inventory inventory;
+		boolean chestJustCreated = false;
+
+		if (tchest.isSingleton()) {
+			inventory = createTreasureInventory(player, tchest, true);
+			if (inventory == null) {
+				chestJustCreated = true;
+				inventory = createTreasureInventory(player, tchest, false);
+			}
+		} else {
+			inventory = createTreasureInventory(player, tchest);
+		}
 		
+
 		Location loc = tchest.getContainer().getLocation();
 		
 		//
@@ -346,15 +358,7 @@ public class TreasureManager {
 		}
 		else
 		{
-			boolean bEmpty = true;
-
-			for(ItemStack stack : inventory.getContents()){
-				try{
-				if(stack.getType()!=(Material.AIR)) bEmpty = false;
-				} catch (Exception e){}
-			}
-
-			if (bEmpty) {
+			if (chestJustCreated) {
 				// For singleton chests we don't have forget or rewards
 				// set items to chest
 				toInventory(tchest.getContainer().getContents(), tchest.getAmountOfRandomlyChosenStacks(), inventory);
@@ -380,6 +384,10 @@ public class TreasureManager {
 	}
 	
 	public Inventory createTreasureInventory(Player player, ITreasureChest tchest) {
+		return createTreasureInventory(player, tchest, false);
+	}
+	
+	public Inventory createTreasureInventory(Player player, ITreasureChest tchest, boolean lookupOnly) {
 		Location loc = tchest.getContainer().getLocation();
 		Block block = loc.getBlock();
 		
@@ -406,6 +414,9 @@ public class TreasureManager {
 			inventory = tInventory.getInventory();
 		}
 		else {
+			if (lookupOnly) {
+				return null;
+			}
 			// create new Inventory
 			if(holder instanceof DoubleChest) {
 				inventory = plugin.getServer().createInventory(holder, holder.getInventory().getSize());
