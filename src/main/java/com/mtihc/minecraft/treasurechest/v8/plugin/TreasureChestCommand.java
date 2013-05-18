@@ -1029,11 +1029,6 @@ public class TreasureChestCommand extends SimpleCommand {
 	
 	@Command(aliases = { "group-forget" }, args = "[groupName] [playername]", desc = "Tell all chests in the specified group to forget a specific player", help = { "" })
 	public void groupForget(CommandSender sender, String[] args) throws CommandException {
-
-		if(!(sender instanceof Player)) {
-			sender.sendMessage("Command must be executed by a player, in game.");
-			return;
-		}	
 	
 		if(!sender.hasPermission(Permission.FORGET.getNode())) {
 			throw new CommandException("You don't have permission to make a treasure forget that anybody has found it.");
@@ -1072,11 +1067,6 @@ public class TreasureChestCommand extends SimpleCommand {
 	
 	@Command(aliases = { "group-forget-all" }, args = "[groupName]", desc = "Tell all chests in the specified group to forget all players", help = { "" })
 	public void groupForgetAll(CommandSender sender, String[] args) throws CommandException {
-
-		if(!(sender instanceof Player)) {
-			sender.sendMessage("Command must be executed by a player, in game.");
-			return;
-		}	
 	
 		if(!sender.hasPermission(Permission.FORGET.getNode())) {
 			throw new CommandException("You don't have permission to make a treasure forget that anybody has found it.");
