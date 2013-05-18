@@ -2,7 +2,10 @@ package com.mtihc.minecraft.treasurechest.v8.plugin.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -91,5 +94,31 @@ public class GroupRepository<T extends ConfigurationSerializable> {
 	
 	public void delete(String name) {
 		getConfigFile(name).delete();
+	}
+
+	public Set<String> getGroups() {
+		
+		final Set<String> result = new HashSet<String>();
+		
+		directory.list(new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				String[] split = name.split("[.]");
+				if(split.length != 2) {
+					return false;
+				}
+				
+				try {
+					result.add(new String(split[0]));
+					return false;
+				} catch(NumberFormatException e) {
+					Bukkit.getLogger().info("error "+ e.getCause().getMessage() + ": " + e.getMessage());
+					return false;
+				}
+				
+			}
+		});
+		return result;
 	}
 }

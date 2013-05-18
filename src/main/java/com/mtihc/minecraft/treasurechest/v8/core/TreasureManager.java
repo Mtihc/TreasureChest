@@ -759,6 +759,10 @@ public class TreasureManager {
 		return true;
 	}
 	
+	public Set<String> getGroups() {
+		return groups.getGroups();
+	}
+	
 	abstract class TreasureInventory implements Runnable {
 
 		private JavaPlugin plugin;

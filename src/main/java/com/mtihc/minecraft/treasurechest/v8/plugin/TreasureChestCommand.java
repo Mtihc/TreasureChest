@@ -58,6 +58,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		addNested("groupForgetAll");
 		addNested("groupCopy");
 		addNested("groupRandom");
+		addNested("groupList");
 		
 		addNested(RewardCommand.class, manager, this);
 		addNested(RankCommand.class, manager, this);
@@ -319,6 +320,34 @@ public class TreasureChestCommand extends SimpleCommand {
 			throw new CommandException("Treasure chest doesn't exist, or is already deleted.");
 		}
 		else {
+			int BlockX = loc.getBlockX();
+			int BlockY = loc.getBlockY();
+			int BlockZ = loc.getBlockZ();
+			// Check if the chest is in any groups and if it is remove it from them
+			Set<String> groupList = manager.getGroups();
+			Iterator<String> ig = groupList.iterator();
+			while(ig.hasNext()) {
+				String group = ig.next();
+				ITreasureChestGroup tcgroup = manager.loadGroup(group);
+				Set<Location> locs = tcgroup.getLocations();
+				Iterator<Location> il = locs.iterator();
+				while(il.hasNext()) {
+					Location tmpLoc = il.next();
+
+					if ((BlockX == tmpLoc.getBlockX()) &&
+							(BlockY == tmpLoc.getBlockY()) &&
+							(BlockZ == tmpLoc.getBlockZ())){
+						ITreasureChest tchest = manager.load(loc);
+						if (!tcgroup.removeChest(tchest)) {
+							throw new CommandException(tcgroup.getError());
+						}
+
+						sender.sendMessage(ChatColor.GRAY + "Treasure removed from group " + group + ".");
+						manager.saveGroup(group, tcgroup);
+					}
+				}
+			}
+			
 			if(!manager.delete(loc)) {
 				throw new CommandException("Deletion of the Treasure Chest was cancelled.");
 			}
@@ -1247,6 +1276,31 @@ public class TreasureChestCommand extends SimpleCommand {
 			sender.sendMessage(ChatColor.YELLOW + "All chests in the group " + name + " are no longer random.");
 		}
 		return;
+	}
+	
+	@Command(aliases = { "group-list" }, args = "", desc = "List all groups.", help = { "" })
+	public void groupList(CommandSender sender, String[] args) throws CommandException {
+	
+		if(!(sender instanceof Player)) {
+			sender.sendMessage("Command must be executed by a player, in game.");
+			return;
+		}
+	
+		if(!sender.hasPermission(Permission.SET.getNode())) {
+			throw new CommandException("You don't have permission to list treasurechest groups.");
+		}
+	
+		if(args != null && args.length != 0) {
+			throw new CommandException("Expected no params");
+		}
+
+		sender.sendMessage(ChatColor.GREEN + "Teasurechest groups.");
+		Set<String> groupList = manager.getGroups();
+		Iterator<String> i = groupList.iterator();
+		while(i.hasNext()) {
+			String group = i.next();
+			sender.sendMessage(ChatColor.YELLOW + group);
+		}
 	}
 	
 	private void sendIllegalArgumentMessage(CommandSender sender) throws CommandException {
