@@ -38,7 +38,7 @@ public class ScoreRewardFactory extends RewardFactory {
 		try {
 			objective = Bukkit.getServer().getScoreboardManager().getMainScoreboard().getObjective(args[0]);
 			if (objective == null) {
-				callback.onCreateException(sender, args, new RewardException("Objective does not exist.", e));
+				callback.onCreateException(sender, args, new RewardException("Objective does not exist.", new Exception("Objective does not exist.")));
 			}
 			score = Integer.parseInt(args[1]);
 		} catch(IndexOutOfBoundsException e) {
