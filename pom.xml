@@ -18,10 +18,15 @@
             <id>kitteh-repo</id>
             <url>http://repo.kitteh.org/content/groups/public</url>
         </repository>
+	    <repository>
+		    <id>milkbowl-repo</id>
+		    <url>http://ci.milkbowl.net/plugin/repository/everything/</url>
+	    </repository>
+        <!--
         <repository>
             <id>cna-public-repos</id>
             <url>http://nexus.cube-nation.de/content/groups/public/</url>
-        </repository>
+        </repository>  -->
     </repositories>
     <build>
         <plugins>
@@ -40,19 +45,35 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.4.7-R1.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldedit</artifactId>
-            <version>5.5</version>
         </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>Vault</artifactId>
-            <version>1.2.22</version>
         </dependency>
     </dependencies>
+    <dependencyManagement>
+    	<dependencies>
+    		<dependency>
+    			<groupId>org.bukkit</groupId>
+    			<artifactId>craftbukkit</artifactId>
+    			<version>1.5.2-R1.0</version>
+    		</dependency>
+    		<dependency>
+    			<groupId>com.sk89q</groupId>
+    			<artifactId>worldedit</artifactId>
+    			<version>5.5</version>
+    		</dependency>
+    		<dependency>
+    			<groupId>net.milkbowl.vault</groupId>
+    			<artifactId>Vault</artifactId>
+    			<version>1.2.22</version>
+    		</dependency>
+    	</dependencies>
+    </dependencyManagement>
 </project>
