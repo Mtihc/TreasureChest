@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 
@@ -22,7 +23,15 @@ class TreasureChestListener implements Listener {
 		this.control = control;
 	}
 
-
+	// TODO StackOverflowError workaround start
+	@EventHandler(priority=EventPriority.NORMAL)
+	public void shiftClickWorkaround(InventoryClickEvent event) {
+		Location loc = TreasureManager.getLocation(event.getInventory().getHolder());
+		if(control.has(loc) && event.isShiftClick()) {
+			event.setCancelled(true);
+		}
+	}
+	// TODO StackOverflowError workaround end
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerInteract(final PlayerInteractEvent event) {
