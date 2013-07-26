@@ -28,11 +28,11 @@ public class HealthReward implements IReward {
 		return info;
 	}
 	
-	public int getHealth() {
-		return (Integer) info.getData("health");
+	public double getHealth() {
+		return (Double) info.getData("health");
 	}
 	
-	public void setHealth(int value) {
+	public void setHealth(double value) {
 		this.info.setData("health", value);
 	}
 
@@ -43,7 +43,7 @@ public class HealthReward implements IReward {
 
 	@Override
 	public void give(Player player) throws RewardException {
-		int health = player.getHealth() + getHealth() * player.getMaxHealth() / 100;
+		double health = player.getHealth() + getHealth() * player.getMaxHealth() / 100;
 		if(health > player.getMaxHealth()) {
 			health = player.getMaxHealth();
 		}
