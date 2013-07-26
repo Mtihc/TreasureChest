@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mtihc.minecraft.treasurechest.v8.plugin</groupId>
     <artifactId>TreasureChest</artifactId>
-    <version>8.4.1</version>
+    <version>8.4.2</version>
     <name>TreasureChest</name>
     <url>http://dev.bukkit.org/server-mods/treasurechest/</url>
     <repositories>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.4.7-R1.1-SNAPSHOT</version>
+            <version>1.5.2</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
