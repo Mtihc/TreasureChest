@@ -4,6 +4,8 @@ import java.util.Iterator;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,10 +35,14 @@ class TreasureChestListener implements Listener {
 		if(event.getInventory().getType().equals(InventoryType.CHEST)) {
 			return;
 		}
-		Location loc = TreasureManager.getLocation(event.getInventory().getHolder());
-		if(control.has(loc)) {
-			event.setCancelled(true);
+		InventoryHolder holder = event.getInventory().getHolder();
+		if(holder instanceof BlockState || holder instanceof DoubleChest) {
+			Location loc = TreasureManager.getLocation(event.getInventory().getHolder());
+			if(control.has(loc)) {
+				event.setCancelled(true);
+			}
 		}
+		
 	}
 	// TODO StackOverflowError workaround end
 	
