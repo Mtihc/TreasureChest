@@ -33,7 +33,7 @@ public class TreasureChestGroup implements ITreasureChestGroup {
 		int count, i;
 		this.world = (String) values.get("world");
 		this.name = (String) values.get("name");
-		count = (int) values.get("count");
+		count = (Integer) values.get("count");
 
 		Map<?, ?> chestsSection = (Map<?, ?>) values.get("chests");
 		for (i=0;i<count;i++) {
