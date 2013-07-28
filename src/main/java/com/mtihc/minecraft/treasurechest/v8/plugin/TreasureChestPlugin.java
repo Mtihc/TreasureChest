@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.mtihc.minecraft.treasurechest.v8.core.TreasureChestGroupRepository;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureChestMemory;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureChestRepository;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
@@ -54,6 +55,7 @@ public class TreasureChestPlugin extends JavaPlugin implements Listener {
 		manager = new TreasureManager(
 				this, config, 
 				new TreasureChestRepository(getDataFolder() + "/treasure"), 
+				new TreasureChestGroupRepository(getDataFolder() + "/groups"),
 				new TreasureChestMemory(getDataFolder() + "/players"), 
 				Permission.ACCESS_TREASURE.getNode(), 
 				Permission.ACCESS_UNLIMITED.getNode(),

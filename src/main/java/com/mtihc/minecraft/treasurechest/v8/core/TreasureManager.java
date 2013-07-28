@@ -47,6 +47,7 @@ public class TreasureManager {
 	static {
 		ConfigurationSerialization.registerClass(ItemStackWrapper.class);
 		ConfigurationSerialization.registerClass(TreasureChest.class);
+		ConfigurationSerialization.registerClass(TreasureChestGroup.class);
 		ConfigurationSerialization.registerClass(BlockInventory.class);
 		ConfigurationSerialization.registerClass(DoubleBlockInventory.class);
 		ConfigurationSerialization.registerClass(RewardInfo.class, "RewardInfo");
@@ -84,6 +85,7 @@ public class TreasureManager {
 	private JavaPlugin plugin;
 	private ITreasureManagerConfiguration config;
 	private ITreasureChestRepository chests;
+	private ITreasureChestGroupRepository groups;
 	private ITreasureChestMemory memory;
 	
 	private LinkedHashMap<String, TreasureInventory> inventories = new LinkedHashMap<String, TreasureInventory>();
@@ -93,10 +95,11 @@ public class TreasureManager {
 	
 	private RewardFactoryManager rewardManager;
 	
-	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited, String permRank) {
+	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestGroupRepository groups, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited, String permRank) {
 		this.plugin = plugin;
 		this.config = config;
 		this.chests = chests;
+		this.groups = groups;
 		this.memory = memory;
 		
 		this.permAccessNormal = permAccessNormal;
@@ -180,7 +183,16 @@ public class TreasureManager {
 	}
 
 	public void forgetChest(Location location) {
-		memory.forgetChest(location);
+		ITreasureChest tchest = load(location);
+		if (tchest.isSingleton()) {
+			// Singleton chests don't have a timed removal, their inventory will persist until
+			// server reset or a forget-all command is issued
+			Location loc =  tchest.getContainer().getLocation();
+			final String KEY = loc.getWorld().getName() + "@" + loc.toVector().toString();
+			inventories.remove(KEY);
+		} else {
+			memory.forgetChest(location);
+		}
 	}
 	
 	
@@ -256,8 +268,20 @@ public class TreasureManager {
 	
 	public void openTreasureInventory(Player player, ITreasureChest tchest) {
 
-		Inventory inventory = createTreasureInventory(player, tchest);
+		Inventory inventory;
+		boolean chestJustCreated = false;
+
+		if (tchest.isSingleton()) {
+			inventory = createTreasureInventory(player, tchest, true);
+			if (inventory == null) {
+				chestJustCreated = true;
+				inventory = createTreasureInventory(player, tchest, false);
+			}
+		} else {
+			inventory = createTreasureInventory(player, tchest);
+		}
 		
+
 		Location loc = tchest.getContainer().getLocation();
 		
 		//
@@ -286,11 +310,11 @@ public class TreasureManager {
 			}
 		}
 		//
-		// if treasure is not unlimited,
+		// if treasure is not unlimited and not a sinlgeton,
 		// check if/when the player has found the treasure before,
 		// and compare the time with the treasure's "forget-time".
 		//
-		else {
+		else if(!tchest.isSingleton()){
 			// when has player found before
 			long time = whenHasPlayerFound((OfflinePlayer)player, loc);
 			
@@ -332,6 +356,24 @@ public class TreasureManager {
 				
 			}
 		}
+		else
+		{
+			if (chestJustCreated) {
+				// For singleton chests we don't have forget or rewards
+				// set items to chest
+				toInventory(tchest.getContainer().getContents(), tchest.getAmountOfRandomlyChosenStacks(), inventory);
+
+				// message found treasure!
+				if(!dispatchTreasureFound(player, tchest, inventory)) {
+					return;
+				}
+
+				String foundMessage = tchest.getMessage(TreasureChest.Message.FOUND);
+				if(foundMessage != null) {
+					player.sendMessage(ChatColor.GOLD + foundMessage);
+				}
+			}
+		}
 		
 		// player opens "fake" inventory,
 		// this ensures players don't interfere with eachother's items 
@@ -342,6 +384,10 @@ public class TreasureManager {
 	}
 	
 	public Inventory createTreasureInventory(Player player, ITreasureChest tchest) {
+		return createTreasureInventory(player, tchest, false);
+	}
+	
+	public Inventory createTreasureInventory(Player player, ITreasureChest tchest, boolean lookupOnly) {
 		Location loc = tchest.getContainer().getLocation();
 		Block block = loc.getBlock();
 		
@@ -353,7 +399,12 @@ public class TreasureManager {
 		holder = holder.getInventory().getHolder();
 		
 		// get unique key for player @ inventory location
-		final String KEY = player.getName() + "@" + loc.getWorld().getName() + "@" + loc.toVector().toString();
+		final String KEY;
+		if (tchest.isSingleton()) {
+			KEY = loc.getWorld().getName() + "@" + loc.toVector().toString();
+		} else {
+			KEY = player.getName() + "@" + loc.getWorld().getName() + "@" + loc.toVector().toString();			
+		}
 		// get remembered inventory for player, or null
 		TreasureInventory tInventory = inventories.get(KEY);
 		
@@ -363,6 +414,9 @@ public class TreasureManager {
 			inventory = tInventory.getInventory();
 		}
 		else {
+			if (lookupOnly) {
+				return null;
+			}
 			// create new Inventory
 			if(holder instanceof DoubleChest) {
 				inventory = plugin.getServer().createInventory(holder, holder.getInventory().getSize());
@@ -383,7 +437,9 @@ public class TreasureManager {
 		}
 		
 		// inventory will clear itself from the map
-		tInventory.schedule();
+		if (!tchest.isSingleton()) {
+			tInventory.schedule();
+		}
 		
 		return inventory;
 		
@@ -680,6 +736,31 @@ public class TreasureManager {
 				player.sendMessage(ChatColor.RED + e.getMessage());
 			}
 		}
+	}
+
+	public ITreasureChestGroup loadGroup(String name) {
+		return groups.load(name);
+	}
+
+	public void saveGroup(String name, ITreasureChestGroup value) {
+		groups.save(name, value);
+	}
+	
+	public boolean groupExists(String name) {
+		return groups.exists(name);
+	}
+
+	public boolean groupDelete(String name) {
+		ITreasureChestGroup tcgroup = loadGroup(name);
+		if(tcgroup == null) {
+			return false;
+		}
+		groups.delete(name);
+		return true;
+	}
+	
+	public Set<String> getGroups() {
+		return groups.getGroups();
 	}
 	
 	abstract class TreasureInventory implements Runnable {
