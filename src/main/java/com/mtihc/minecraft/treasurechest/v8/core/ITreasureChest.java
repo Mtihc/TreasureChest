@@ -109,5 +109,6 @@ public interface ITreasureChest extends ConfigurationSerializable {
 	public List<RewardInfo> getRewards();
 	public void setRewards(List<RewardInfo> values);
 	public int getRewardTotal();
-
+	boolean isSingleton();
+	void setSingleton(boolean singleton);
 }

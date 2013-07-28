@@ -60,10 +60,10 @@ public class DoubleBlockInventory implements IBlockInventory {
 		ItemStack[] right = getRightSide().getContents();
 		ItemStack[] combined = new ItemStack[size * 2];
 		
-		for (int i = 0; i < size && i < left.length; i++) {
+		for (int i = 0; i < size; i++) {
 			combined[i] = left[i];
 		}
-		for (int i = 0; i < size && i < right.length; i++) {
+		for (int i = 0; i < size; i++) {
 			combined[i + size] = right[i];
 		}
 		
@@ -72,15 +72,15 @@ public class DoubleBlockInventory implements IBlockInventory {
 
 	@Override
 	public void setContents(ItemStack[] contents) {
-		int size = InventoryType.CHEST.getDefaultSize() * 2;
+		int size = InventoryType.CHEST.getDefaultSize();
 		
 		ItemStack[] left = new ItemStack[size];
 		ItemStack[] right = new ItemStack[size];
 		
-		for (int i = 0; i < size && i < contents.length; i++) {
+		for (int i = 0; i < size; i++) {
 			left[i] = contents[i];
 		}
-		for (int i = 0; i < size && i + size < contents.length; i++) {
+		for (int i = 0; i < size; i++) {
 			right[i] = contents[i + size];
 		}
 		
