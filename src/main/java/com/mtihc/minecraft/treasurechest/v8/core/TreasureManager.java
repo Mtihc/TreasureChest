@@ -743,47 +743,12 @@ public class TreasureManager {
 	private static HashSet<Byte> getInvisibleBlocks() {
 		if(invisibleBlocks == null) {
 			invisibleBlocks  = new HashSet<Byte>();
-			invisibleBlocks.add((byte) Material.AIR.getId());
-			
-			invisibleBlocks.add((byte) Material.LAVA.getId());
-			invisibleBlocks.add((byte) Material.WATER.getId());
-			invisibleBlocks.add((byte) Material.STATIONARY_LAVA.getId());
-			invisibleBlocks.add((byte) Material.STATIONARY_WATER.getId());
-			
-			invisibleBlocks.add((byte) Material.LEAVES.getId());
-			invisibleBlocks.add((byte) Material.CACTUS.getId());
-
-			invisibleBlocks.add((byte) Material.GLASS.getId());
-			
-			// stairs
-			invisibleBlocks.add((byte) Material.WOOD_STAIRS.getId());
-			invisibleBlocks.add((byte) Material.COBBLESTONE_STAIRS.getId());
-			invisibleBlocks.add((byte) Material.BRICK_STAIRS.getId());
-			invisibleBlocks.add((byte) Material.SMOOTH_STAIRS.getId());
-			invisibleBlocks.add((byte) Material.NETHER_BRICK_STAIRS.getId());
-			invisibleBlocks.add((byte) Material.SANDSTONE_STAIRS.getId());
-			invisibleBlocks.add((byte) Material.SPRUCE_WOOD_STAIRS.getId());
-			invisibleBlocks.add((byte) Material.BIRCH_WOOD_STAIRS.getId());
-			invisibleBlocks.add((byte) Material.JUNGLE_WOOD_STAIRS.getId());
-			invisibleBlocks.add((byte) Material.QUARTZ_STAIRS.getId());
-
-			// slabs
-			invisibleBlocks.add((byte) Material.STEP.getId());
-			invisibleBlocks.add((byte) Material.WOOD_STEP.getId());
-			
-
-			invisibleBlocks.add((byte) Material.MOB_SPAWNER.getId());
-			invisibleBlocks.add((byte) Material.SNOW.getId());
-			invisibleBlocks.add((byte) Material.ICE.getId());
-
-			invisibleBlocks.add((byte) Material.FENCE.getId());
-			invisibleBlocks.add((byte) Material.CAKE.getId());
-			invisibleBlocks.add((byte) Material.BED.getId());
-			invisibleBlocks.add((byte) Material.GLOWSTONE.getId());
-			invisibleBlocks.add((byte) Material.ANVIL.getId());
-			invisibleBlocks.add((byte) Material.BEACON.getId());
-			invisibleBlocks.add((byte) Material.CHEST.getId());
-			
+			Material[] mats = Material.values();
+			for (Material mat : mats) {
+				if(mat.isTransparent()) {
+					invisibleBlocks.add((byte) mat.getId());
+				}
+			}
 		}
 		
 		return invisibleBlocks;
