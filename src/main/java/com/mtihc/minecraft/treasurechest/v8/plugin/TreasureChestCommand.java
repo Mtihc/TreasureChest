@@ -380,8 +380,15 @@ public class TreasureChestCommand extends SimpleCommand {
 			
 			Inventory inventory = manager.createTreasureInventory(player, tchest);
 			tchest.getContainer().setContents(inventory.getContents());
-			sender.sendMessage(ChatColor.GOLD + "Treasure contents updated.");
-			tchest.setSingleton(false);
+			
+			if(tchest.isSingleton()) {
+				tchest.setSingleton(false);
+				sender.sendMessage(ChatColor.GOLD + "Treasure contents updated. And is no longer shared.");
+			}
+			else {
+				sender.sendMessage(ChatColor.GOLD + "Treasure contents updated.");
+			}
+			
 		}
 		else {
 			tchest = new TreasureChest(block.getState(), false);
@@ -430,12 +437,14 @@ public class TreasureChestCommand extends SimpleCommand {
 			
 			Inventory inventory = manager.createTreasureInventory(player, tchest);
 			tchest.getContainer().setContents(inventory.getContents());
-			sender.sendMessage(ChatColor.GOLD + "Treasure contents updated.");
 			if(!tchest.isSingleton()) {
 				tchest.setSingleton(true);
-				sender.sendMessage("Treasure changed to shared treasure.");
+				sender.sendMessage(ChatColor.GOLD + "Treasure contents updated. And changed to shared treasure.");
 			}
-			
+			else {
+
+				sender.sendMessage(ChatColor.GOLD + "Treasure contents updated.");
+			}
 		}
 		else {
 			tchest = new TreasureChest(block.getState(), true);
