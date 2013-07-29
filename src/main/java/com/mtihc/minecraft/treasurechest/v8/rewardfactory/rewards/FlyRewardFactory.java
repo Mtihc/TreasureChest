@@ -146,6 +146,7 @@ public class FlyRewardFactory extends RewardFactory {
 
 				player.setFlying(false);
 				player.setAllowFlight(originalAllowFlight);
+				player.saveData();
 				active.remove(player.getName());
 				return true;
 			}
