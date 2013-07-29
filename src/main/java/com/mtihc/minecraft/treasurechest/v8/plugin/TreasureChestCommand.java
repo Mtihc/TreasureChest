@@ -19,7 +19,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest;
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChestGroup;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureChest;
-import com.mtihc.minecraft.treasurechest.v8.core.TreasureChestGroup;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.Command;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
@@ -50,18 +49,10 @@ public class TreasureChestCommand extends SimpleCommand {
 		addNested("forget");
 		addNested("forgetAll");
 		addNested("reload");
-		addNested("groupCreate");
-		addNested("groupDelete");
-		addNested("groupAdd");
-		addNested("groupRemove");
-		addNested("groupForget");
-		addNested("groupForgetAll");
-		addNested("groupCopy");
-		addNested("groupRandom");
-		addNested("groupList");
 		
 		addNested(RewardCommand.class, manager, this);
 		addNested(RankCommand.class, manager, this);
+		addNested(GroupCommand.class, manager, this);
 		
 	}
 	
@@ -128,7 +119,7 @@ public class TreasureChestCommand extends SimpleCommand {
 			count = found.size();
 		}
 		int total = manager.getLocations(world.getName()).size();
-		String message = count + " out of " + total + " treasure chests";
+		String message = count + " out of " + total + " treasures";
 		if(other) {
 			sender.sendMessage(ChatColor.GOLD + "Player " + ChatColor.WHITE + playerName + ChatColor.GOLD + " has found " + message);
 		}
@@ -317,7 +308,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
 		if(!manager.has(loc)) {
-			throw new CommandException("Treasure chest doesn't exist, or is already deleted.");
+			throw new CommandException("Treasure doesn't exist, or is already deleted.");
 		}
 		else {
 			int BlockX = loc.getBlockX();
@@ -349,7 +340,7 @@ public class TreasureChestCommand extends SimpleCommand {
 			}
 			
 			if(!manager.delete(loc)) {
-				throw new CommandException("Deletion of the Treasure Chest was cancelled.");
+				throw new CommandException("Deletion of the Treasure was cancelled.");
 			}
 			sender.sendMessage(ChatColor.YELLOW + "Treasure chest deleted.");
 			return;
@@ -389,7 +380,7 @@ public class TreasureChestCommand extends SimpleCommand {
 			
 			Inventory inventory = manager.createTreasureInventory(player, tchest);
 			tchest.getContainer().setContents(inventory.getContents());
-			sender.sendMessage(ChatColor.GOLD + "Treasure chest contents updated.");
+			sender.sendMessage(ChatColor.GOLD + "Treasure contents updated.");
 			tchest.setSingleton(false);
 		}
 		else {
@@ -400,13 +391,13 @@ public class TreasureChestCommand extends SimpleCommand {
 			tchest.ignoreProtection(manager.getConfig().getDefaultIgnoreProtection());
 			holder.getInventory().clear();
 	
-			sender.sendMessage(ChatColor.GOLD + "Treasure chest saved");
+			sender.sendMessage(ChatColor.GOLD + "Treasure saved");
 		}
 		manager.save(loc, tchest);
 		//holder.getInventory().clear();
 	}
 
-	@Command(aliases = { "set-single" }, args = "", desc = "Create/update a treasure making it a single invertory.", help = { "Put items in a container block, ", "look at it, then execute this command." })
+	@Command(aliases = { "set-shared" }, args = "", desc = "Create/update a treasure with a single invertory.", help = { "Put items in a container block, ", "look at it, then execute this command." })
 	public void setSingle(CommandSender sender, String[] args) throws CommandException {
 	
 		if(!(sender instanceof Player)) {
@@ -439,8 +430,11 @@ public class TreasureChestCommand extends SimpleCommand {
 			
 			Inventory inventory = manager.createTreasureInventory(player, tchest);
 			tchest.getContainer().setContents(inventory.getContents());
-			tchest.setSingleton(true);
-			sender.sendMessage(ChatColor.GOLD + "Treasure chest contents updated.");
+			sender.sendMessage(ChatColor.GOLD + "Treasure contents updated.");
+			if(!tchest.isSingleton()) {
+				tchest.setSingleton(true);
+				sender.sendMessage("Treasure changed to shared treasure.");
+			}
 			
 		}
 		else {
@@ -451,7 +445,7 @@ public class TreasureChestCommand extends SimpleCommand {
 			tchest.ignoreProtection(manager.getConfig().getDefaultIgnoreProtection());
 			holder.getInventory().clear();
 	
-			sender.sendMessage(ChatColor.GOLD + "Treasure chest saved");
+			sender.sendMessage(ChatColor.GOLD + "Shared treasure saved.");
 		}
 		manager.save(loc, tchest);
 		//holder.getInventory().clear();
@@ -481,14 +475,14 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		ITreasureChest tchest = manager.load(loc);
 		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 		int randomness;
 		try {
 			randomness = Integer.parseInt(args[0]);
 			if(randomness < 1) {
-				sendIllegalArgumentMessage(sender);
+				sendRandomCommandIllegalArgumentMessage(sender);
 				return;
 			}
 		} catch(NullPointerException e) {
@@ -496,7 +490,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		} catch(IndexOutOfBoundsException e) {
 			randomness = 0;
 		} catch(Exception e) {
-			sendIllegalArgumentMessage(sender);
+			sendRandomCommandIllegalArgumentMessage(sender);
 			return;
 		}
 		
@@ -510,9 +504,9 @@ public class TreasureChestCommand extends SimpleCommand {
 		}
 		
 		if(randomness >= total) {
-			sender.sendMessage(ChatColor.RED + "Unable to make a random chest.");
+			sender.sendMessage(ChatColor.RED + "Unable to make a random treasure.");
 			if(total <= 1) {
-				throw new CommandException("This treasure chest contains " + total + " items.");
+				throw new CommandException("This treasure contains " + total + " items.");
 			}
 			else {
 				throw new CommandException("Expected a number from 1 to " + (total - 1) + ", including.");
@@ -523,10 +517,10 @@ public class TreasureChestCommand extends SimpleCommand {
 		tchest.setAmountOfRandomlyChosenStacks(randomness);
 		
 		if(randomness > 0) {
-			sender.sendMessage(ChatColor.GOLD + "This chest is random!");
+			sender.sendMessage(ChatColor.GOLD + "This treasure is random!");
 		}
 		else {
-			sender.sendMessage(ChatColor.YELLOW + "This chest is no longer random.");
+			sender.sendMessage(ChatColor.YELLOW + "This treasure is no longer random.");
 		}
 		manager.save(loc, tchest);
 		return;
@@ -557,21 +551,21 @@ public class TreasureChestCommand extends SimpleCommand {
 		ITreasureChest tchest = manager.load(loc);
 		
 		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 		boolean isUnlimited = !tchest.isUnlimited();
 		tchest.setUnlimited(isUnlimited);
 		if(isUnlimited) {
-			sender.sendMessage(ChatColor.GOLD + "This chest is unlimited!");
+			sender.sendMessage(ChatColor.GOLD + "This treasure is unlimited!");
 		}
 		else {
-			sender.sendMessage(ChatColor.YELLOW + "This chest is no longer unlimited.");
+			sender.sendMessage(ChatColor.YELLOW + "This treasure is no longer unlimited.");
 		}
 		manager.save(loc, tchest);
 	}
 
-	@Command(aliases = { "ip", "ignoreprotection" }, args = "", desc = "Make a treasure ignore protection.", help = { "When protection is ignored, players can open a treasure chest ", "even if it's protected by another plugin." })
+	@Command(aliases = { "ip", "ignoreprotection" }, args = "", desc = "Make a treasure ignore protection.", help = { "When protection is ignored, players can open a treasures ", "even if it's protected by another plugin." })
 	public void ignoreProtection(CommandSender sender, String[] args) throws CommandException {
 	
 		if(!(sender instanceof Player)) {
@@ -596,17 +590,17 @@ public class TreasureChestCommand extends SimpleCommand {
 		ITreasureChest tchest = manager.load(loc);
 		
 		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 		
 		boolean ignoreProtection = !tchest.ignoreProtection();
 		tchest.ignoreProtection(ignoreProtection);
 		if(ignoreProtection) {
-			sender.sendMessage(ChatColor.GOLD + "This chest is now accessible, even if another plugin is protecting it!");
+			sender.sendMessage(ChatColor.GOLD + "This treasure is now accessible, even if another plugin is protecting it!");
 		}
 		else {
-			sender.sendMessage(ChatColor.YELLOW + "This chest is no longer accessible, if another plugin is protecting it.");
+			sender.sendMessage(ChatColor.YELLOW + "This treasure is no longer accessible, if another plugin is protecting it.");
 		}
 		manager.save(loc, tchest);
 	}
@@ -635,7 +629,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		ITreasureChest tchest = manager.load(loc);
 		
 		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 		int msgId;
@@ -684,10 +678,10 @@ public class TreasureChestCommand extends SimpleCommand {
 		}
 		
 		if(message == null) {
-			sender.sendMessage(ChatColor.GOLD + "Treasure chest message cleared.");
+			sender.sendMessage(ChatColor.GOLD + "Treasure message cleared.");
 		}
 		else {
-			sender.sendMessage(ChatColor.GOLD + "Treasure chest message changed.");
+			sender.sendMessage(ChatColor.GOLD + "Treasure message changed.");
 		}
 		manager.save(loc, tchest);
 	}
@@ -729,7 +723,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		ITreasureChest tchest = manager.load(loc);
 		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 		long secsIn = seconds + (minutes * 60) + (hours * 3600) + (days * 86400);
@@ -796,14 +790,14 @@ public class TreasureChestCommand extends SimpleCommand {
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
 		if(!manager.has(loc)) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 		// forget (large) chest
 		manager.forgetPlayerFound(p, loc);
 		
 		
-		sender.sendMessage(ChatColor.GOLD + "Treasure chest forgot that " + ChatColor.WHITE + "'" + playerName + "'" + ChatColor.GOLD + " found it :)");
+		sender.sendMessage(ChatColor.GOLD + "Treasure forgot that " + ChatColor.WHITE + "'" + playerName + "'" + ChatColor.GOLD + " found it :)");
 		
 	}
 	
@@ -835,11 +829,11 @@ public class TreasureChestCommand extends SimpleCommand {
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
 		if(!manager.has(loc)) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 		manager.forgetChest(loc);
-		sender.sendMessage(ChatColor.GOLD + "Treasure chest is as good as new :)");
+		sender.sendMessage(ChatColor.GOLD + "Treasure is as good as new :)");
 		
 		
 		
@@ -864,437 +858,8 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 	}
 
-	@Command(aliases = { "group-create" }, args = "[groupName]", desc = "Create a group to add chests to", help = { "" })
-	public void groupCreate(CommandSender sender, String[] args) throws CommandException {
-		
-		if(!(sender instanceof Player)) {
-			throw new CommandException("Command must be executed by a player, in game.");
-		}
-
-		if(!sender.hasPermission(Permission.SET.getNode())) {
-			throw new CommandException("You don't have permission to create treasure groups.");
-		}	
-		
-		if(args != null && args.length != 1) {
-			throw new CommandException("Expected group name");
-		}
-		
-		String name = args[0];
-		
-		if (manager.groupExists(name)) {
-			throw new CommandException("Group " + name + " already exists!");
-		}
-			
-		Player player = (Player) sender;
-		String world = player.getLocation().getWorld().getName();
-		ITreasureChestGroup tcgroup = new TreasureChestGroup(world, name);
-
-		sender.sendMessage(ChatColor.GOLD + "Created treasure chest group " + name + ".");
-		
-		manager.saveGroup(name, tcgroup);
-	}
-
-	@Command(aliases = { "group-delete" }, args = "[groupName]", desc = "Delete the specified group", help = { "" })
-	public void groupDelete(CommandSender sender, String[] args) throws CommandException {
-		
-		if(!(sender instanceof Player)) {
-			throw new CommandException("Command must be executed by a player, in game.");
-		}
-
-		if(!sender.hasPermission(Permission.SET.getNode())) {
-			throw new CommandException("You don't have permission to create treasure groups.");
-		}	
-		
-		if(args != null && args.length != 1) {
-			throw new CommandException("Expected group name");
-		}
-		
-		String name = args[0];
-		
-		if(!manager.groupExists(name)) {
-			throw new CommandException("Group doesn't exist, or is already deleted.");
-		}
-		else {
-			if(!manager.groupDelete(name)) {
-				throw new CommandException("Deletion of the group failed.");
-			}
-			sender.sendMessage(ChatColor.YELLOW + "Group deleted.");
-			return;
-		}
-	}
-	
-	@Command(aliases = { "group-add" }, args = "[groupName]", desc = "Add the chest your looking at to the specified group", help = { "" })
-	public void groupAdd(CommandSender sender, String[] args) throws CommandException {
-		
-		if(!(sender instanceof Player)) {
-			sender.sendMessage("Command must be executed by a player, in game.");
-			return;
-		}	
-	
-		if(!sender.hasPermission(Permission.SET.getNode())) {
-			throw new CommandException("You don't have permission to add a treasure chest to a group.");
-		}
-
-		if(args != null && args.length != 1) {
-			throw new CommandException("Expected group name");
-		}
-
-		String name = args[0];
-		
-		if (!manager.groupExists(name)) {
-			throw new CommandException("Group " + name + " doesn't exist");
-		}
-		
-		Player player = (Player) sender;
-		Block block = TreasureManager.getTargetedContainerBlock(player);
-		if(block == null) {
-			throw new CommandException("You're not looking at a container block.");
-		}
-		
-		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
-		
-		ITreasureChest tchest = manager.load(loc);
-		
-		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
-		}
-	
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
-		
-		if (tcgroup == null) {
-			throw new CommandException("Failed to load group " + name + ".");
-		}
-		
-		if (!tcgroup.addChest(tchest)) {
-			throw new CommandException(tcgroup.getError());
-		}
-			
-
-		sender.sendMessage(ChatColor.GOLD + "Treasure chest added to group " + name + ".");
-		
-		manager.saveGroup(name, tcgroup);
-	
-	}
-
-	@Command(aliases = { "group-remove" }, args = "[groupName]", desc = "Remove the chest your looking at from the specified group", help = { "" })
-	public void groupRemove(CommandSender sender, String[] args) throws CommandException {
-
-		if(!(sender instanceof Player)) {
-			sender.sendMessage("Command must be executed by a player, in game.");
-			return;
-		}	
-	
-		if(!sender.hasPermission(Permission.SET.getNode())) {
-			throw new CommandException("You don't have permission to remove a teasture chest from a group.");
-		}
-
-		if(args != null && args.length != 1) {
-			throw new CommandException("Expected group name");
-		}
-		
-		String name = args[0];
-
-		if (!manager.groupExists(name)) {
-			throw new CommandException("Group " + name + " doesn't exist!");
-		}
-		
-		Player player = (Player) sender;
-		Block block = TreasureManager.getTargetedContainerBlock(player);
-		if(block == null) {
-			throw new CommandException("You're not looking at a container block.");
-		}
-		
-		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
-		
-		ITreasureChest tchest = manager.load(loc);
-		
-		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
-		}
-	
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
-		
-		if (tcgroup == null) {
-			throw new CommandException("Failed to load group " + name);
-		}
-		
-		if (!tcgroup.removeChest(tchest)) {
-			throw new CommandException(tcgroup.getError());
-		}
-
-		sender.sendMessage(ChatColor.GOLD + "Treasure chest removed from group " + name + ".");
-		
-		manager.saveGroup(name, tcgroup);
-	}
-	
-	@Command(aliases = { "group-forget" }, args = "[groupName] [playername]", desc = "Tell all chests in the specified group to forget a specific player", help = { "" })
-	public void groupForget(CommandSender sender, String[] args) throws CommandException {
-	
-		if(!sender.hasPermission(Permission.FORGET.getNode())) {
-			throw new CommandException("You don't have permission to make a treasure forget that anybody has found it.");
-		}
-
-		if(args != null && args.length != 2) {
-			throw new CommandException("Expected group name and player name");
-		}
-
-		String name = args[0];
-		String playerName = args[1];
-
-		OfflinePlayer p = manager.getPlugin().getServer().getOfflinePlayer(playerName);
-		if(p == null || !p.hasPlayedBefore()) {
-			throw new CommandException("Player \"" + playerName + "\" does not exist.");
-		}
-		
-		if (!manager.groupExists(name)) {
-			throw new CommandException("Group " + name + " doesn't exist!");
-		}
-
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
-		
-		if (tcgroup == null) {
-			throw new CommandException("Failed to load group " + name);
-		}
-
-		Set<Location> locs = tcgroup.getLocations();
-		Iterator<Location> i = locs.iterator();
-	
-		while(i.hasNext()) {
-			manager.forgetPlayerFound(p, i.next());
-		}
-		sender.sendMessage(ChatColor.GOLD + "Treasure chest(s) in group " + name + " forgot " + playerName + ".");
-	}
-	
-	@Command(aliases = { "group-forget-all" }, args = "[groupName]", desc = "Tell all chests in the specified group to forget all players", help = { "" })
-	public void groupForgetAll(CommandSender sender, String[] args) throws CommandException {
-	
-		if(!sender.hasPermission(Permission.FORGET.getNode())) {
-			throw new CommandException("You don't have permission to make a treasure forget that anybody has found it.");
-		}
-
-		if(args != null && args.length != 1) {
-			throw new CommandException("Expected group name");
-		}
-
-		String name = args[0];
-
-		if (!manager.groupExists(name)) {
-			throw new CommandException("Group " + name + " doesn't exist!");
-		}
-
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
-		
-		if (tcgroup == null) {
-			throw new CommandException("Failed to load group " + name);
-		}
-		
-		Set<Location> locs = tcgroup.getLocations();
-		Iterator<Location> i = locs.iterator();
-	
-		while(i.hasNext()) {
-			manager.forgetChest(i.next());
-		}
-		sender.sendMessage(ChatColor.GOLD + "Treasure chest(s) in group " + name + " as good as new :).");
-	}
-
-	@Command(aliases = { "group-copy" }, args = "[groupName]", desc = "Copy the contents of the chest your looking at to all chests in the specified group", help = { "" })
-	public void groupCopy(CommandSender sender, String[] args) throws CommandException {
-
-		if(!(sender instanceof Player)) {
-			sender.sendMessage("Command must be executed by a player, in game.");
-			return;
-		}	
-	
-		if(!sender.hasPermission(Permission.FORGET.getNode())) {
-			throw new CommandException("You don't have permission to make a treasure forget that anybody has found it.");
-		}
-
-		if(args != null && args.length != 1) {
-			throw new CommandException("Expected group name");
-		}
-
-		String name = args[0];
-
-		if (!manager.groupExists(name)) {
-			throw new CommandException("Group " + name + " doesn't exist!");
-		}
-
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
-		
-		if (tcgroup == null) {
-			throw new CommandException("Failed to load group " + name);
-		}
-	
-		Player player = (Player) sender;
-		Block block = TreasureManager.getTargetedContainerBlock(player);
-		if(block == null) {
-			throw new CommandException("You're not looking at a container block.");
-		}
-		
-		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
-		
-		if(!manager.has(loc)) {
-			throw new CommandException("You're not looking at a treasure chest");
-		}
-		
-		ITreasureChest tchest = manager.load(loc);
-		
-		if (tchest == null) {
-			throw new CommandException("Failed to load chest");
-		}
-		
-		Set<Location> locs = tcgroup.getLocations();
-		Iterator<Location> i = locs.iterator();
-
-		// Check all chests are of the same type as the reference chest before we do anything
-		while(i.hasNext()) {
-			Location locTmp = i.next();
-			ITreasureChest chestTmp = manager.load(locTmp);
-			if (chestTmp == null) {
-				throw new CommandException("Failed to load chest (for check) at " + locTmp.toString());
-			}
-			if ((!tchest.getContainer().getType().equals(chestTmp.getContainer().getType())) || 
-					(!(tchest.getContainer().getSize() == chestTmp.getContainer().getSize()))) {
-				throw new CommandException("Chest @ " + 
-											locTmp.toVector().getBlockX() + "," +
-											locTmp.toVector().getBlockY() + "," +
-											locTmp.toVector().getBlockZ() +
-											" doesn't match reference chest");
-			}
-		}
-
-		Iterator<Location> i2 = locs.iterator();
-
-		// Now make the change
-		while(i2.hasNext()) {
-			Location locTmp = i2.next();
-			manager.forgetChest(locTmp);
-			ITreasureChest chestTmp = manager.load(locTmp);
-			if (chestTmp == null) {
-				throw new CommandException("Failed to load chest (for change) at " + locTmp.toString());
-			}
-			chestTmp.getContainer().setContents(tchest.getContainer().getContents());
-			manager.save(locTmp, chestTmp);
-		}
-		sender.sendMessage(ChatColor.GOLD + "Treasure chest(s) in group " + name + " have been copied.");
-	}
-
-	@Command(aliases = { "group-random" }, args = "[groupName] [amount]", desc = "Make all treasure chests in a group randomized.", help = { "" })
-	public void groupRandom(CommandSender sender, String[] args) throws CommandException {
-	
-		if(!(sender instanceof Player)) {
-			sender.sendMessage("Command must be executed by a player, in game.");
-			return;
-		}
-	
-		if(!sender.hasPermission(Permission.RANDOM.getNode())) {
-			throw new CommandException("You don't have permission to make a treasure randomized.");
-		}
-	
-		if(args != null && args.length != 2) {
-			throw new CommandException("Expected group name and amount");
-		}
-		
-		String name = args[0];
-		String amount = args[1];
-
-		if (!manager.groupExists(name)) {
-			throw new CommandException("Group " + name + " doesn't exist!");
-		}
-
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
-		
-		if (tcgroup == null) {
-			throw new CommandException("Failed to load group " + name);
-		}
-		
-		
-		int randomness;
-		try {
-			randomness = Integer.parseInt(amount);
-			if(randomness < 1) {
-				sendIllegalArgumentMessage(sender);
-				return;
-			}
-		} catch(NullPointerException e) {
-			randomness = 0;
-		} catch(IndexOutOfBoundsException e) {
-			randomness = 0;
-		} catch(Exception e) {
-			sendIllegalArgumentMessage(sender);
-			return;
-		}
-		
-		Set<Location> locs = tcgroup.getLocations();
-		Iterator<Location> i = locs.iterator();
-
-		/* Loop through all chests setting them to random */
-		while(i.hasNext()) {
-			Location locTmp = i.next();
-			ITreasureChest chestTmp = manager.load(locTmp);
-
-			manager.forgetChest(locTmp);
-			ItemStack[] contents = chestTmp.getContainer().getContents();
-			int total = 0;
-			for (ItemStack item : contents) {
-				if(item == null || item.getTypeId() == 0) {
-					continue;
-				}
-				total++;
-			}
-
-			if(randomness >= total) {
-				sender.sendMessage(ChatColor.RED + "Unable to make a random chest @ " + locTmp.getBlockX() + "," + locTmp.getBlockY() + "," + locTmp.getBlockZ() + ".");
-				if(total <= 1) {
-					throw new CommandException("This treasure chest contains " + total + " items.");
-				}
-				else {
-					throw new CommandException("Expected a number from 1 to " + (total - 1) + ", including.");
-				}
-			}
-
-
-			chestTmp.setAmountOfRandomlyChosenStacks(randomness);
-
-			manager.save(locTmp, chestTmp);
-		}
-
-		if(randomness > 0) {
-			sender.sendMessage(ChatColor.GOLD + "All chests in the group " + name + " are now random!");
-		}
-		else {
-			sender.sendMessage(ChatColor.YELLOW + "All chests in the group " + name + " are no longer random.");
-		}
-		return;
-	}
-	
-	@Command(aliases = { "group-list" }, args = "", desc = "List all groups.", help = { "" })
-	public void groupList(CommandSender sender, String[] args) throws CommandException {
-	
-		if(!(sender instanceof Player)) {
-			sender.sendMessage("Command must be executed by a player, in game.");
-			return;
-		}
-	
-		if(!sender.hasPermission(Permission.SET.getNode())) {
-			throw new CommandException("You don't have permission to list treasurechest groups.");
-		}
-	
-		if(args != null && args.length != 0) {
-			throw new CommandException("Expected no params");
-		}
-
-		sender.sendMessage(ChatColor.GREEN + "Teasurechest groups.");
-		Set<String> groupList = manager.getGroups();
-		Iterator<String> i = groupList.iterator();
-		while(i.hasNext()) {
-			String group = i.next();
-			sender.sendMessage(ChatColor.YELLOW + group);
-		}
-	}
-	
-	private void sendIllegalArgumentMessage(CommandSender sender) throws CommandException {
-		throw new CommandException("Expected a number that represents how many item stacks should be chosen randomly. Or expected no arguments, to indicate the chest should not be random.");
+	public static void sendRandomCommandIllegalArgumentMessage(CommandSender sender) throws CommandException {
+		throw new CommandException("Expected a number that represents how many item stacks should be chosen randomly. Or expected no arguments, to indicate the treasure should not be random.");
 	}
 	
 }

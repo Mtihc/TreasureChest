@@ -69,7 +69,7 @@ public class RewardCommand extends SimpleCommand {
 		final ITreasureChest tchest = manager.load(loc);
 		
 		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 		if(rewardManager.getFactoryTotal() == 0) {
@@ -167,11 +167,11 @@ public class RewardCommand extends SimpleCommand {
 		ITreasureChest tchest = manager.load(loc);
 		
 		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 		if(!tchest.hasRewards()) {
-			throw new CommandException("There are no more rewards in that treasure chest.");
+			throw new CommandException("There are no more rewards in that treasure.");
 		}
 		
 		int number;
@@ -221,7 +221,7 @@ public class RewardCommand extends SimpleCommand {
 		ITreasureChest tchest = manager.load(loc);
 		
 		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		tchest.setRewards(null);
 		manager.save(loc, tchest);
@@ -251,7 +251,7 @@ public class RewardCommand extends SimpleCommand {
 		ITreasureChest tchest = manager.load(loc);
 		
 		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 		List<RewardInfo> rewards = tchest.getRewards();

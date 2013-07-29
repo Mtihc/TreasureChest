@@ -109,7 +109,7 @@ public class RankCommand extends SimpleCommand {
 		
 		final ITreasureChest tchest = manager.load(loc);
 		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 		
@@ -133,10 +133,11 @@ public class RankCommand extends SimpleCommand {
 			throw new CommandException("Rank \"" + rank + "\" doesn't exist.");
 		}
 		
+		boolean first = tchest.getRanks().isEmpty();
 		tchest.getRanks().add(rank);
 		manager.save(loc, tchest);
 		
-		if(tchest.getRanks().size() == 1) {
+		if(first) {
 			sender.sendMessage(ChatColor.GREEN + "Only rank " + ChatColor.WHITE + rank + ChatColor.GREEN + " can access this treasure.");
 		}
 		else {
@@ -173,7 +174,7 @@ public class RankCommand extends SimpleCommand {
 		
 		final ITreasureChest tchest = manager.load(loc);
 		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure chest");
+			throw new CommandException("You're not looking at a treasure.");
 		}
 		
 
