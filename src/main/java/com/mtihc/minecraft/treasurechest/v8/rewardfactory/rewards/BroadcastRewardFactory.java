@@ -89,7 +89,7 @@ public class BroadcastRewardFactory extends RewardFactory {
 	public String[] help() {
 		return new String[] {
 				"You will be asked to type lines of text.", 
-				"You can use %player% in your message. It will automatically ", 
+				"You can use @p in your message. It will automatically ", 
 				"be replaced with the player's name."
 		};
 	}

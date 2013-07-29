@@ -48,7 +48,7 @@ public class BroadcastReward implements IReward {
 		List<String> msg = getMessages();
 		String playerName = player.getDisplayName();
 		for (String line : msg) {
-			Bukkit.getServer().broadcastMessage(ChatColor.GOLD + line.replace("%player%", playerName + ChatColor.GOLD));
+			Bukkit.getServer().broadcastMessage(ChatColor.GOLD + line.replace("%player%", playerName + ChatColor.GOLD).replace("@p", playerName + ChatColor.GOLD));
 		}
 	}
 
