@@ -36,6 +36,7 @@ import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundAlreadyEven
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestFoundUnlimitedEvent;
 import com.mtihc.minecraft.treasurechest.v8.events.TreasureChestOpenEvent;
+import com.mtihc.minecraft.treasurechest.v8.plugin.Permission;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactoryManager;
@@ -543,8 +544,14 @@ public class TreasureManager {
 			return true;
 		}
 		else {
-			rankPerms = rankPerms.substring(2);//remove comma and string
-			player.sendMessage(ChatColor.RED + "You require one of the following permissions, to open that treasure: " + ChatColor.GRAY + rankPerms);
+			if(player.hasPermission(Permission.SET.getNode())) {
+				rankPerms = rankPerms.substring(2);//remove comma and string
+				player.sendMessage(ChatColor.RED + "You require one of the following permissions, to open that treasure: " + ChatColor.GRAY + rankPerms);
+			}
+			else {
+				player.sendMessage(ChatColor.RED + "You are not allowed to open this treasure.");
+			}
+			
 			return false;
 		}
 	}
