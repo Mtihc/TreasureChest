@@ -31,9 +31,9 @@ public class HealthRewardFactory extends RewardFactory {
 	@Override
 	public void createReward(CommandSender sender, String[] args,
 			CreateCallback callback) {
-		int health;
+		double health;
 		try {
-			health = Integer.parseInt(args[0]);
+			health = Double.parseDouble(args[0]);
 		} catch(IndexOutOfBoundsException e) {
 			callback.onCreateException(sender, args, new RewardException("Not enough arguments. Expected the amount of health.", e));
 			return;
@@ -57,7 +57,7 @@ public class HealthRewardFactory extends RewardFactory {
 	@Override
 	public String[] help() {
 		return new String[] {
-				"Specify the amount of health (1-100)"
+				"Specify the amount of health (1-20)"
 		};
 	}
 

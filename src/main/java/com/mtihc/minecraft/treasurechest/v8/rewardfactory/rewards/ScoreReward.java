@@ -3,6 +3,7 @@ package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 
@@ -19,9 +20,14 @@ public class ScoreReward implements IReward {
 	}
 	
 	public ScoreReward(Objective objective, int score) {
+		
+		if(objective == null) {
+			throw new IllegalArgumentException("Parameter objective can't be null.");
+		}
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("score", score);
-		data.put("objective", objective);
+		data.put("objective", objective.getName());
 		this.info = new RewardInfo("score", data);
 	}
 
@@ -31,11 +37,12 @@ public class ScoreReward implements IReward {
 	}
 	
 	public Objective getObjective() {
-		return (Objective) info.getData("objective");
+		String name = (String) info.getData("objective");
+		return Bukkit.getServer().getScoreboardManager().getMainScoreboard().getObjective(name);
 	}
 	
 	public void setObjective(Objective value) {
-		this.info.setData("objective", value);
+		this.info.setData("objective", value.getName());
 	}
 	
 	public int getScore() {
@@ -48,7 +55,7 @@ public class ScoreReward implements IReward {
 
 	@Override
 	public String getDescription() {
-		return getScore() + " points to " + getObjective().toString();
+		return getScore() + " points to " + getObjective().getName();
 	}
 
 	@Override

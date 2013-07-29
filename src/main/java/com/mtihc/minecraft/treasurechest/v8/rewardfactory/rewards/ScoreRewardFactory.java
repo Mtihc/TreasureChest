@@ -22,12 +22,12 @@ public class ScoreRewardFactory extends RewardFactory {
 
 	@Override
 	public String getGeneralDescription() {
-		return "some amount of score in a scoreboard objective";
+		return "some amount of points in a scoreboard objective";
 	}
 
 	@Override
 	public IReward createReward(RewardInfo info) throws RewardException {
-		return new HealthReward(info);
+		return new ScoreReward(info);
 	}
 
 	@Override
@@ -37,10 +37,11 @@ public class ScoreRewardFactory extends RewardFactory {
 		int score;
 		try {
 			objective = Bukkit.getServer().getScoreboardManager().getMainScoreboard().getObjective(args[0]);
-			if (objective == null) {
-				callback.onCreateException(sender, args, new RewardException("Objective does not exist.", new Exception("Objective does not exist.")));
-			}
 			score = Integer.parseInt(args[1]);
+			if (objective == null) {
+				callback.onCreateException(sender, args, new RewardException("Objective does not exist. To create new objectives, use command /scoreboard objectives add"));
+				return;
+			}
 		} catch(IndexOutOfBoundsException e) {
 			callback.onCreateException(sender, args, new RewardException("Not enough arguments. Expected the name of objective and points to give.", e));
 			return;
@@ -52,19 +53,20 @@ public class ScoreRewardFactory extends RewardFactory {
 			callback.onCreateException(sender, args, new RewardException("Too many arguments. Expected only name of objective and the amount of points to give."));
 			return;
 		}
+
 		
 		callback.onCreate(sender, args, new ScoreReward(objective, score));
 	}
 
 	@Override
 	public String args() {
-		return "<Objective> <Score>";
+		return "<objective> <score>";
 	}
 
 	@Override
 	public String[] help() {
 		return new String[] {
-				"Specify the objective to give points to and the amount of points (~-2000000 - ~2000000)"
+				"Specify the objective and the amount of points."
 		};
 	}
 

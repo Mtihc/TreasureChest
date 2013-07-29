@@ -17,7 +17,7 @@ public class HealthReward implements IReward {
 		this.info = info;
 	}
 	
-	public HealthReward(int health) {
+	public HealthReward(double health) {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("health", health);
 		this.info = new RewardInfo("health", data);
@@ -29,7 +29,7 @@ public class HealthReward implements IReward {
 	}
 	
 	public double getHealth() {
-		return (Double) info.getData("health");
+		return (Integer) info.getData("health");
 	}
 	
 	public void setHealth(double value) {
