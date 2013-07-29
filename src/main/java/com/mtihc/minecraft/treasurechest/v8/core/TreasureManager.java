@@ -468,7 +468,56 @@ public class TreasureManager {
 	}
 	
 	public boolean isBlock(Block block) {
-		return block.getType().isBlock() && block.getType() != Material.CHEST && !getInvisibleBlocks().contains((byte)block.getTypeId());
+		
+		// returns whether the given block would prevent a chest from opening
+		// based on:
+		// http://www.minecraftwiki.net/wiki/Chest
+		
+		if(block == null || block.getType().isTransparent()) {
+			// translucent/transparent, or non-block
+			return false;
+		}
+		switch (block.getType()) {
+			// water and lava
+		case LAVA:
+		case WATER:
+		case STATIONARY_LAVA:
+		case STATIONARY_WATER:
+
+			// plants
+		case LEAVES:
+		case CACTUS:
+			
+			// translucent blocks
+		case GLASS:
+		case MOB_SPAWNER:
+		case SNOW:
+		case ICE:
+		case FENCE:
+		case CAKE:
+		case BED:
+		case GLOWSTONE:
+		case ANVIL:
+		case BEACON:
+		case CHEST:
+			// slabs
+		case STEP:
+		case WOOD_STEP:
+			// stairs
+		case WOOD_STAIRS:
+		case COBBLESTONE_STAIRS:
+		case BRICK_STAIRS:
+		case SMOOTH_STAIRS:
+		case NETHER_BRICK_STAIRS:
+		case SANDSTONE_STAIRS:
+		case SPRUCE_WOOD_STAIRS:
+		case BIRCH_WOOD_STAIRS:
+		case JUNGLE_WOOD_STAIRS:
+		case QUARTZ_STAIRS:
+			return false;
+		default:
+			return true;
+		}
 	}
 	
 	public boolean isBlockedByBlockAbove(Block block) {
@@ -700,24 +749,41 @@ public class TreasureManager {
 			invisibleBlocks.add((byte) Material.WATER.getId());
 			invisibleBlocks.add((byte) Material.STATIONARY_LAVA.getId());
 			invisibleBlocks.add((byte) Material.STATIONARY_WATER.getId());
-			invisibleBlocks.add((byte) Material.BROWN_MUSHROOM.getId());
-			invisibleBlocks.add((byte) Material.RED_MUSHROOM.getId());
-			invisibleBlocks.add((byte) Material.RED_ROSE.getId());
-			invisibleBlocks.add((byte) Material.YELLOW_FLOWER.getId());
-			invisibleBlocks.add((byte) Material.CROPS.getId());
-			invisibleBlocks.add((byte) Material.LADDER.getId());
-			invisibleBlocks.add((byte) Material.LEVER.getId());
-			invisibleBlocks.add((byte) Material.STONE_BUTTON.getId());
-			invisibleBlocks.add((byte) Material.PAINTING.getId());
-			invisibleBlocks.add((byte) Material.PORTAL.getId());
-			invisibleBlocks.add((byte) Material.REDSTONE_TORCH_OFF.getId());
-			invisibleBlocks.add((byte) Material.REDSTONE_TORCH_ON.getId());
-			invisibleBlocks.add((byte) Material.REDSTONE_WIRE.getId());
+			
+			invisibleBlocks.add((byte) Material.LEAVES.getId());
+			invisibleBlocks.add((byte) Material.CACTUS.getId());
+
+			invisibleBlocks.add((byte) Material.GLASS.getId());
+			
+			// stairs
+			invisibleBlocks.add((byte) Material.WOOD_STAIRS.getId());
+			invisibleBlocks.add((byte) Material.COBBLESTONE_STAIRS.getId());
+			invisibleBlocks.add((byte) Material.BRICK_STAIRS.getId());
+			invisibleBlocks.add((byte) Material.SMOOTH_STAIRS.getId());
+			invisibleBlocks.add((byte) Material.NETHER_BRICK_STAIRS.getId());
+			invisibleBlocks.add((byte) Material.SANDSTONE_STAIRS.getId());
+			invisibleBlocks.add((byte) Material.SPRUCE_WOOD_STAIRS.getId());
+			invisibleBlocks.add((byte) Material.BIRCH_WOOD_STAIRS.getId());
+			invisibleBlocks.add((byte) Material.JUNGLE_WOOD_STAIRS.getId());
+			invisibleBlocks.add((byte) Material.QUARTZ_STAIRS.getId());
+
+			// slabs
+			invisibleBlocks.add((byte) Material.STEP.getId());
+			invisibleBlocks.add((byte) Material.WOOD_STEP.getId());
+			
+
+			invisibleBlocks.add((byte) Material.MOB_SPAWNER.getId());
 			invisibleBlocks.add((byte) Material.SNOW.getId());
-			invisibleBlocks.add((byte) Material.SIGN_POST.getId());
-			invisibleBlocks.add((byte) Material.TORCH.getId());
-			invisibleBlocks.add((byte) Material.VINE.getId());
-			invisibleBlocks.add((byte) Material.WALL_SIGN.getId());
+			invisibleBlocks.add((byte) Material.ICE.getId());
+
+			invisibleBlocks.add((byte) Material.FENCE.getId());
+			invisibleBlocks.add((byte) Material.CAKE.getId());
+			invisibleBlocks.add((byte) Material.BED.getId());
+			invisibleBlocks.add((byte) Material.GLOWSTONE.getId());
+			invisibleBlocks.add((byte) Material.ANVIL.getId());
+			invisibleBlocks.add((byte) Material.BEACON.getId());
+			invisibleBlocks.add((byte) Material.CHEST.getId());
+			
 		}
 		
 		return invisibleBlocks;
