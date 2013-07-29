@@ -17,7 +17,8 @@ public enum Permission {
 	IGNORE_PROTECTION("treasurechest.ignoreprotection"), 
 	LIST("treasurechest.list"), 
 	LIST_ALL("treasurechest.list.all"), 
-	RANK("treasurechest.rank");
+	RANK("treasurechest.rank"), 
+	PEEK("treasurechest.peek");
 	
 	private String node;
 

@@ -28,6 +28,7 @@ permissions:
             treasurechest.forget.all: true
             treasurechest.ignoreprotection: true
             treasurechest.list.all: true
+            treasurechest.peek: true
     
     treasurechest.player:
         description: Grants all permissions that a regular player usually gets
@@ -96,5 +97,8 @@ permissions:
             treasurechest.forget: true
     treasurechest.forget.all:
         description: Allows you to make a chest forget that anybody has found it
+        default: false
+    treasurechest.peek:
+        description: Allows you to open a treasure's real inventory.
         default: false
     

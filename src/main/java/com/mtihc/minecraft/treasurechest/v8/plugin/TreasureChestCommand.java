@@ -49,6 +49,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		addNested("forget");
 		addNested("forgetAll");
 		addNested("reload");
+		addNested("peek");
 		
 		addNested(RewardCommand.class, manager, this);
 		addNested(RankCommand.class, manager, this);
@@ -62,6 +63,39 @@ public class TreasureChestCommand extends SimpleCommand {
 		if(rewardManager != null) {
 			addNested(RewardCommand.class, manager, rewardManager, this);
 		}
+	}
+	
+	@Command(aliases = { "peek" }, args = "", desc = "Open the real inventory.", help = { "Look at a treasure, ", "then execute this command.", "Useful for testing and working with unlimited dispensers/droppers." })
+	public void peek(CommandSender sender, String[] args) throws CommandException {
+		
+		if(!(sender instanceof Player)) {
+			throw new CommandException("This command must be executed by a player, in game.");
+		}
+		
+		if(args != null && args.length > 0) {
+			throw new CommandException("Expected no arguments.");
+		}
+		
+		if(!sender.hasPermission(Permission.PEEK.getNode())) {
+			throw new CommandException("You don't have permission to open a treasure's real inventory.");
+		}
+		
+		Player player = (Player) sender;
+		
+
+		Block block = TreasureManager.getTargetedContainerBlock(player);
+		if(block == null) {
+			throw new CommandException("You're not looking at a container block.");
+		}
+		
+		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
+		
+		if(!manager.has(loc)) {
+			throw new CommandException("You're not looking at a treasure.");
+		}
+		
+		InventoryHolder holder = (InventoryHolder) block.getState();
+		player.openInventory(holder.getInventory());
 	}
 	
 	@Command(aliases = { "count" }, args = "[player]", desc = "Count found treasures.", help = { "Counts how many treasures you, or someone else, found in this world.", "Specify a player name to count another player's found treasures." })
