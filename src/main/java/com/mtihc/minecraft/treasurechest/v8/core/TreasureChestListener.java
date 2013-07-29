@@ -5,17 +5,22 @@ import java.util.Iterator;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Dispenser;
 import org.bukkit.block.DoubleChest;
+import org.bukkit.block.Dropper;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 
 class TreasureChestListener implements Listener {
 
@@ -119,8 +124,69 @@ class TreasureChestListener implements Listener {
 	
 	
 	
+	@EventHandler(priority=EventPriority.HIGH)
+    public void onBlockPowered(BlockPhysicsEvent event) {
+		Block block = event.getBlock();
+		switch (block.getType()) {
+		case DISPENSER:
+			break;
+		case DROPPER:
+			break;
+		default:
+			return;
+		}
+		
+		if (block.getBlockPower() == 0) {
+			// We don't care if a block loses power
+			return;
+		}
+		
+		if(!(block.getState() instanceof InventoryHolder)) {
+			// block is not an InventoryHolder
+			return;
+		}
+		
+		ITreasureChest tchest = control.getTreasureChest(block);
+		
+		if(tchest == null) {
+			// not a treasure
+			return;
+		}
+
+		if(!tchest.isUnlimited()) {
+			// not unlimited
+			return;
+		}
+		
+		if(block.getState() instanceof Dispenser) {
+			Dispenser dispenser = (Dispenser) block.getState();
+			if(isInventoryEmpty(dispenser.getInventory())) {
+				control.toInventory(tchest.getContainer().getContents(), tchest.getAmountOfRandomlyChosenStacks(), dispenser.getInventory());
+			}
+			// will dispense on it's own
+			// no need for dispenser.dispense()
+		}
+		else if(block.getState() instanceof Dropper) {
+			Dropper dropper = (Dropper) block.getState();
+			if(isInventoryEmpty(dropper.getInventory())) {
+				
+				control.toInventory(tchest.getContainer().getContents(), tchest.getAmountOfRandomlyChosenStacks(), dropper.getInventory());
+			}
+			// will dispense on it's own
+			// no need for dropper.drop()
+		}
+    }
 	
-	
+	private boolean isInventoryEmpty(Inventory inventory) {
+		int n = inventory.getSize();
+		for (int i = 0; i < n; i++) {
+			ItemStack item = inventory.getItem(i);
+			if(item != null && item.getTypeId() != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
 	
 	
 	

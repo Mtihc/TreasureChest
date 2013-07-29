@@ -707,7 +707,7 @@ public class TreasureManager {
 		 
 	}
 
-	private void toInventory(ItemStack[] contents, int random, Inventory inventory) {
+	protected void toInventory(ItemStack[] contents, int random, Inventory inventory) {
 		
 		ItemStack[] tchest = getRandomizedInventory(contents, random);
 		int size = tchest.length;
