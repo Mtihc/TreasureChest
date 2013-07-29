@@ -40,7 +40,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		addNested("listAll");
 		addNested("delete");
 		addNested("set");
-		addNested("setSingle");
+		addNested("setShared");
 		addNested("random");
 		addNested("unlimited");
 		addNested("ignoreProtection");
@@ -381,8 +381,8 @@ public class TreasureChestCommand extends SimpleCommand {
 			Inventory inventory = manager.createTreasureInventory(player, tchest);
 			tchest.getContainer().setContents(inventory.getContents());
 			
-			if(tchest.isSingleton()) {
-				tchest.setSingleton(false);
+			if(tchest.isShared()) {
+				tchest.setShared(false);
 				sender.sendMessage(ChatColor.GOLD + "Treasure contents updated. And is no longer shared.");
 			}
 			else {
@@ -405,7 +405,7 @@ public class TreasureChestCommand extends SimpleCommand {
 	}
 
 	@Command(aliases = { "set-shared" }, args = "", desc = "Create/update a treasure with a single invertory.", help = { "Put items in a container block, ", "look at it, then execute this command." })
-	public void setSingle(CommandSender sender, String[] args) throws CommandException {
+	public void setShared(CommandSender sender, String[] args) throws CommandException {
 	
 		if(!(sender instanceof Player)) {
 			throw new CommandException("Command must be executed by a player, in game.");
@@ -437,8 +437,8 @@ public class TreasureChestCommand extends SimpleCommand {
 			
 			Inventory inventory = manager.createTreasureInventory(player, tchest);
 			tchest.getContainer().setContents(inventory.getContents());
-			if(!tchest.isSingleton()) {
-				tchest.setSingleton(true);
+			if(!tchest.isShared()) {
+				tchest.setShared(true);
 				sender.sendMessage(ChatColor.GOLD + "Treasure contents updated. And changed to shared treasure.");
 			}
 			else {

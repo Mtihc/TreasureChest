@@ -184,9 +184,10 @@ public class TreasureManager {
 
 	public void forgetChest(Location location) {
 		ITreasureChest tchest = load(location);
-		if (tchest.isSingleton()) {
-			// Singleton chests don't have a timed removal, their inventory will persist until
+		if (tchest.isShared()) {
+			// shared chests don't have a timed removal, their inventory will persist until
 			// server reset or a forget-all command is issued
+			// TODO if we end up using the forget-time somehow, we will need timed removal
 			Location loc =  tchest.getContainer().getLocation();
 			final String KEY = loc.getWorld().getName() + "@" + loc.toVector().toString();
 			inventories.remove(KEY);
@@ -271,7 +272,7 @@ public class TreasureManager {
 		Inventory inventory;
 		boolean chestJustCreated = false;
 
-		if (tchest.isSingleton()) {
+		if (tchest.isShared()) {
 			inventory = createTreasureInventory(player, tchest, true);
 			if (inventory == null) {
 				chestJustCreated = true;
@@ -314,7 +315,7 @@ public class TreasureManager {
 		// check if/when the player has found the treasure before,
 		// and compare the time with the treasure's "forget-time".
 		//
-		else if(!tchest.isSingleton()){
+		else if(!tchest.isShared()){
 			// when has player found before
 			long time = whenHasPlayerFound((OfflinePlayer)player, loc);
 			
@@ -359,7 +360,10 @@ public class TreasureManager {
 		else
 		{
 			if (chestJustCreated) {
-				// For singleton chests we don't have forget or rewards
+				// For shared chests we don't have forget or rewards
+				// TODO if we would remember who found it first, we could use the forget-time.
+				// TODO if we would know who found it first, we could give rewards
+				
 				// set items to chest
 				toInventory(tchest.getContainer().getContents(), tchest.getAmountOfRandomlyChosenStacks(), inventory);
 
@@ -400,7 +404,7 @@ public class TreasureManager {
 		
 		// get unique key for player @ inventory location
 		final String KEY;
-		if (tchest.isSingleton()) {
+		if (tchest.isShared()) {
 			KEY = loc.getWorld().getName() + "@" + loc.toVector().toString();
 		} else {
 			KEY = player.getName() + "@" + loc.getWorld().getName() + "@" + loc.toVector().toString();			
@@ -437,7 +441,7 @@ public class TreasureManager {
 		}
 		
 		// inventory will clear itself from the map
-		if (!tchest.isSingleton()) {
+		if (!tchest.isShared()) {
 			tInventory.schedule();
 		}
 		
