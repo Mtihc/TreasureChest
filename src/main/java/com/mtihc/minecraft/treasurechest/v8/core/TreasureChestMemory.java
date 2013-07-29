@@ -42,6 +42,9 @@ public class TreasureChestMemory extends YamlRepository implements ITreasureChes
 			return locs;
 		}
 		ConfigurationSection worldSection = config.getConfigurationSection(world.getName());
+		if(worldSection == null) {
+			return locs;
+		}
 		Set<String> coordKeys = worldSection.getKeys(false);
 		for (String coordKey : coordKeys) {
 			locs.add(stringToLocation(world.getName(), coordKey));
