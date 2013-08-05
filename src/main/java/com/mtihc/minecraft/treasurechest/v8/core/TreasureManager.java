@@ -500,6 +500,8 @@ public class TreasureManager {
 		case ANVIL:
 		case BEACON:
 		case CHEST:
+		case SIGN:
+		case SIGN_POST:
 			// slabs
 		case STEP:
 		case WOOD_STEP:
