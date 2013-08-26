@@ -130,29 +130,9 @@ public class GroupCommand extends SimpleCommand {
 			throw new CommandException("You're not looking at a container block.");
 		}
 		
-		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
-		
-		ITreasureChest tchest = manager.load(loc);
-		
-		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure.");
+		if (!manager.treasureGroupAdd(player, block, name, true)) {
+			throw new CommandException(manager.getError());
 		}
-	
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
-		
-		if (tcgroup == null) {
-			throw new CommandException("Failed to load group " + name + ".");
-		}
-		
-		if (!tcgroup.addChest(tchest)) {
-			throw new CommandException(tcgroup.getError());
-		}
-			
-
-		sender.sendMessage(ChatColor.GOLD + "Treasure added to group " + name + ".");
-		
-		manager.saveGroup(name, tcgroup);
-	
 	}
 
 	@Command(aliases = { "remove" }, args = "<name>", desc = "Remove a treasure.", help = { "This does not delete the treasure." })
@@ -183,27 +163,9 @@ public class GroupCommand extends SimpleCommand {
 			throw new CommandException("You're not looking at a container block.");
 		}
 		
-		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
-		
-		ITreasureChest tchest = manager.load(loc);
-		
-		if(tchest == null) {
-			throw new CommandException("You're not looking at a treasure.");
+		if (!manager.treasureGroupRemove(player, block, name, true)) {
+			throw new CommandException(manager.getError());
 		}
-	
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
-		
-		if (tcgroup == null) {
-			throw new CommandException("Failed to load group " + name);
-		}
-		
-		if (!tcgroup.removeChest(tchest)) {
-			throw new CommandException(tcgroup.getError());
-		}
-
-		sender.sendMessage(ChatColor.GOLD + "Treasure removed from group " + name + ".");
-		
-		manager.saveGroup(name, tcgroup);
 	}
 	
 	@Command(aliases = { "forget" }, args = "<name> [player]", desc = "Tell all treasures in a group, to forget that a player found them.", help = { "This is like executing the forget command, on every treasure in the group." })
