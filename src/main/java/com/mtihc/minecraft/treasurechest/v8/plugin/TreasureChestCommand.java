@@ -1,8 +1,6 @@
 package com.mtihc.minecraft.treasurechest.v8.plugin;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -11,14 +9,11 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest;
-import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChestGroup;
-import com.mtihc.minecraft.treasurechest.v8.core.TreasureChest;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.Command;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
@@ -54,6 +49,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		addNested(RewardCommand.class, manager, this);
 		addNested(RankCommand.class, manager, this);
 		addNested(GroupCommand.class, manager, this);
+		addNested(RegionCommand.class, manager, this);
 		
 	}
 	
@@ -339,45 +335,8 @@ public class TreasureChestCommand extends SimpleCommand {
 			throw new CommandException("You're not looking at a container block.");
 		}
 		
-		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
-		
-		if(!manager.has(loc)) {
-			throw new CommandException("Treasure doesn't exist, or is already deleted.");
-		}
-		else {
-			int BlockX = loc.getBlockX();
-			int BlockY = loc.getBlockY();
-			int BlockZ = loc.getBlockZ();
-			// Check if the chest is in any groups and if it is remove it from them
-			Set<String> groupList = manager.getGroups();
-			Iterator<String> ig = groupList.iterator();
-			while(ig.hasNext()) {
-				String group = ig.next();
-				ITreasureChestGroup tcgroup = manager.loadGroup(group);
-				Set<Location> locs = tcgroup.getLocations();
-				Iterator<Location> il = locs.iterator();
-				while(il.hasNext()) {
-					Location tmpLoc = il.next();
-
-					if ((BlockX == tmpLoc.getBlockX()) &&
-							(BlockY == tmpLoc.getBlockY()) &&
-							(BlockZ == tmpLoc.getBlockZ())){
-						ITreasureChest tchest = manager.load(loc);
-						if (!tcgroup.removeChest(tchest)) {
-							throw new CommandException(tcgroup.getError());
-						}
-
-						sender.sendMessage(ChatColor.GRAY + "Treasure removed from group " + group + ".");
-						manager.saveGroup(group, tcgroup);
-					}
-				}
-			}
-			
-			if(!manager.delete(loc)) {
-				throw new CommandException("Deletion of the Treasure was cancelled.");
-			}
-			sender.sendMessage(ChatColor.YELLOW + "Treasure chest deleted.");
-			return;
+		if (!manager.treasureDelete(player, block, true)) {
+			throw new CommandException(manager.getError());
 		}
 	}
 	
@@ -405,37 +364,9 @@ public class TreasureChestCommand extends SimpleCommand {
 			throw new CommandException("You're not looking at a container block.");
 		}
 		
-		InventoryHolder holder = (InventoryHolder) block.getState();
-		Location loc = TreasureManager.getLocation(holder);
-		
-		ITreasureChest tchest = manager.load(loc);
-		
-		if(tchest != null) {
-			
-			Inventory inventory = manager.createTreasureInventory(player, tchest);
-			tchest.getContainer().setContents(inventory.getContents());
-			
-			if(tchest.isShared()) {
-				tchest.setShared(false);
-				sender.sendMessage(ChatColor.GOLD + "Treasure contents updated. And is no longer shared.");
-			}
-			else {
-				sender.sendMessage(ChatColor.GOLD + "Treasure contents updated.");
-			}
-			
+		if (!manager.treasureSet(player, block, true)) {
+			throw new CommandException(manager.getError());
 		}
-		else {
-			tchest = new TreasureChest(block.getState(), false);
-			for (ITreasureChest.Message messageId : ITreasureChest.Message.values()) {
-				tchest.setMessage(messageId, manager.getConfig().getDefaultMessage(messageId));
-			}
-			tchest.ignoreProtection(manager.getConfig().getDefaultIgnoreProtection());
-			holder.getInventory().clear();
-	
-			sender.sendMessage(ChatColor.GOLD + "Treasure saved");
-		}
-		manager.save(loc, tchest);
-		//holder.getInventory().clear();
 	}
 
 	@Command(aliases = { "set-shared" }, args = "", desc = "Create/update a treasure with a single invertory.", help = { "Put items in a container block, ", "look at it, then execute this command." })
@@ -462,36 +393,9 @@ public class TreasureChestCommand extends SimpleCommand {
 			throw new CommandException("You're not looking at a container block.");
 		}
 		
-		InventoryHolder holder = (InventoryHolder) block.getState();
-		Location loc = TreasureManager.getLocation(holder);
-		
-		ITreasureChest tchest = manager.load(loc);
-		
-		if(tchest != null) {
-			
-			Inventory inventory = manager.createTreasureInventory(player, tchest);
-			tchest.getContainer().setContents(inventory.getContents());
-			if(!tchest.isShared()) {
-				tchest.setShared(true);
-				sender.sendMessage(ChatColor.GOLD + "Treasure contents updated. And changed to shared treasure.");
-			}
-			else {
-
-				sender.sendMessage(ChatColor.GOLD + "Treasure contents updated.");
-			}
+		if (!manager.treasureSetShared(player, block, true)) {
+			throw new CommandException(manager.getError());
 		}
-		else {
-			tchest = new TreasureChest(block.getState(), true);
-			for (ITreasureChest.Message messageId : ITreasureChest.Message.values()) {
-				tchest.setMessage(messageId, manager.getConfig().getDefaultMessage(messageId));
-			}
-			tchest.ignoreProtection(manager.getConfig().getDefaultIgnoreProtection());
-			holder.getInventory().clear();
-	
-			sender.sendMessage(ChatColor.GOLD + "Shared treasure saved.");
-		}
-		manager.save(loc, tchest);
-		//holder.getInventory().clear();
 	}
 	
 	@Command(aliases = { "random", "setrandom", "r" }, args = "[amount]", desc = "Make a treasure randomized.", help = { "The argument is the amount of item-stacks that will be included in the treasure at random." })
