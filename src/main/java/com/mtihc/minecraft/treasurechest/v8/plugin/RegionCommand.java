@@ -347,11 +347,7 @@ public class RegionCommand extends SimpleCommand {
 			}
 			
 			// ... finally all is good so we create the chest and add it to the groups
-			if (shared) {
-				manager.treasureSetShared(player, block, false);
-			} else {
-				manager.treasureSet(player, block, false);
-			}
+			manager.treasureSet(player, block, shared);
 
 			if (!groups.isEmpty()) {
 				Iterator<String> is = groups.iterator();

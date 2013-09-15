@@ -810,6 +810,14 @@ public class TreasureManager {
 	}
 	
 	public boolean treasureSet(Player player, Block block, boolean displayMessages) {
+		return treasureSet(player, block, displayMessages, false);
+	}
+	
+	public boolean treasureSetShared(Player player, Block block, boolean displayMessages) {
+		return treasureSet(player, block, displayMessages, true);
+	}
+	
+	public boolean treasureSet(Player player, Block block, boolean displayMessages, boolean shared) {
 		InventoryHolder holder = (InventoryHolder) block.getState();
 		Location loc = TreasureManager.getLocation(holder);
 		
@@ -834,7 +842,8 @@ public class TreasureManager {
 			
 		}
 		else {
-			tchest = new TreasureChest(block.getState(), false);
+			tchest = new TreasureChest(block.getState());
+			tchest.setShared(shared);
 			for (ITreasureChest.Message messageId : ITreasureChest.Message.values()) {
 				tchest.setMessage(messageId, getConfig().getDefaultMessage(messageId));
 			}
@@ -843,44 +852,6 @@ public class TreasureManager {
 	
 			if (displayMessages) {
 				player.sendMessage(ChatColor.GOLD + "Treasure saved");
-			}
-		}
-		save(loc, tchest);
-		return true;
-	}
-
-	public boolean treasureSetShared(Player player, Block block, boolean displayMessages) {
-		InventoryHolder holder = (InventoryHolder) block.getState();
-		Location loc = TreasureManager.getLocation(holder);
-		
-		ITreasureChest tchest = load(loc);
-		
-		if(tchest != null) {
-			
-			Inventory inventory = createTreasureInventory(player, tchest);
-			tchest.getContainer().setContents(inventory.getContents());
-			if(!tchest.isShared()) {
-				tchest.setShared(true);
-				if (displayMessages) {
-					player.sendMessage(ChatColor.GOLD + "Treasure contents updated. And changed to shared treasure.");
-				}
-			}
-			else {
-				if (displayMessages) {
-					player.sendMessage(ChatColor.GOLD + "Treasure contents updated.");
-				}
-			}
-		}
-		else {
-			tchest = new TreasureChest(block.getState(), true);
-			for (ITreasureChest.Message messageId : ITreasureChest.Message.values()) {
-				tchest.setMessage(messageId, getConfig().getDefaultMessage(messageId));
-			}
-			tchest.ignoreProtection(getConfig().getDefaultIgnoreProtection());
-			holder.getInventory().clear();
-	
-			if (displayMessages) {
-				player.sendMessage(ChatColor.GOLD + "Shared treasure saved.");
 			}
 		}
 		save(loc, tchest);

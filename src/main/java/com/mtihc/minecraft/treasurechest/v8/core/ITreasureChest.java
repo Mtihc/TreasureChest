@@ -110,5 +110,5 @@ public interface ITreasureChest extends ConfigurationSerializable {
 	public void setRewards(List<RewardInfo> values);
 	public int getRewardTotal();
 	boolean isShared();
-	void setShared(boolean singleton);
+	void setShared(boolean value);
 }

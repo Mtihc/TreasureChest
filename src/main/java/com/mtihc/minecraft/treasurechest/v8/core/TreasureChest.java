@@ -32,7 +32,7 @@ public class TreasureChest implements ITreasureChest {
 	
 	private List<RewardInfo> rewards = new ArrayList<RewardInfo>();
 	
-	public TreasureChest(BlockState blockState, boolean shared) {
+	public TreasureChest(BlockState blockState) {
 		if(!(blockState instanceof InventoryHolder)) {
 			throw new IllegalArgumentException("Parameter blockState must be an InventoryHolder.");
 		}
@@ -49,7 +49,7 @@ public class TreasureChest implements ITreasureChest {
 		random = 0;
 		forgetTime = 0;
 		ignoreProtection = false;
-		this.shared = shared;  
+		shared = false;  
 		
 		ranks = new ArrayList<String>();
 	}
