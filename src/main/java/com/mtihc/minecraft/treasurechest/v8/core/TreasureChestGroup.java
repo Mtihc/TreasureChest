@@ -17,7 +17,6 @@ public class TreasureChestGroup implements ITreasureChestGroup {
 
 	private String world;
 	private String name;
-	private String errorMessage;
 	private List<Location> chests;
 	
 	public TreasureChestGroup(String world, String name) {
@@ -43,30 +42,26 @@ public class TreasureChestGroup implements ITreasureChestGroup {
 		}
 	}
 	
-	public boolean addChest(ITreasureChest chest) {
+	public void addChest(ITreasureChest chest) throws Exception {
 		String chestsWorld = chest.getContainer().getLocation().getWorld().getName();
 		if (chestsWorld.equals(world)) {
 			Location newLoc = chest.getContainer().getLocation();
 
 			if (!chests.contains(newLoc)) {
 				chests.add(chest.getContainer().getLocation());
-				return true;
+				return;
 			}
 			
-			errorMessage = "Chest is already in this group!";
-			return false;
+			throw new Exception("Treasure is already in the group.");
 		}
-		errorMessage = "Chest (in world " + chestsWorld + ") is not in the same world as the group (" + world + ")";
-		return false;
+		throw new Exception("Treasure (in world " + chestsWorld + ") is not in the same world as the group (" + world + ")");
 	}
 	
-	public boolean removeChest(ITreasureChest chest) {
+	public boolean removeChest(ITreasureChest chest) throws Exception {
 		if (!chests.contains(chest.getContainer().getLocation())) {
-			errorMessage = "Chest is not in this group!";
-			return false;
+			throw new Exception("Treasure is not in the group.");
 		}
-		chests.remove(chest.getContainer().getLocation());
-		return true;
+		return chests.remove(chest.getContainer().getLocation());
 	}
 
 	public Set<Location> getLocations() {
@@ -78,11 +73,7 @@ public class TreasureChestGroup implements ITreasureChestGroup {
 
 		return result;
 	}
-
-	public String getError() {
-		return errorMessage;
-	}
-
+	
 	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> values = new LinkedHashMap<String, Object>();

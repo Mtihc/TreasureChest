@@ -7,11 +7,11 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 public interface ITreasureChestGroup extends ConfigurationSerializable {
 
-	public boolean addChest(ITreasureChest chest);
+	public void addChest(ITreasureChest chest) throws Exception;
 
-	public boolean removeChest(ITreasureChest chest);
+	public boolean removeChest(ITreasureChest chest) throws Exception;
 	
 	public Set<Location> getLocations();
 	
-	public String getError();
+	//public String getError();
 }

@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -45,7 +46,6 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
 
 public class TreasureManager extends TreasureDataFacade {
-	private String errorString;
 	
 	static {
 		ConfigurationSerialization.registerClass(ItemStackWrapper.class);
@@ -813,12 +813,11 @@ public class TreasureManager extends TreasureDataFacade {
 		return true;
 	}
 	
-	public boolean treasureDelete(Player player, Block block, boolean displayMessages) {
+	public boolean treasureDelete(Player player, Block block, boolean displayMessages) throws TreasureException {
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
 		if(!hasTreasure(loc)) {
-			errorString = "Treasure doesn't exist, or is already deleted.";
-			return false;
+			throw new TreasureException("Treasure doesn't exist, or is already deleted.");
 		}
 		else {
 			int BlockX = loc.getBlockX();
@@ -839,11 +838,13 @@ public class TreasureManager extends TreasureDataFacade {
 							(BlockY == tmpLoc.getBlockY()) &&
 							(BlockZ == tmpLoc.getBlockZ())){
 						ITreasureChest tchest = getTreasure(loc);
-						if (!tcgroup.removeChest(tchest)) {
-							errorString = tcgroup.getError();
-							return false;
+						
+						try {
+							tcgroup.removeChest(tchest);
+						} catch(Exception e) {
+							player.sendMessage(ChatColor.RED + "Failed to remove treasure at " + tmpLoc.getBlockX() + "," + tmpLoc.getBlockY() + "," + tmpLoc.getBlockZ() + " from group \"" + group + "\". " + e.getMessage());
 						}
-
+						
 						if (displayMessages) {
 							player.sendMessage(ChatColor.GRAY + "Treasure removed from group " + group + ".");
 						}
@@ -853,8 +854,7 @@ public class TreasureManager extends TreasureDataFacade {
 			}
 			
 			if(!removeTreasure(loc)) {
-				errorString = "Deletion of the Treasure was cancelled.";
-				return false;
+				throw new TreasureException("Deletion of the Treasure was cancelled.");
 			}
 			if (displayMessages) {
 				player.sendMessage(ChatColor.YELLOW + "Treasure chest deleted.");
@@ -863,68 +863,63 @@ public class TreasureManager extends TreasureDataFacade {
 		}
 	}
 
-	public boolean treasureGroupAdd(Player player, Block block, String name, boolean displayMessages) {
+	public boolean treasureGroupAdd(Player player, Block block, String name, boolean displayMessages) throws TreasureException {
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
 		ITreasureChest tchest = getTreasure(loc);
 		
 		if(tchest == null) {
-			errorString = "You're not looking at a treasure.";
-			return false;
+			throw new TreasureException("You're not looking at a treasure.");
 		}
 	
 		ITreasureChestGroup tcgroup = getGroup(name);
 		
 		if (tcgroup == null) {
-			errorString = "Failed to load group " + name + ".";
-			return false;
+			throw new TreasureException("Failed to load group \"" + name + "\".");
 		}
 		
-		if (!tcgroup.addChest(tchest)) {
-			errorString = tcgroup.getError();
-			return false;
+		try {
+			tcgroup.addChest(tchest);
+		} catch(Exception e) {
+			Location tmpLoc = tchest.getContainer().getLocation();
+			throw new TreasureException("Failed to add treasure at " + tmpLoc.getBlockX() + "," + tmpLoc.getBlockY() + "," + tmpLoc.getBlockZ() + " to group \"" + name + "\". " + e.getMessage());
 		}
-
 		if (displayMessages) {
-			player.sendMessage(ChatColor.GOLD + "Treasure added to group " + name + ".");
+			player.sendMessage(ChatColor.GOLD + "Treasure added to group \"" + name + "\".");
 		}
 		
 		setGroup(name, tcgroup);
 		return true;
 	}
 
-	public boolean treasureGroupRemove(Player player, Block block, String name, boolean displayMessages) {
+	public boolean treasureGroupRemove(Player player, Block block, String name, boolean displayMessages) throws TreasureException {
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
 		ITreasureChest tchest = getTreasure(loc);
 		
 		if(tchest == null) {
-			errorString = "You're not looking at a treasure.";
-			return false;
+			throw new TreasureException("You're not looking at a treasure.");
 		}
 	
 		ITreasureChestGroup tcgroup = getGroup(name);
 		
 		if (tcgroup == null) {
-			errorString = "Failed to load group " + name;
-			return false;
+			throw new TreasureException("Failed to load group \"" + name + "\".");
 		}
 		
-		if (!tcgroup.removeChest(tchest)) {
-			errorString = tcgroup.getError();
-			return false;
+		try {
+			tcgroup.removeChest(tchest);
+		} catch(Exception e) {
+			Location tmpLoc = tchest.getContainer().getLocation();
+			throw new TreasureException("Failed to remove treasure at " + tmpLoc.getBlockX() + "," + tmpLoc.getBlockY() + "," + tmpLoc.getBlockZ() + " from group \"" + name + "\". " + e.getMessage());
 		}
 
 		if (displayMessages) {
-			player.sendMessage(ChatColor.GOLD + "Treasure removed from group " + name + ".");
+			player.sendMessage(ChatColor.GOLD + "Treasure removed from group \"" + name + "\".");
 		}
 		
 		setGroup(name, tcgroup);
 		return true;
-	}
-
-	public String getError() {
-		return errorString;
 	}
 	
 	abstract class TreasureInventory implements Runnable {

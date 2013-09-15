@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest;
+import com.mtihc.minecraft.treasurechest.v8.core.TreasureException;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.Command;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
@@ -335,8 +336,10 @@ public class TreasureChestCommand extends SimpleCommand {
 			throw new CommandException("You're not looking at a container block.");
 		}
 		
-		if (!manager.treasureDelete(player, block, true)) {
-			throw new CommandException(manager.getError());
+		try {
+			manager.treasureDelete(player, block, true);
+		} catch (TreasureException e) {
+			throw new CommandException(e.getMessage(), e);
 		}
 	}
 	
@@ -364,9 +367,7 @@ public class TreasureChestCommand extends SimpleCommand {
 			throw new CommandException("You're not looking at a container block.");
 		}
 		
-		if (!manager.treasureSet(player, block, true)) {
-			throw new CommandException(manager.getError());
-		}
+		manager.treasureSet(player, block, true);
 	}
 
 	@Command(aliases = { "set-shared" }, args = "", desc = "Create/update a treasure with a single invertory.", help = { "Put items in a container block, ", "look at it, then execute this command." })
@@ -393,9 +394,7 @@ public class TreasureChestCommand extends SimpleCommand {
 			throw new CommandException("You're not looking at a container block.");
 		}
 		
-		if (!manager.treasureSetShared(player, block, true)) {
-			throw new CommandException(manager.getError());
-		}
+		manager.treasureSetShared(player, block, true);
 	}
 	
 	@Command(aliases = { "random", "setrandom", "r" }, args = "[amount]", desc = "Make a treasure randomized.", help = { "The argument is the amount of item-stacks that will be included in the treasure at random." })

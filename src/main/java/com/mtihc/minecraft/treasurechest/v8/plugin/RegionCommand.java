@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
+import com.mtihc.minecraft.treasurechest.v8.core.TreasureException;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.Command;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
@@ -353,7 +354,11 @@ public class RegionCommand extends SimpleCommand {
 				Iterator<String> is = groups.iterator();
 				while(is.hasNext()) {
 					String tmpGroup = is.next();
-					manager.treasureGroupAdd(player, block, tmpGroup, false);
+					try {
+						manager.treasureGroupAdd(player, block, tmpGroup, false);
+					} catch (TreasureException e) {
+						player.sendMessage(ChatColor.RED + e.getMessage());
+					}
 				}
 			}
 
@@ -371,27 +376,31 @@ public class RegionCommand extends SimpleCommand {
 				Location treasure = i.next();
 				Block block = treasure.getBlock();
 
-				switch(task) {
-				case SET:
-					manager.treasureSet(player, block, false);
-					break;
-				case SET_SHARED:
-					manager.treasureSetShared(player, block, false);
-					break;
-				case DELETE:
-					manager.treasureDelete(player, block, false);
-					break;
-				case GROUP_ADD:
-					manager.treasureGroupAdd(player, block, group, false);
-					break;
-				case USE_META_DATA:
-					createChestFromMetadata(player, block);
-					break;
-				case GROUP_REMOVE:
-					manager.treasureGroupRemove(player, block, group, false);
-					break;
-				default:
-					break;
+				try {
+					switch (task) {
+					case SET:
+						manager.treasureSet(player, block, false);
+						break;
+					case SET_SHARED:
+						manager.treasureSetShared(player, block, false);
+						break;
+					case DELETE:
+						manager.treasureDelete(player, block, false);
+						break;
+					case GROUP_ADD:
+						manager.treasureGroupAdd(player, block, group, false);
+						break;
+					case USE_META_DATA:
+						createChestFromMetadata(player, block);
+						break;
+					case GROUP_REMOVE:
+						manager.treasureGroupRemove(player, block, group, false);
+						break;
+					default:
+						break;
+					}
+				} catch (TreasureException e) {
+					player.sendMessage(ChatColor.RED + e.getMessage());
 				}
 			}
 		}

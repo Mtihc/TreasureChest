@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest;
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChestGroup;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureChestGroup;
+import com.mtihc.minecraft.treasurechest.v8.core.TreasureException;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.Command;
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
@@ -130,8 +131,10 @@ public class GroupCommand extends SimpleCommand {
 			throw new CommandException("You're not looking at a container block.");
 		}
 		
-		if (!manager.treasureGroupAdd(player, block, name, true)) {
-			throw new CommandException(manager.getError());
+		try {
+			manager.treasureGroupAdd(player, block, name, true);
+		} catch (TreasureException e) {
+			throw new CommandException(e.getMessage(), e);
 		}
 	}
 
@@ -163,8 +166,10 @@ public class GroupCommand extends SimpleCommand {
 			throw new CommandException("You're not looking at a container block.");
 		}
 		
-		if (!manager.treasureGroupRemove(player, block, name, true)) {
-			throw new CommandException(manager.getError());
+		try {
+			manager.treasureGroupRemove(player, block, name, true);
+		} catch (TreasureException e) {
+			throw new CommandException(e.getMessage(), e);
 		}
 	}
 	
