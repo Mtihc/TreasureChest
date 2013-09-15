@@ -50,7 +50,7 @@ public class RankCommand extends SimpleCommand {
 		
 		final Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		final ITreasureChest tchest = manager.load(loc);
+		final ITreasureChest tchest = manager.getTreasure(loc);
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure chest");
 		}
@@ -107,7 +107,7 @@ public class RankCommand extends SimpleCommand {
 		
 		final Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		final ITreasureChest tchest = manager.load(loc);
+		final ITreasureChest tchest = manager.getTreasure(loc);
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure.");
 		}
@@ -135,7 +135,7 @@ public class RankCommand extends SimpleCommand {
 		
 		boolean first = tchest.getRanks().isEmpty();
 		tchest.getRanks().add(rank);
-		manager.save(loc, tchest);
+		manager.setTreasure(tchest);
 		
 		if(first) {
 			sender.sendMessage(ChatColor.GREEN + "Only rank " + ChatColor.WHITE + rank + ChatColor.GREEN + " can access this treasure.");
@@ -172,7 +172,7 @@ public class RankCommand extends SimpleCommand {
 		
 		final Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		final ITreasureChest tchest = manager.load(loc);
+		final ITreasureChest tchest = manager.getTreasure(loc);
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure.");
 		}
@@ -196,7 +196,7 @@ public class RankCommand extends SimpleCommand {
 			throw new CommandException("Rank \"" + rank + "\" isn't added to this treasure.");
 		}
 		
-		manager.save(loc, tchest);
+		manager.setTreasure(tchest);
 		
 		if(tchest.getRanks().isEmpty()) {
 			sender.sendMessage(ChatColor.YELLOW + "You no longer need a rank to access this treasure.");

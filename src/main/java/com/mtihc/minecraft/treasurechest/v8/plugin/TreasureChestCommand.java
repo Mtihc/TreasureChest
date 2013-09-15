@@ -86,7 +86,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		if(!manager.has(loc)) {
+		if(!manager.hasTreasure(loc)) {
 			throw new CommandException("You're not looking at a treasure.");
 		}
 		
@@ -148,7 +148,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		else {
 			count = found.size();
 		}
-		int total = manager.getLocations(world.getName()).size();
+		int total = manager.getTreasureLocations(world.getName()).size();
 		String message = count + " out of " + total + " treasures";
 		if(other) {
 			sender.sendMessage(ChatColor.GOLD + "Player " + ChatColor.WHITE + playerName + ChatColor.GOLD + " has found " + message);
@@ -215,7 +215,7 @@ public class TreasureChestCommand extends SimpleCommand {
 			int endIndex = startIndex + totalPerPage;
 			for (int i = startIndex; i < idArray.length && i < endIndex; i++) {
 				Location loc = idArray[i];
-				ITreasureChest chest = manager.load(loc);
+				ITreasureChest chest = manager.getTreasure(loc);
 				if (chest == null) {
 					continue;
 				}
@@ -264,7 +264,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		Player player = (Player) sender;
 	
-		Collection<Location> allChests = manager.getLocations(player.getWorld().getName());
+		Collection<Location> allChests = manager.getTreasureLocations(player.getWorld().getName());
 	
 		int total = allChests.size();
 		int totalPerPage = 10;
@@ -289,7 +289,7 @@ public class TreasureChestCommand extends SimpleCommand {
 			int endIndex = startIndex + totalPerPage;
 			for (int i = startIndex; i < idArray.length && i < endIndex; i++) {
 				Location loc = idArray[i];
-				ITreasureChest chest = manager.load(loc);
+				ITreasureChest chest = manager.getTreasure(loc);
 				if (chest == null) {
 					continue;
 				}
@@ -420,7 +420,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		ITreasureChest tchest = manager.load(loc);
+		ITreasureChest tchest = manager.getTreasure(loc);
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure.");
 		}
@@ -469,7 +469,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		else {
 			sender.sendMessage(ChatColor.YELLOW + "This treasure is no longer random.");
 		}
-		manager.save(loc, tchest);
+		manager.setTreasure(tchest);
 		return;
 	}
 
@@ -495,7 +495,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		ITreasureChest tchest = manager.load(loc);
+		ITreasureChest tchest = manager.getTreasure(loc);
 		
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure.");
@@ -509,7 +509,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		else {
 			sender.sendMessage(ChatColor.YELLOW + "This treasure is no longer unlimited.");
 		}
-		manager.save(loc, tchest);
+		manager.setTreasure(tchest);
 	}
 
 	@Command(aliases = { "ip", "ignoreprotection" }, args = "", desc = "Make a treasure ignore protection.", help = { "When protection is ignored, players can open a treasures ", "even if it's protected by another plugin." })
@@ -534,7 +534,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		ITreasureChest tchest = manager.load(loc);
+		ITreasureChest tchest = manager.getTreasure(loc);
 		
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure.");
@@ -549,7 +549,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		else {
 			sender.sendMessage(ChatColor.YELLOW + "This treasure is no longer accessible, if another plugin is protecting it.");
 		}
-		manager.save(loc, tchest);
+		manager.setTreasure(tchest);
 	}
 
 	@Command(aliases = { "setmsg", "setmessage" }, args = "<number> <message>", desc = "Set messages", help = { "Specify a message number, and the message text.", "Valid message numbers are: ", "1: found", "2: already found", "3: unlimited" })
@@ -573,7 +573,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		ITreasureChest tchest = manager.load(loc);
+		ITreasureChest tchest = manager.getTreasure(loc);
 		
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure.");
@@ -630,7 +630,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		else {
 			sender.sendMessage(ChatColor.GOLD + "Treasure message changed.");
 		}
-		manager.save(loc, tchest);
+		manager.setTreasure(tchest);
 	}
 	
 	@Command(aliases = { "setforget", "setforgettime" }, args = "<days> <hours> <min> <sec>", desc = "Set forget-time", help = { "Defines after how long a treasure can be looted again, per player." })
@@ -668,7 +668,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		ITreasureChest tchest = manager.load(loc);
+		ITreasureChest tchest = manager.getTreasure(loc);
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure.");
 		}
@@ -689,7 +689,7 @@ public class TreasureChestCommand extends SimpleCommand {
 			sender.sendMessage(ChatColor.GOLD + "Changed forget time to " + ChatColor.WHITE + realDays + " days, " + realHours + " hours, " + realMinutes + " minutes, and " + realSeconds + " seconds");
 		}
 		
-		manager.save(loc, tchest);
+		manager.setTreasure(tchest);
 	}
 
 	@Command(aliases = { "forget" }, args = "[player]", desc = "Make a treasure forget you/others.", help = { "It will be as if you, or the specified player, never found it." })
@@ -736,7 +736,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		if(!manager.has(loc)) {
+		if(!manager.hasTreasure(loc)) {
 			throw new CommandException("You're not looking at a treasure.");
 		}
 		
@@ -775,7 +775,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		if(!manager.has(loc)) {
+		if(!manager.hasTreasure(loc)) {
 			throw new CommandException("You're not looking at a treasure.");
 		}
 		

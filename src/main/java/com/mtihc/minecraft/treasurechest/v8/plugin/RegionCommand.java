@@ -109,7 +109,7 @@ public class RegionCommand extends SimpleCommand {
 
 		String name = args[0];
 		
-		if (!manager.groupExists(name)) {
+		if (!manager.hasGroup(name)) {
 			throw new CommandException("Group " + name + " doesn't exist");
 		}
 		
@@ -138,7 +138,7 @@ public class RegionCommand extends SimpleCommand {
 		
 		String name = args[0];
 		
-		if (!manager.groupExists(name)) {
+		if (!manager.hasGroup(name)) {
 			throw new CommandException("Group " + name + " doesn't exist");
 		}
 		
@@ -338,7 +338,7 @@ public class RegionCommand extends SimpleCommand {
 				Iterator<String> is = groups.iterator();
 				while(is.hasNext()) {
 					String tmpGroup = is.next();
-					if (!manager.groupExists(tmpGroup)) {
+					if (!manager.hasGroup(tmpGroup)) {
 						Location loc = block.getLocation();
 						player.sendMessage(ChatColor.RED + "Failed to find group " + tmpGroup + " for chest @ " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ());
 						return;

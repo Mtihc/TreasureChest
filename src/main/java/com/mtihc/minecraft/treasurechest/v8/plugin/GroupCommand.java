@@ -60,7 +60,7 @@ public class GroupCommand extends SimpleCommand {
 		
 		String name = args[0];
 		
-		if (manager.groupExists(name)) {
+		if (manager.hasGroup(name)) {
 			throw new CommandException("Group " + name + " already exists!");
 		}
 			
@@ -70,7 +70,7 @@ public class GroupCommand extends SimpleCommand {
 
 		sender.sendMessage(ChatColor.GOLD + "Created treasure group " + name + ".");
 		
-		manager.saveGroup(name, tcgroup);
+		manager.setGroup(name, tcgroup);
 	}
 
 	@Command(aliases = { "delete" }, args = "<name>", desc = "Delete a treasure group", help = { "This only deletes the group data, individual treasures are not deleted." })
@@ -90,11 +90,11 @@ public class GroupCommand extends SimpleCommand {
 		
 		String name = args[0];
 		
-		if(!manager.groupExists(name)) {
+		if(!manager.hasGroup(name)) {
 			throw new CommandException("Group doesn't exist, or is already deleted.");
 		}
 		else {
-			if(!manager.groupDelete(name)) {
+			if(!manager.removeGroup(name)) {
 				throw new CommandException("Failed to delete group \"" + name + "\".");
 			}
 			sender.sendMessage(ChatColor.YELLOW + "Group deleted.");
@@ -120,7 +120,7 @@ public class GroupCommand extends SimpleCommand {
 
 		String name = args[0];
 		
-		if (!manager.groupExists(name)) {
+		if (!manager.hasGroup(name)) {
 			throw new CommandException("Group " + name + " doesn't exist");
 		}
 		
@@ -153,7 +153,7 @@ public class GroupCommand extends SimpleCommand {
 		
 		String name = args[0];
 
-		if (!manager.groupExists(name)) {
+		if (!manager.hasGroup(name)) {
 			throw new CommandException("Group " + name + " doesn't exist!");
 		}
 		
@@ -202,11 +202,11 @@ public class GroupCommand extends SimpleCommand {
 			throw new CommandException("Player \"" + playerName + "\" does not exist.");
 		}
 		
-		if (!manager.groupExists(name)) {
+		if (!manager.hasGroup(name)) {
 			throw new CommandException("Group " + name + " doesn't exist!");
 		}
 
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
+		ITreasureChestGroup tcgroup = manager.getGroup(name);
 		
 		if (tcgroup == null) {
 			throw new CommandException("Failed to load group " + name);
@@ -234,11 +234,11 @@ public class GroupCommand extends SimpleCommand {
 
 		String name = args[0];
 
-		if (!manager.groupExists(name)) {
+		if (!manager.hasGroup(name)) {
 			throw new CommandException("Group " + name + " doesn't exist!");
 		}
 
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
+		ITreasureChestGroup tcgroup = manager.getGroup(name);
 		
 		if (tcgroup == null) {
 			throw new CommandException("Failed to load group " + name);
@@ -271,11 +271,11 @@ public class GroupCommand extends SimpleCommand {
 
 		String name = args[0];
 
-		if (!manager.groupExists(name)) {
+		if (!manager.hasGroup(name)) {
 			throw new CommandException("Group " + name + " doesn't exist!");
 		}
 
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
+		ITreasureChestGroup tcgroup = manager.getGroup(name);
 		
 		if (tcgroup == null) {
 			throw new CommandException("Failed to load group " + name);
@@ -289,11 +289,11 @@ public class GroupCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		if(!manager.has(loc)) {
+		if(!manager.hasTreasure(loc)) {
 			throw new CommandException("You're not looking at a treasure.");
 		}
 		
-		ITreasureChest tchest = manager.load(loc);
+		ITreasureChest tchest = manager.getTreasure(loc);
 		
 		if (tchest == null) {
 			throw new CommandException("Failed to load treasure.");
@@ -305,7 +305,7 @@ public class GroupCommand extends SimpleCommand {
 		// Check all chests are of the same type as the reference chest before we do anything
 		while(i.hasNext()) {
 			Location locTmp = i.next();
-			ITreasureChest chestTmp = manager.load(locTmp);
+			ITreasureChest chestTmp = manager.getTreasure(locTmp);
 			if (chestTmp == null) {
 				throw new CommandException("Failed to load treasure (for check) at " + locTmp.toString());
 			}
@@ -325,12 +325,12 @@ public class GroupCommand extends SimpleCommand {
 		while(i2.hasNext()) {
 			Location locTmp = i2.next();
 			manager.forgetChest(locTmp);
-			ITreasureChest chestTmp = manager.load(locTmp);
+			ITreasureChest chestTmp = manager.getTreasure(locTmp);
 			if (chestTmp == null) {
 				throw new CommandException("Failed to load treasure (for change) at " + locTmp.toString());
 			}
 			chestTmp.getContainer().setContents(tchest.getContainer().getContents());
-			manager.save(locTmp, chestTmp);
+			manager.setTreasure(chestTmp);
 		}
 		sender.sendMessage(ChatColor.GOLD + "Treasure(s) in group " + name + " have been copied.");
 	}
@@ -354,11 +354,11 @@ public class GroupCommand extends SimpleCommand {
 		String name = args[0];
 		String amount = args[1];
 
-		if (!manager.groupExists(name)) {
+		if (!manager.hasGroup(name)) {
 			throw new CommandException("Group " + name + " doesn't exist!");
 		}
 
-		ITreasureChestGroup tcgroup = manager.loadGroup(name);
+		ITreasureChestGroup tcgroup = manager.getGroup(name);
 		
 		if (tcgroup == null) {
 			throw new CommandException("Failed to load group " + name);
@@ -387,7 +387,7 @@ public class GroupCommand extends SimpleCommand {
 		/* Loop through all chests setting them to random */
 		while(i.hasNext()) {
 			Location locTmp = i.next();
-			ITreasureChest chestTmp = manager.load(locTmp);
+			ITreasureChest chestTmp = manager.getTreasure(locTmp);
 
 			manager.forgetChest(locTmp);
 			ItemStack[] contents = chestTmp.getContainer().getContents();
@@ -412,7 +412,7 @@ public class GroupCommand extends SimpleCommand {
 
 			chestTmp.setAmountOfRandomlyChosenStacks(randomness);
 
-			manager.save(locTmp, chestTmp);
+			manager.setTreasure(chestTmp);
 		}
 
 		if(randomness > 0) {
@@ -441,7 +441,7 @@ public class GroupCommand extends SimpleCommand {
 		}
 
 		sender.sendMessage(ChatColor.GREEN + "Teasure groups.");
-		Set<String> groupList = manager.getGroups();
+		Set<String> groupList = manager.getGroupNames();
 		Iterator<String> i = groupList.iterator();
 		while(i.hasNext()) {
 			String group = i.next();

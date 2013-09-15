@@ -66,7 +66,7 @@ public class RewardCommand extends SimpleCommand {
 		
 		final Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		final ITreasureChest tchest = manager.load(loc);
+		final ITreasureChest tchest = manager.getTreasure(loc);
 		
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure.");
@@ -138,7 +138,7 @@ public class RewardCommand extends SimpleCommand {
 			@Override
 			public void onCreate(CommandSender sender, String[] args, IReward reward) {
 				tchest.getRewards().add(reward.getInfo());
-				manager.save(loc, tchest);
+				manager.setTreasure(tchest);
 				sender.sendMessage(ChatColor.GREEN + "Reward saved.");
 			}
 		});
@@ -164,7 +164,7 @@ public class RewardCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		ITreasureChest tchest = manager.load(loc);
+		ITreasureChest tchest = manager.getTreasure(loc);
 		
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure.");
@@ -191,7 +191,7 @@ public class RewardCommand extends SimpleCommand {
 		List<RewardInfo> rewards = tchest.getRewards();
 		rewards.remove(number - 1);
 		tchest.setRewards(rewards);
-		manager.save(loc, tchest);
+		manager.setTreasure(tchest);
 		
 		sender.sendMessage(ChatColor.GREEN + "Reward " + ChatColor.WHITE + String.valueOf(number) + ChatColor.GREEN + " removed.");
 		
@@ -218,13 +218,13 @@ public class RewardCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		ITreasureChest tchest = manager.load(loc);
+		ITreasureChest tchest = manager.getTreasure(loc);
 		
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure.");
 		}
 		tchest.setRewards(null);
-		manager.save(loc, tchest);
+		manager.setTreasure(tchest);
 		sender.sendMessage(ChatColor.GREEN + "Cleared all rewards from this treasure.");
 	}
 
@@ -248,7 +248,7 @@ public class RewardCommand extends SimpleCommand {
 		
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		ITreasureChest tchest = manager.load(loc);
+		ITreasureChest tchest = manager.getTreasure(loc);
 		
 		if(tchest == null) {
 			throw new CommandException("You're not looking at a treasure.");

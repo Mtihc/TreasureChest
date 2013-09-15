@@ -43,7 +43,7 @@ class TreasureChestListener implements Listener {
 		InventoryHolder holder = event.getInventory().getHolder();
 		if(holder instanceof BlockState || holder instanceof DoubleChest) {
 			Location loc = TreasureManager.getLocation(event.getInventory().getHolder());
-			if(control.has(loc)) {
+			if(control.hasTreasure(loc)) {
 				event.setCancelled(true);
 			}
 		}
@@ -67,7 +67,7 @@ class TreasureChestListener implements Listener {
 			InventoryHolder holder = (InventoryHolder)block.getState();
 			
 			Location loc = TreasureManager.getLocation(holder);
-			if(control.has(loc)) {
+			if(control.hasTreasure(loc)) {
 				event.setCancelled(true);
 			}
 			
@@ -87,7 +87,7 @@ class TreasureChestListener implements Listener {
 			InventoryHolder holder = ((InventoryHolder)block.getState()).getInventory().getHolder();
 
 			Location loc = TreasureManager.getLocation(holder);
-			if(control.has(loc)) {
+			if(control.hasTreasure(loc)) {
 				event.setCancelled(true);
 			}
 		}
@@ -110,7 +110,7 @@ class TreasureChestListener implements Listener {
 			
 			Location loc = TreasureManager.getLocation(holder);
 			
-			if(control.has(loc)) {
+			if(control.hasTreasure(loc)) {
 				cancelled = true;
 				break;
 			}
