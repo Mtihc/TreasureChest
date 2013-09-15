@@ -2,20 +2,17 @@ package com.mtihc.minecraft.treasurechest.v8.core;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -87,9 +84,6 @@ public class TreasureManager extends TreasureDataFacade {
 	
 	private JavaPlugin plugin;
 	private ITreasureManagerConfiguration config;
-	private ITreasureChestRepository chests;
-	private ITreasureChestGroupRepository groups;
-	private ITreasureChestMemory memory;
 	
 	private LinkedHashMap<String, TreasureInventory> inventories = new LinkedHashMap<String, TreasureInventory>();
 	private String permAccessNormal;
@@ -151,7 +145,7 @@ public class TreasureManager extends TreasureDataFacade {
 		if(tchest == null || !dispatchTreasureDelete(tchest)) {
 			return false;
 		}
-		memory.forgetChest(location);
+		forgetChest(location);
 		return super.removeTreasure(location);
 	}
 
