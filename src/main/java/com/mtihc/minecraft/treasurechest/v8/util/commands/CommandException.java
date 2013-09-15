@@ -1,4 +1,4 @@
-package com.mtihc.minecraft.treasurechest.v8.plugin.util.commands;
+package com.mtihc.minecraft.treasurechest.v8.util.commands;
 
 public class CommandException extends Exception {
 

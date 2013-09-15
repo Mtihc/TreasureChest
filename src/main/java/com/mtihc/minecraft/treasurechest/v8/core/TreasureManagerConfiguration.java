@@ -5,7 +5,7 @@ import java.util.List;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest.Message;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.YamlFile;
+import com.mtihc.minecraft.treasurechest.v8.util.YamlFile;
 
 public class TreasureManagerConfiguration extends YamlFile implements
 		ITreasureManagerConfiguration {

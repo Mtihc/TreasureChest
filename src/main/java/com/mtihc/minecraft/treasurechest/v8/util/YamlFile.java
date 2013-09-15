@@ -1,4 +1,4 @@
-package com.mtihc.minecraft.treasurechest.v8.plugin.util;
+package com.mtihc.minecraft.treasurechest.v8.util;
 
 
 import java.io.File;

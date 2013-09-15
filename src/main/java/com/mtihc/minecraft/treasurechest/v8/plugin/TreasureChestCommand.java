@@ -16,11 +16,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureException;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.Command;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.ICommand;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.SimpleCommand;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactoryManager;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.Command;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.CommandException;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.ICommand;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.SimpleCommand;
 
 public class TreasureChestCommand extends SimpleCommand {
 

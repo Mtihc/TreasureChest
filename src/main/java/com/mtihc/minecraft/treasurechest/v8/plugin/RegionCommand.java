@@ -19,10 +19,10 @@ import org.bukkit.util.Vector;
 
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureException;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.Command;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.ICommand;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.SimpleCommand;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.Command;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.CommandException;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.ICommand;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.SimpleCommand;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 

@@ -13,7 +13,7 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
-import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.prompts.SelectBlockPrompt;
+import com.mtihc.minecraft.treasurechest.v8.util.prompts.SelectBlockPrompt;
 
 public class ExplosionRewardFactory extends RewardFactory {
 

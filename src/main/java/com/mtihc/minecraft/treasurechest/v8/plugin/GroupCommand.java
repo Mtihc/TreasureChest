@@ -17,10 +17,10 @@ import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChestGroup;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureChestGroup;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureException;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.Command;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.ICommand;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.SimpleCommand;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.Command;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.CommandException;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.ICommand;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.SimpleCommand;
 
 public class GroupCommand extends SimpleCommand {
 

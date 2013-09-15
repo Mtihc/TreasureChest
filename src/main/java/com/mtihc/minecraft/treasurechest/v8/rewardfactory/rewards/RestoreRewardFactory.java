@@ -16,8 +16,8 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.RestoreTaskQueue.Observer;
-import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.prompts.SelectRegionPrompt;
-import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.prompts.SelectSnapshotPrompt;
+import com.mtihc.minecraft.treasurechest.v8.util.prompts.SelectRegionPrompt;
+import com.mtihc.minecraft.treasurechest.v8.util.prompts.SelectSnapshotPrompt;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.snapshots.Snapshot;
 

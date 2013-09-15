@@ -12,8 +12,6 @@ import com.mtihc.minecraft.treasurechest.v8.core.TreasureChestMemory;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureChestRepository;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManagerConfiguration;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.CommandException;
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.commands.SimpleCommand;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.AirRewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.BankRobberRewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.BroadcastRewardFactory;
@@ -30,6 +28,8 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.RestoreRewardF
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.ScoreRewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.SpawnRewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.TeleportRewardFactory;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.CommandException;
+import com.mtihc.minecraft.treasurechest.v8.util.commands.SimpleCommand;
 
 public class TreasureChestPlugin extends JavaPlugin implements Listener {
 	

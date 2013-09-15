@@ -18,7 +18,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.YamlRepository;
+import com.mtihc.minecraft.treasurechest.v8.util.YamlRepository;
 
 public class TreasureChestMemory extends YamlRepository<String> implements ITreasureChestMemory {
 

@@ -27,7 +27,7 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
-import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.prompts.SelectRegionPrompt;
+import com.mtihc.minecraft.treasurechest.v8.util.prompts.SelectRegionPrompt;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class TeleportRewardFactory extends RewardFactory {

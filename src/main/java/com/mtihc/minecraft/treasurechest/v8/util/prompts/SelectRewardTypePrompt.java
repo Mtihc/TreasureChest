@@ -1,4 +1,4 @@
-package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.prompts;
+package com.mtihc.minecraft.treasurechest.v8.util.prompts;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

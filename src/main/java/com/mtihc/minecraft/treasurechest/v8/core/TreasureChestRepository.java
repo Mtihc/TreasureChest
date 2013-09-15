@@ -13,7 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.Repository;
+import com.mtihc.minecraft.treasurechest.v8.util.Repository;
 
 public class TreasureChestRepository extends Repository<Location, ITreasureChest> implements ITreasureChestRepository {
 

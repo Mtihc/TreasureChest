@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 
-import com.mtihc.minecraft.treasurechest.v8.plugin.util.Repository;
+import com.mtihc.minecraft.treasurechest.v8.util.Repository;
 
 public class TreasureChestGroupRepository extends Repository<String, ITreasureChestGroup> implements ITreasureChestGroupRepository {
 
