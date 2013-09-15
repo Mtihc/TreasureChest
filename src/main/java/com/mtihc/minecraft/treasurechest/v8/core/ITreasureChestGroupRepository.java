@@ -4,14 +4,14 @@ import java.util.Set;
 
 public interface ITreasureChestGroupRepository {
 	
-	public ITreasureChestGroup load(String name);
+	public ITreasureChestGroup getGroup(String name);
 	
-	public void save(String name, ITreasureChestGroup value);
+	public void setGroup(String name, ITreasureChestGroup value);
 	
-	public boolean exists(String name);
+	public boolean hasGroup(String name);
 	
-	public void delete(String name);
+	public boolean removeGroup(String name);
 
-	public Set<String> getGroups();
+	public Set<String> getGroupNames();
 	
 }

@@ -7,7 +7,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 
 public interface ITreasureChestMemory {
-
+	
 	Collection<Location> getAllPlayerFound(OfflinePlayer player, World world);
 	
 	long whenHasPlayerFound(OfflinePlayer player, Location location);

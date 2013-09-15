@@ -1,10 +1,13 @@
 package com.mtihc.minecraft.treasurechest.v8.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -12,11 +15,12 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.mtihc.minecraft.treasurechest.v8.plugin.util.YamlRepository;
 
-public class TreasureChestMemory extends YamlRepository implements ITreasureChestMemory {
+public class TreasureChestMemory extends YamlRepository<String> implements ITreasureChestMemory {
 
 	public TreasureChestMemory(String directory) {
 		super(directory);
@@ -35,9 +39,36 @@ public class TreasureChestMemory extends YamlRepository implements ITreasureChes
 	}
 
 	@Override
+	public File getYamlFile(String playerName) {
+		return new File(directory + "/" + playerName + ".yml");
+	}
+
+	private YamlConfiguration getYamlConfig(String playerName) {
+		try {
+			return loadYamlConfig(playerName);
+		} catch (FileNotFoundException e) {
+			return null;
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "Failed to load TreasureChest memory file " + getYamlFile(playerName) + " due to IOException.", e);
+			return null;
+		} catch (InvalidConfigurationException e) {
+			logger.log(Level.WARNING, "Failed to load TreasureChest memory file " + getYamlConfig(playerName) + " due to InvalidConfigurationException.", e);
+			return null;
+		}
+	}
+	
+	private void setYamlConfig(String playerName, YamlConfiguration config) {
+		try {
+			saveYamlConfig(playerName, config);
+		} catch (IOException e) {
+			logger.log(Level.WARNING, "Failed to save TreasureChest memory file " + getYamlFile(playerName) + " due to IOException.", e);
+		}
+	}
+
+	@Override
 	public Collection<Location> getAllPlayerFound(OfflinePlayer player, World world) {
 		ArrayList<Location> locs = new ArrayList<Location>();
-		YamlConfiguration config = load(player.getName());
+		YamlConfiguration config = getYamlConfig(player.getName());
 		if(config == null) {
 			return locs;
 		}
@@ -67,7 +98,7 @@ public class TreasureChestMemory extends YamlRepository implements ITreasureChes
 
 	@Override
 	public long whenHasPlayerFound(OfflinePlayer player, Location location) {
-		YamlConfiguration config = load(player.getName());
+		YamlConfiguration config = getYamlConfig(player.getName());
 		if(config == null) {
 			return 0L;
 		}
@@ -83,12 +114,12 @@ public class TreasureChestMemory extends YamlRepository implements ITreasureChes
 	public void rememberPlayerFound(OfflinePlayer player, Location location) {
 		long time = Calendar.getInstance().getTimeInMillis();
 		
-		YamlConfiguration config = load(player.getName());
+		YamlConfiguration config = getYamlConfig(player.getName());
 		if(config == null) {
 			config = new YamlConfiguration();
 		}
 		config.set(locationToString(location), time);
-		save(player.getName(), config);
+		setYamlConfig(player.getName(), config);
 	}
 
 	@Override
@@ -97,22 +128,22 @@ public class TreasureChestMemory extends YamlRepository implements ITreasureChes
 	}
 	
 	private void forgetPlayerFound(String playerName, Location location) {
-		YamlConfiguration config = load(playerName);
+		YamlConfiguration config = getYamlConfig(playerName);
 		if(config == null) {
 			return;
 		}
 		config.set(locationToString(location), null);
-		save(playerName, config);
+		setYamlConfig(playerName, config);
 	}
 
 	@Override
 	public void forgetPlayerFoundAll(OfflinePlayer player, World world) {
-		YamlConfiguration config = load(player.getName());
+		YamlConfiguration config = getYamlConfig(player.getName());
 		if(config == null) {
 			return;
 		}
 		config.set(world.getName(), null);
-		save(player.getName(), config);
+		setYamlConfig(player.getName(), config);
 	}
 
 	@Override
@@ -123,5 +154,4 @@ public class TreasureChestMemory extends YamlRepository implements ITreasureChes
 			forgetPlayerFound(name, location);
 		}
 	}
-
 }

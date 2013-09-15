@@ -6,13 +6,13 @@ import org.bukkit.Location;
 
 public interface ITreasureChestRepository {
 
-	public ITreasureChest load(Location location);
+	public ITreasureChest getTreasure(Location location);
 	
-	public void save(Location location, ITreasureChest value);
+	public void setTreasure(ITreasureChest value);
 	
-	public boolean has(Location location);
+	public boolean hasTreasure(Location location);
 	
-	public void delete(Location location);
+	public boolean removeTreasure(Location location);
 	
-	public Set<Location> getLocations(String worldName);
+	public Set<Location> getTreasureLocations(String worldName);
 }

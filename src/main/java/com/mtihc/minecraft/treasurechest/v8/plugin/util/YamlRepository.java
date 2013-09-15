@@ -9,19 +9,19 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.google.common.io.Files;
 
-public class YamlRepository {
+public abstract class YamlRepository<K> {
 
-	private File directory;
+	public final File directory;
 
-	public Logger logger;
+	public final Logger logger;
 	
 	public YamlRepository(String directory) {
 		this(new File(directory));
@@ -45,29 +45,15 @@ public class YamlRepository {
 		}
 	}
 	
+	public abstract File getYamlFile(K key);
 	
-	public File getDirectory() {
-		return directory;
-	}
-	
-	public File getYamlFile(String name) {
-		return new File(directory + "/" + name + ".yml");
-	}
-	
-	public YamlConfiguration load(String name) {
+	public YamlConfiguration loadYamlConfig(K key) throws FileNotFoundException, IOException, InvalidConfigurationException {
 		YamlConfiguration config = new YamlConfiguration();
-		File file = getYamlFile(name);
-        try {
-            if (isValidUTF8(Files.toByteArray(file))) {
-            	config.loadFromString(Files.toString(file, Charset.forName("UTF-8")));
-            } else {
-            	config.load(file);
-            }
-        } catch(FileNotFoundException e) {
-        	return null;
-        } catch (Exception e) {
-        	logger.log(Level.WARNING, "Couldn't load \"" + file + "\". ", e);
-        	return null;
+		File file = getYamlFile(key);
+		if (isValidUTF8(Files.toByteArray(file))) {
+        	config.loadFromString(Files.toString(file, Charset.forName("UTF-8")));
+        } else {
+        	config.load(file);
         }
         return config;
 	}
@@ -88,24 +74,20 @@ public class YamlRepository {
         }
     }
 
-	public void save(String name, YamlConfiguration config) {
-		try {
-			config.save(getYamlFile(name));
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "Couldn't save \"" + name + "\".", e);
-			return;
-		}
+	public void saveYamlConfig(K key, YamlConfiguration config) throws IOException {
+		File file = getYamlFile(key);
+		config.save(file);
 	}
 	
-	public boolean has(String name) {
-		return getYamlFile(name).exists();
+	public boolean exists(K key) {
+		return getYamlFile(key).exists();
 	}
 	
 	public Set<String> getNames() {
 		final HashSet<String> result = new HashSet<String>();
 		final String extension = ".yml";
 		final int length = extension.length();
-		getDirectory().list(new FilenameFilter() {
+		directory.list(new FilenameFilter() {
 			
 			@Override
 			public boolean accept(File dir, String name) {
@@ -120,7 +102,7 @@ public class YamlRepository {
 		return result;
 	}
 
-	public void delete(String name) {
-		getYamlFile(name).delete();
+	public boolean delete(K key) {
+		return getYamlFile(key).delete();
 	}
 }

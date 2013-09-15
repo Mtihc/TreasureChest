@@ -44,7 +44,7 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactoryManager;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
 
-public class TreasureManager {
+public class TreasureManager extends TreasureDataFacade {
 	private String errorString;
 	
 	static {
@@ -98,13 +98,25 @@ public class TreasureManager {
 	
 	private RewardFactoryManager rewardManager;
 	
-	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestGroupRepository groups, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited, String permRank) {
+	
+	
+	/**
+	 * Constructor.
+	 * @param plugin The JavaPlugin
+	 * @param config The configuration
+	 * @param chests The chests repository
+	 * @param groups The groups repository
+	 * @param memory The memory/players repository
+	 * @param permAccessNormal Normal treasure access permission string
+	 * @param permAccessUnlimited Unlimited treasure access permission string
+	 * @param permRank The first part of the rank permission string
+	 */
+	public TreasureManager(JavaPlugin plugin, ITreasureManagerConfiguration config,
+			ITreasureChestRepository chests,
+			ITreasureChestGroupRepository groups, ITreasureChestMemory memory, String permAccessNormal, String permAccessUnlimited, String permRank) {
+		super(config, chests, groups, memory);
 		this.plugin = plugin;
-		this.config = config;
-		this.chests = chests;
-		this.groups = groups;
-		this.memory = memory;
-		
+
 		this.permAccessNormal = permAccessNormal;
 		this.permAccessUnlimited = permAccessUnlimited;
 		this.permRank = permRank;
@@ -115,79 +127,38 @@ public class TreasureManager {
 		plugin.getServer().getPluginManager().registerEvents(listener, plugin);
 	}
 	
+	/**
+	 * Returns the JavaPlugin
+	 * @return the plugin
+	 */
 	public JavaPlugin getPlugin() {
 		return plugin;
 	}
 	
-	public ITreasureManagerConfiguration getConfig() {
-		return config;
-	}
-	
+	/**
+	 * Returns the reward factory manager
+	 * @return the reward factory manager
+	 */
 	public RewardFactoryManager getRewardManager() {
 		return rewardManager;
 	}
 	
 	
-	
-	
-	
-	public ITreasureChest load(Location location) {
-		return chests.load(location);
-	}
 
-	public void save(Location location, ITreasureChest value) {
-		chests.save(location, value);
-	}
-
-	public boolean has(Location location) {
-		return chests.has(location);
-	}
-
-	public boolean delete(Location location) {
-		ITreasureChest tchest = load(location);
+	@Override
+	public boolean removeTreasure(Location location) {
+		ITreasureChest tchest = getTreasure(location);
 		if(tchest == null || !dispatchTreasureDelete(tchest)) {
 			return false;
 		}
 		memory.forgetChest(location);
-		chests.delete(location);
-		return true;
-	}
-	
-	public Set<Location> getLocations(String worldName) {
-		return chests.getLocations(worldName);
-	}
-	
-	
-	
-	
-	
-	public Collection<Location> getAllPlayerFound(OfflinePlayer player, World world) {
-		return memory.getAllPlayerFound(player, world);
+		return super.removeTreasure(location);
 	}
 
-	public long whenHasPlayerFound(OfflinePlayer player, Location location) {
-		return memory.whenHasPlayerFound(player, location);
-	}
-
-	public boolean hasPlayerFound(OfflinePlayer player, Location location) {
-		return memory.hasPlayerFound(player, location);
-	}
-
-	public void rememberPlayerFound(OfflinePlayer player, Location location) {
-		memory.rememberPlayerFound(player, location);
-	}
-
-	public void forgetPlayerFound(OfflinePlayer player, Location location) {
-		memory.forgetPlayerFound(player, location);
-	}
-
-	public void forgetPlayerFoundAll(OfflinePlayer player, World world) {
-		memory.forgetPlayerFoundAll(player, world);
-	}
-
+	@Override
 	public void forgetChest(Location location) {
-		ITreasureChest tchest = load(location);
-		if (tchest.isShared()) {
+		ITreasureChest tchest = getTreasure(location);
+		if (tchest != null && tchest.isShared()) {
 			// shared chests don't have a timed removal, their inventory will persist until
 			// server reset or a forget-all command is issued
 			// TODO if we end up using the forget-time somehow, we will need timed removal
@@ -195,7 +166,7 @@ public class TreasureManager {
 			final String KEY = loc.getWorld().getName() + "@" + loc.toVector().toString();
 			inventories.remove(KEY);
 		} else {
-			memory.forgetChest(location);
+			super.forgetChest(location);
 		}
 	}
 	
@@ -204,7 +175,10 @@ public class TreasureManager {
 	
 	
 	
-	
+	/**
+	 * Called automatically by the internal event listener that has a reference to this manager, whenever a player interact event occurs.
+	 * @param event the player interact event
+	 */
 	void onPlayerInteract(final PlayerInteractEvent event) {
 		
 		// check action
@@ -270,6 +244,12 @@ public class TreasureManager {
 		
 	}
 	
+	/**
+	 * Helper method to open a treasure. 
+	 * <p>Creates the fake inventory and it's contents. 
+	 * Checks and remembers whether the treasure was found before. 
+	 * And opens the fake inventory for the player.</p>
+	 */
 	public void openTreasureInventory(Player player, ITreasureChest tchest) {
 
 		Inventory inventory;
@@ -466,7 +446,7 @@ public class TreasureManager {
 		Location location = getLocation(holder);
 		
 		// get the treasure chest object
-		return load(location);
+		return getTreasure(location);
 	}
 	
 	public boolean isBlock(Block block) {
@@ -783,31 +763,6 @@ public class TreasureManager {
 			}
 		}
 	}
-
-	public ITreasureChestGroup loadGroup(String name) {
-		return groups.load(name);
-	}
-
-	public void saveGroup(String name, ITreasureChestGroup value) {
-		groups.save(name, value);
-	}
-	
-	public boolean groupExists(String name) {
-		return groups.exists(name);
-	}
-
-	public boolean groupDelete(String name) {
-		ITreasureChestGroup tcgroup = loadGroup(name);
-		if(tcgroup == null) {
-			return false;
-		}
-		groups.delete(name);
-		return true;
-	}
-	
-	public Set<String> getGroups() {
-		return groups.getGroups();
-	}
 	
 	public boolean treasureSet(Player player, Block block, boolean displayMessages) {
 		return treasureSet(player, block, displayMessages, false);
@@ -821,7 +776,7 @@ public class TreasureManager {
 		InventoryHolder holder = (InventoryHolder) block.getState();
 		Location loc = TreasureManager.getLocation(holder);
 		
-		ITreasureChest tchest = load(loc);
+		ITreasureChest tchest = getTreasure(loc);
 		
 		if(tchest != null) {
 			
@@ -854,14 +809,14 @@ public class TreasureManager {
 				player.sendMessage(ChatColor.GOLD + "Treasure saved");
 			}
 		}
-		save(loc, tchest);
+		setTreasure(tchest);
 		return true;
 	}
 	
 	public boolean treasureDelete(Player player, Block block, boolean displayMessages) {
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		if(!has(loc)) {
+		if(!hasTreasure(loc)) {
 			errorString = "Treasure doesn't exist, or is already deleted.";
 			return false;
 		}
@@ -870,11 +825,11 @@ public class TreasureManager {
 			int BlockY = loc.getBlockY();
 			int BlockZ = loc.getBlockZ();
 			// Check if the chest is in any groups and if it is remove it from them
-			Set<String> groupList = getGroups();
+			Set<String> groupList = getGroupNames();
 			Iterator<String> ig = groupList.iterator();
 			while(ig.hasNext()) {
 				String group = ig.next();
-				ITreasureChestGroup tcgroup = loadGroup(group);
+				ITreasureChestGroup tcgroup = getGroup(group);
 				Set<Location> locs = tcgroup.getLocations();
 				Iterator<Location> il = locs.iterator();
 				while(il.hasNext()) {
@@ -883,7 +838,7 @@ public class TreasureManager {
 					if ((BlockX == tmpLoc.getBlockX()) &&
 							(BlockY == tmpLoc.getBlockY()) &&
 							(BlockZ == tmpLoc.getBlockZ())){
-						ITreasureChest tchest = load(loc);
+						ITreasureChest tchest = getTreasure(loc);
 						if (!tcgroup.removeChest(tchest)) {
 							errorString = tcgroup.getError();
 							return false;
@@ -892,12 +847,12 @@ public class TreasureManager {
 						if (displayMessages) {
 							player.sendMessage(ChatColor.GRAY + "Treasure removed from group " + group + ".");
 						}
-						saveGroup(group, tcgroup);
+						setGroup(group, tcgroup);
 					}
 				}
 			}
 			
-			if(!delete(loc)) {
+			if(!removeTreasure(loc)) {
 				errorString = "Deletion of the Treasure was cancelled.";
 				return false;
 			}
@@ -911,14 +866,14 @@ public class TreasureManager {
 	public boolean treasureGroupAdd(Player player, Block block, String name, boolean displayMessages) {
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		ITreasureChest tchest = load(loc);
+		ITreasureChest tchest = getTreasure(loc);
 		
 		if(tchest == null) {
 			errorString = "You're not looking at a treasure.";
 			return false;
 		}
 	
-		ITreasureChestGroup tcgroup = loadGroup(name);
+		ITreasureChestGroup tcgroup = getGroup(name);
 		
 		if (tcgroup == null) {
 			errorString = "Failed to load group " + name + ".";
@@ -934,21 +889,21 @@ public class TreasureManager {
 			player.sendMessage(ChatColor.GOLD + "Treasure added to group " + name + ".");
 		}
 		
-		saveGroup(name, tcgroup);
+		setGroup(name, tcgroup);
 		return true;
 	}
 
 	public boolean treasureGroupRemove(Player player, Block block, String name, boolean displayMessages) {
 		Location loc = TreasureManager.getLocation((InventoryHolder) block.getState());
 		
-		ITreasureChest tchest = load(loc);
+		ITreasureChest tchest = getTreasure(loc);
 		
 		if(tchest == null) {
 			errorString = "You're not looking at a treasure.";
 			return false;
 		}
 	
-		ITreasureChestGroup tcgroup = loadGroup(name);
+		ITreasureChestGroup tcgroup = getGroup(name);
 		
 		if (tcgroup == null) {
 			errorString = "Failed to load group " + name;
@@ -964,7 +919,7 @@ public class TreasureManager {
 			player.sendMessage(ChatColor.GOLD + "Treasure removed from group " + name + ".");
 		}
 		
-		saveGroup(name, tcgroup);
+		setGroup(name, tcgroup);
 		return true;
 	}
 
