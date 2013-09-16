@@ -28,7 +28,12 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class RegionCommand extends SimpleCommand {
 	private enum TaskType {
-		SET, SET_SHARED, GROUP_ADD, GROUP_REMOVE, DELETE, USE_META_DATA;
+		SET, SET_SHARED, GROUP_ADD, GROUP_REMOVE, DELETE,
+		/**
+		 * @deprecated Will become obsolete once the book-config feature is implemented.
+		 */
+		@Deprecated
+		USE_META_DATA;
 	}
 	
 	private final EnumSet<Material> ContainerBlocks = EnumSet.of(Material.DISPENSER, Material.CHEST, Material.FURNACE, Material.BURNING_FURNACE, Material.TRAPPED_CHEST, Material.HOPPER, Material.DROPPER);
@@ -43,6 +48,7 @@ public class RegionCommand extends SimpleCommand {
 		addNested("setShared");
 		addNested("groupAdd");
 		addNested("groupRemove");
+		// TODO remove when useMetaData method is removed
 		addNested("useMetaData");
 		addNested("delete");
 	}
@@ -151,6 +157,10 @@ public class RegionCommand extends SimpleCommand {
 		schudleFindContainerBlocks(player, TaskType.GROUP_REMOVE, name, filter);
 	}
 
+	/**
+	 * @deprecated Will be obsolete once book-config feature is implemented.
+	 */
+	@Deprecated
 	@Command(aliases = { "use-meta-data" }, args = "[block,white-list]", desc = "Create/update all treasure in the selected region using the meta-data of items in the chest (sticks with names where shared will make a chest shared and any other name will add the chest to a group with that name)", help = { "" })
 	public void useMetaData(CommandSender sender, String[] args) throws CommandException {
 		
@@ -312,6 +322,10 @@ public class RegionCommand extends SimpleCommand {
 			this.group = group;
 		}
 
+		/**
+		 * @deprecated Will become obsolete once the book-config feature is implemented
+		 */
+		@Deprecated
 		private void createChestFromMetadata(Player player, Block block) {
 			InventoryHolder holder = (InventoryHolder) block.getState();
 			Iterator<ItemStack> ic = holder.getInventory().iterator();
