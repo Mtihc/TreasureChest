@@ -132,36 +132,57 @@ public class SimpleCommand implements ICommand {
 		String firstArgument;
 		if(args.length == 0) {
 			// no arguments
-			onCommandHelp(sender, args);
+			onCommand(sender, args);
 			return;
 		}
 		else {
 			firstArgument = args[0];
-			// first argument is not help
-			ICommand nested = getNested(firstArgument);
-			if(nested == null) {
-				// first argument is not a nested command
-				onCommandHelp(sender, args);
+			
+			if(firstArgument.equals("?") || firstArgument.equalsIgnoreCase("help")) {
+				sendHelp(sender, this);
 				return;
 			}
-			else {
+			
+			// first argument is not help
+			ICommand nested = getNested(firstArgument);
+
+			if(nested != null) {
 				// first argument is nested command
-				
 				try {
+					// remove first argument
 					args = Arrays.copyOfRange(args, 1, args.length);
 				} catch(Exception e) {
 					args = new String[0];
 				}
 				
-				String help;
 				try {
-					help = args[0];
-					if(help.equalsIgnoreCase("?")) {
+					firstArgument = args[0];
+					if(firstArgument.equals("?") || firstArgument.equalsIgnoreCase("help")) {
+						// new first argument is help
 						sendHelp(sender, nested);
 						return;
 					}
-				} catch(IndexOutOfBoundsException e) {
-					
+				} catch(IndexOutOfBoundsException e) { }
+				
+				// new first argument is not help
+				
+				// execute nested command
+				nested.execute(sender, args);
+				return;
+			}
+			if(nested == null) {
+				// first argument is not a nested command
+				
+				// execute this command
+				onCommand(sender, args);
+				return;
+			}
+			else {
+				// first argument is nested command
+				try {
+					args = Arrays.copyOfRange(args, 1, args.length);
+				} catch(Exception e) {
+					args = new String[0];
 				}
 				
 				nested.execute(sender, args);
@@ -172,12 +193,14 @@ public class SimpleCommand implements ICommand {
 
 	/**
 	 * Sends help messages to the command sender.
-	 * <p>This method is used in method <code>execute</code>.</p>
+	 * <p>This method is used in method <code>execute</code>. 
+	 * This method can be overridden to implement different command behavior. 
+	 * But usually the main command simply sends information about it's nested commands.</p>
 	 * @param sender the command sender
 	 * @param args the command arguments
 	 * @throws CommandException thrown when the command could not be executed
 	 */
-	protected void onCommandHelp(CommandSender sender, String[] args) throws CommandException {
+	protected void onCommand(CommandSender sender, String[] args) throws CommandException {
 		int page;
 		try {
 			page = Integer.parseInt(args[0]);
