@@ -7,6 +7,12 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 
+/**
+ * Facade class that combines a bunch of data related objects.
+ * 
+ * @author Mitch
+ *
+ */
 public class TreasureDataFacade implements ITreasureDataFacade {
 
 	private ITreasureManagerConfiguration config;
@@ -14,6 +20,13 @@ public class TreasureDataFacade implements ITreasureDataFacade {
 	private ITreasureChestGroupRepository groups;
 	private ITreasureChestMemory memory;
 
+	/**
+	 * Constructor.
+	 * @param config the manager configuration
+	 * @param chests the treasure repository
+	 * @param groups the group repository
+	 * @param memory the memory/player repository
+	 */
 	public TreasureDataFacade(ITreasureManagerConfiguration config, ITreasureChestRepository chests, ITreasureChestGroupRepository groups, ITreasureChestMemory memory) {
 		this.config = config;
 		this.chests = chests;

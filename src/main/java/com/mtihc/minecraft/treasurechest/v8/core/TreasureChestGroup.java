@@ -12,13 +12,23 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
-
+/**
+ * Class representing a group of treasures.
+ * 
+ * @author Mitch
+ *
+ */
 public class TreasureChestGroup implements ITreasureChestGroup {
 
 	private String world;
 	private String name;
 	private List<Location> chests;
 	
+	/**
+	 * Constructor.
+	 * @param world the world name
+	 * @param name the group name
+	 */
 	public TreasureChestGroup(String world, String name) {
 		this.world = world;
 		this.name = name;
@@ -26,6 +36,10 @@ public class TreasureChestGroup implements ITreasureChestGroup {
 		chests = new ArrayList<Location>();
 	}
 
+	/**
+	 * Deserialization constructor.
+	 * @param values the serialized values
+	 */
 	public TreasureChestGroup(Map<String, Object> values) {
 		chests = new ArrayList<Location>();
 
@@ -42,6 +56,7 @@ public class TreasureChestGroup implements ITreasureChestGroup {
 		}
 	}
 	
+	@Override
 	public void addChest(ITreasureChest chest) throws Exception {
 		String chestsWorld = chest.getContainer().getLocation().getWorld().getName();
 		if (chestsWorld.equals(world)) {
@@ -57,6 +72,7 @@ public class TreasureChestGroup implements ITreasureChestGroup {
 		throw new Exception("Treasure (in world " + chestsWorld + ") is not in the same world as the group (" + world + ")");
 	}
 	
+	@Override
 	public boolean removeChest(ITreasureChest chest) throws Exception {
 		if (!chests.contains(chest.getContainer().getLocation())) {
 			throw new Exception("Treasure is not in the group.");
@@ -64,6 +80,7 @@ public class TreasureChestGroup implements ITreasureChestGroup {
 		return chests.remove(chest.getContainer().getLocation());
 	}
 
+	@Override
 	public Set<Location> getLocations() {
 		final Set<Location> result = new HashSet<Location>();
 		Iterator<Location> i = chests.iterator();

@@ -13,7 +13,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-
+/**
+ * Class representing a block with an inventory.
+ * 
+ * @author Mitch
+ *
+ */
 public class BlockInventory implements IBlockInventory {
 
 	private Location location;
@@ -44,6 +49,11 @@ public class BlockInventory implements IBlockInventory {
 		}
 	}*/
 
+	/**
+	 * Constructor.
+	 * @param location the block location
+	 * @param inventory the inventory
+	 */
 	public BlockInventory(Location location, Inventory inventory) {
 		if(inventory instanceof DoubleChestInventory) {
 			throw new IllegalArgumentException("Parameter inventory cannot be a DoubleChestInventory.");
@@ -54,6 +64,10 @@ public class BlockInventory implements IBlockInventory {
 		this.contents = inventory.getContents();
 	}
 	
+	/**
+	 * Deserialization constructor.
+	 * @param values the serialized values
+	 */
 	public BlockInventory(Map<String, Object> values) {
 		World world = Bukkit.getWorld((String) values.get("world"));
 		Vector coords = (Vector) values.get("coords");

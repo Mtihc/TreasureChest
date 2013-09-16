@@ -13,30 +13,34 @@ import com.mtihc.minecraft.treasurechest.v8.util.Repository;
 public class TreasureChestGroupRepository extends Repository<String, ITreasureChestGroup> implements ITreasureChestGroupRepository {
 
 	/**
-	 * @param directory
-	 * @param logger
+	 * Constructor.
+	 * @param directory the group directory
+	 * @param logger the logger, for save/load errors
 	 */
 	public TreasureChestGroupRepository(File directory, Logger logger) {
 		super(directory, logger);
 	}
 
 	/**
-	 * @param directory
+	 * Constructor.
+	 * @param directory the group directory
 	 */
 	public TreasureChestGroupRepository(File directory) {
 		super(directory);
 	}
 
 	/**
-	 * @param directory
-	 * @param logger
+	 * Constructor.
+	 * @param directory the group directory path
+	 * @param logger the logger, for save/load errors
 	 */
 	public TreasureChestGroupRepository(String directory, Logger logger) {
 		super(directory, logger);
 	}
 
 	/**
-	 * @param directory
+	 * Constructor.
+	 * @param directory the group directory path
 	 */
 	public TreasureChestGroupRepository(String directory) {
 		super(directory);

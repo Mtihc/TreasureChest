@@ -22,13 +22,22 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Event listener for the treasure manager.
+ * 
+ * @author Mitch
+ *
+ */
 class TreasureChestListener implements Listener {
 
 	private TreasureManager control;
 	
-	
-	TreasureChestListener(TreasureManager control) {
-		this.control = control;
+	/**
+	 * Constructor
+	 * @param manager the treasure manager
+	 */
+	TreasureChestListener(TreasureManager manager) {
+		this.control = manager;
 	}
 	
 	// TODO StackOverflowError workaround start

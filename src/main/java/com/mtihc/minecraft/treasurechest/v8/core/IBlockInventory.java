@@ -14,19 +14,19 @@ import org.bukkit.inventory.ItemStack;
 public interface IBlockInventory extends ConfigurationSerializable {
 
 	/**
-	 * 
+	 * Returns the location
 	 * @return the location
 	 */
 	public Location getLocation();
 	
 	/**
-	 * 
+	 * Returns the inventory type
 	 * @return the inventory type
 	 */
 	public InventoryType getType();
 	
 	/**
-	 * 
+	 * Returns the inventory size
 	 * @return the inventory size
 	 */
 	public int getSize();

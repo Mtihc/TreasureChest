@@ -31,7 +31,6 @@ public class GroupCommand extends SimpleCommand {
 		this.manager = manager;
 		
 		
-
 		addNested("groupCreate");
 		addNested("groupDelete");
 		addNested("groupAdd");

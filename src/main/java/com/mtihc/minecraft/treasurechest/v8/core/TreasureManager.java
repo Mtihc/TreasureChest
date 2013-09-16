@@ -41,7 +41,19 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactoryManager;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
-
+/**
+ * The manager class that makes the TreasureChest plugin work.
+ * 
+ * <p>This class creates and registers an event listener with bukkit. 
+ * The listener is not accessible, but it can call methods on this class.</p>
+ * 
+ * <p>This class also creates the reward manager. 
+ * The reward manager is returned by method <code>getRewardManager()</code>. 
+ * You can use it to add new reward factories.</p>
+ * 
+ * @author Mitch
+ *
+ */
 public class TreasureManager extends TreasureDataFacade {
 	
 	static {

@@ -10,12 +10,21 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.ItemStack;
 
-
+/**
+ * Class representing two blocks with a single inventory. Like a double chest.
+ * <p>The location is always the left side's location.</p>
+ * @author Mitch
+ *
+ */
 public class DoubleBlockInventory implements IBlockInventory {
 
 	protected IBlockInventory leftSide;
 	protected IBlockInventory rightSide;
 
+	/**
+	 * Constructor
+	 * @param doubleChest the double chest
+	 */
 	public DoubleBlockInventory(DoubleChest doubleChest) {
 		DoubleChestInventory inv = (DoubleChestInventory) doubleChest.getInventory();
 		BlockState leftBlock = (BlockState) doubleChest.getLeftSide();
@@ -24,6 +33,10 @@ public class DoubleBlockInventory implements IBlockInventory {
 		rightSide = new BlockInventory(rightBlock.getLocation(), inv.getRightSide());
 	}
 	
+	/**
+	 * Deserialization constructor.
+	 * @param values the serialized values
+	 */
 	public DoubleBlockInventory(Map<String, Object> values) {
 		this.leftSide = (IBlockInventory) values.get("left-side");
 		this.rightSide = (IBlockInventory) values.get("right-side");
@@ -88,10 +101,18 @@ public class DoubleBlockInventory implements IBlockInventory {
 		getRightSide().setContents(right);
 	}
 	
+	/**
+	 * Returns the object that represents the block on the left side.
+	 * @return the left side
+	 */
 	public IBlockInventory getLeftSide() {
 		return leftSide;
 	}
 	
+	/**
+	 * Returns the object that represents the block on the right side.
+	 * @return the right side
+	 */
 	public IBlockInventory getRightSide() {
 		return rightSide;
 	}

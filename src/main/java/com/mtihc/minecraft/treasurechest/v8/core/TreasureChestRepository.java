@@ -15,39 +15,48 @@ import org.bukkit.configuration.InvalidConfigurationException;
 
 import com.mtihc.minecraft.treasurechest.v8.util.Repository;
 
+/**
+ * Class representing a folder of yml files containing treasure data.
+ * 
+ * @author Mitch
+ *
+ */
 public class TreasureChestRepository extends Repository<Location, ITreasureChest> implements ITreasureChestRepository {
 
 	/**
-	 * @param directory
-	 * @param logger
+	 * Constructor.
+	 * @param directory the treasure directory
+	 * @param logger the logger, for save/load errors
 	 */
 	public TreasureChestRepository(File directory, Logger logger) {
 		super(directory, logger);
 	}
 
 	/**
-	 * @param directory
+	 * Constructor.
+	 * @param directory the treasure directory
 	 */
 	public TreasureChestRepository(File directory) {
 		super(directory);
 	}
 
 	/**
-	 * @param directory
-	 * @param logger
+	 * Constructor.
+	 * @param directory the treasure directory path
+	 * @param logger the logger, for save/load errors
 	 */
 	public TreasureChestRepository(String directory, Logger logger) {
 		super(directory, logger);
 	}
 
 	/**
-	 * @param directory
+	 * Constructor.
+	 * @param directory the treasure directory path
 	 */
 	public TreasureChestRepository(String directory) {
 		super(directory);
 	}
-
-
+	
 	public File getWorldDirectory(String worldName) {
 		return new File(directory + "/" + worldName);
 	}

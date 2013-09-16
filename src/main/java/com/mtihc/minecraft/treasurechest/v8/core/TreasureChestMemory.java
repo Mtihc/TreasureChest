@@ -20,20 +20,44 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.mtihc.minecraft.treasurechest.v8.util.YamlRepository;
 
+/**
+ * Class representing a folder of yml files containing information about who found which treasures.
+ * 
+ * @author Mitch
+ *
+ */
 public class TreasureChestMemory extends YamlRepository<String> implements ITreasureChestMemory {
 
+	/**
+	 * Constructor.
+	 * @param directory the players directory path
+	 */
 	public TreasureChestMemory(String directory) {
 		super(directory);
 	}
 
+	/**
+	 * Constructor.
+	 * @param directory the players directory
+	 */
 	public TreasureChestMemory(File directory) {
 		super(directory);
 	}
 
+	/**
+	 * Constructor.
+	 * @param directory the players directory path
+	 * @param logger the logger, for save/load errors
+	 */
 	public TreasureChestMemory(String directory, Logger logger) {
 		super(directory, logger);
 	}
 
+	/**
+	 * Constructor.
+	 * @param directory the players directory
+	 * @param logger the logger, for save/load errors
+	 */
 	public TreasureChestMemory(File directory, Logger logger) {
 		super(directory, logger);
 	}

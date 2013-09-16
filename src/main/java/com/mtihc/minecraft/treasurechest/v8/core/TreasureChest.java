@@ -15,7 +15,14 @@ import org.bukkit.inventory.InventoryHolder;
 
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
-
+/**
+ * Class representing a treasure container block.
+ * 
+ * <p>All information should be serializable. Including the inventory items and rewards.</p>
+ * 
+ * @author Mitch
+ *
+ */
 public class TreasureChest implements ITreasureChest {
 
 	
@@ -32,7 +39,13 @@ public class TreasureChest implements ITreasureChest {
 	
 	private List<RewardInfo> rewards = new ArrayList<RewardInfo>();
 	
-	public TreasureChest(BlockState blockState) {
+	/**
+	 * Constructor.
+	 * @param blockState a block's state. Must be an instance of InventoryHolder.
+	 * @throws IllegalArgumentException 	thrown when parameter <code>blockState</code> is not 
+	 * 										an instance of InventoryHolder.
+	 */
+	public TreasureChest(BlockState blockState) throws IllegalArgumentException {
 		if(!(blockState instanceof InventoryHolder)) {
 			throw new IllegalArgumentException("Parameter blockState must be an InventoryHolder.");
 		}
@@ -54,6 +67,10 @@ public class TreasureChest implements ITreasureChest {
 		ranks = new ArrayList<String>();
 	}
 	
+	/**
+	 * Deserialization constructor
+	 * @param values all serialized values
+	 */
 	public TreasureChest(Map<String, Object> values) {
 		
 		container = (IBlockInventory) values.get("container");
@@ -113,12 +130,19 @@ public class TreasureChest implements ITreasureChest {
 	
 	@SuppressWarnings("unchecked")
 	private List<String> castToStringList(Object value) {
+		// YamlConfiguration is capable of serializing List<String>
+		// But type casting from Object to List<String> is not possible.
+		
 		List<String> result;
 		try {
+			// type cast and suppress warnings
 			result = (List<String>) value;
+			
 		} catch(Exception e) {
+			// value parameter wasn't a List<String>
 			result = null;
 		}
+		
 		if(result == null) {
 			return new ArrayList<String>();
 		}

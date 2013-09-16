@@ -9,6 +9,12 @@ import java.util.logging.Level;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * Class representing a yml file.
+ * 
+ * @author Mitch
+ *
+ */
 public class YamlFile {
 
 	private JavaPlugin plugin;
@@ -62,6 +68,10 @@ public class YamlFile {
 		}
 	}
 	
+	/**
+	 * Applies the defaults from an embedded resource where necessary.
+	 * @param fileName the file path
+	 */
 	public void setDefaults(String fileName) {
 		
 		InputStream defConfigStream = plugin.getResource(fileName + ".yml");

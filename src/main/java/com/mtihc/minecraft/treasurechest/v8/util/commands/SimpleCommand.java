@@ -15,6 +15,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+/**
+ * Class representing a command. 
+ * 
+ * <p>This class can be extended to add nested commands. 
+ * It is recommended to add nested commands in the constructor, 
+ * using any of the overloads of method <code>addNested</code>.</p>
+ * 
+ * @author Mitch
+ *
+ */
 public class SimpleCommand implements ICommand {
 
 	protected String[] aliases;
@@ -27,6 +37,14 @@ public class SimpleCommand implements ICommand {
 	
 	protected final ICommand parent;
 	
+	/**
+	 * Constructor.
+	 * @param parent the parent command
+	 * @param aliases the command aliases. The first alias is considered the command label
+	 * @param argumentSyntax the argument syntax
+	 * @param desc the short command description
+	 * @param help the help messages
+	 */
 	public SimpleCommand(ICommand parent, String[] aliases, String argumentSyntax, String desc, String[] help) {
 		
 		this.parent = parent;
@@ -114,7 +132,7 @@ public class SimpleCommand implements ICommand {
 		String firstArgument;
 		if(args.length == 0) {
 			// no arguments
-			onCommand(sender, args);
+			onCommandHelp(sender, args);
 			return;
 		}
 		else {
@@ -123,7 +141,7 @@ public class SimpleCommand implements ICommand {
 			ICommand nested = getNested(firstArgument);
 			if(nested == null) {
 				// first argument is not a nested command
-				onCommand(sender, args);
+				onCommandHelp(sender, args);
 				return;
 			}
 			else {
@@ -152,7 +170,14 @@ public class SimpleCommand implements ICommand {
 		}
 	}
 
-	protected void onCommand(CommandSender sender, String[] args) throws CommandException {
+	/**
+	 * Sends help messages to the command sender.
+	 * <p>This method is used in method <code>execute</code>.</p>
+	 * @param sender the command sender
+	 * @param args the command arguments
+	 * @throws CommandException thrown when the command could not be executed
+	 */
+	protected void onCommandHelp(CommandSender sender, String[] args) throws CommandException {
 		int page;
 		try {
 			page = Integer.parseInt(args[0]);
@@ -174,7 +199,9 @@ public class SimpleCommand implements ICommand {
 	
 	
 	
-	
+	/**
+	 * Adds every method with the <code>Command</code> annotation as nested command.
+	 */
 	protected final void findNestedCommandMethods() {
 
 		Method[] methods = getClass().getMethods();
@@ -185,6 +212,11 @@ public class SimpleCommand implements ICommand {
 		}
 	}
 	
+	/**
+	 * Adds a nested command using a class reference. The class should implement the <code>ICommand</code> interface.
+	 * @param commandClass the class reference
+	 * @param args the arguments that will be passed to the constructor
+	 */
 	protected <T extends ICommand> void addNested(Class<T> commandClass, Object... args) {
 		CommandFactory f = new CommandObjectFactory(commandClass, args);
 		
@@ -198,6 +230,10 @@ public class SimpleCommand implements ICommand {
 		}
 	}
 	
+	/**
+	 * Adds a nested command using a method name. The method should have the <code>Command</code> annotation.
+	 * @param methodName the method name
+	 */
 	protected void addNested(String methodName) {
 		Method method = null;
 		Exception exception = null;
@@ -216,6 +252,10 @@ public class SimpleCommand implements ICommand {
 		addNested(method);
 	}
 	
+	/**
+	 * Adds a nested command using a reference to the method. The method should have the <code>Command</code> annotation.
+	 * @param method the method reference
+	 */
 	protected void addNested(Method method) {
 		if(!method.isAnnotationPresent(Command.class)) {
 			throw new IllegalArgumentException("Method \"" + method.getName() + "\" of class \"" + method.getDeclaringClass().getCanonicalName() + "\" doesn't have the " + Command.class.getName() + " annotation.");
@@ -240,11 +280,20 @@ public class SimpleCommand implements ICommand {
 	
 	
 	
-	
+	/**
+	 * Helper method to get a command's usage string
+	 * @param command the command
+	 * @return the usage string
+	 */
 	public static String getUsage(ICommand command) {
 		return "/" + getUniqueLabel(command) + " " + command.getArgumentSyntax();
 	}
 	
+	/**
+	 * Helper method to get a command's unique label
+	 * @param command the command
+	 * @return the unique label
+	 */
 	public static String getUniqueLabel(ICommand command) {
 		String lbl = command.getLabel();
 		ICommand cmd = command;

@@ -6,6 +6,12 @@ import java.util.Map;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * This is just a wrapper class for ItemStack. In case we need to do some custom serialization.
+ * 
+ * @author Mitch
+ *
+ */
 public class ItemStackWrapper implements ConfigurationSerializable {
 
 	private ItemStack stack;

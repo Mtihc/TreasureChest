@@ -7,7 +7,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
 /**
- * Interface representing a Treasure Chest
+ * Interface representing a treasure container block
  * 
  * @author Mitch
  *
@@ -26,6 +26,10 @@ public interface ITreasureChest extends ConfigurationSerializable {
 		UNLIMITED;
 	}
 	
+	/**
+	 * Returns the interface that represents the actual block and inventory holder
+	 * @return the interface that represents the actual block and inventory holder
+	 */
 	public IBlockInventory getContainer();
 	
 	/**
@@ -84,31 +88,74 @@ public interface ITreasureChest extends ConfigurationSerializable {
 	public void setAmountOfRandomlyChosenStacks(int amount);
 
 	/**
-	 * @return the forgetTime
+	 * Returns the forget time in milliseconds
+	 * <p>Players can access the treasure after this amount of time has passed since last time.</p>
+	 * @return the forget time in milliseconds
 	 */
 	public long getForgetTime();
 
 	/**
-	 * @param forgetTime the forgetTime to set
+	 * Set the forget time.
+	 * <p>Players can access the treasure after this amount of time has passed since last time.</p>
+	 * @param forgetTime the forget time in milliseconds
 	 */
 	public void setForgetTime(long forgetTime);
 
 	/**
-	 * 
-	 * @return true if third party protection is ignored, false otherwise
+	 * Returns whether third part protection is ignored
+	 * @return true if third party protection is ignored, false if protected
 	 */
 	public boolean ignoreProtection();
 
 	/**
-	 * 
+	 * Set whether third party protection is ignored
 	 * @param value whether third party protection is ignored
 	 */
 	public void ignoreProtection(boolean value);
 
+	/**
+	 * Returns whether this treasure has any rewards
+	 * @return true if this treasure has any rewards, false otherwise
+	 */
 	boolean hasRewards();
+	
+	/**
+	 * Returns the list of serializable reward info
+	 * @return the list of serializable reward info
+	 */
 	public List<RewardInfo> getRewards();
+	
+	/**
+	 * Set the list of reward info
+	 * @param values the list of reward info
+	 */
 	public void setRewards(List<RewardInfo> values);
+	
+	/**
+	 * Returns the amount of rewards this treasure has
+	 * @return the amount of rewards this treasure has
+	 */
 	public int getRewardTotal();
+	
+	/**
+	 * Returns whether this treasure uses a shared inventory.
+	 * 
+	 * <p>Shared treasures don't use individual inventories per player. 
+	 * Instead, they function like normal chests. 
+	 * So the rule "first come, first serve" applies.</p>
+	 * 
+	 * @return true if this treasure uses a shared inventory, false if it does not
+	 */
 	boolean isShared();
+	
+	/**
+	 * Set whether this treasure uses a shared inventory.
+	 * 
+	 * <p>Shared treasures don't use individual inventories per player. 
+	 * Instead, they function like normal chests. 
+	 * So the rule "first come, first serve" applies.</p>
+	 * 
+	 * @param value true if this treasure should use a shared inventory, false if it does not
+	 */
 	void setShared(boolean value);
 }

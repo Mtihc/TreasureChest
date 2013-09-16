@@ -1,5 +1,11 @@
 package com.mtihc.minecraft.treasurechest.v8.rewardfactory;
 
+/**
+ * Exception class used for reward related exceptions
+ * 
+ * @author Mitch
+ *
+ */
 public class RewardException extends Exception {
 
 	private static final long serialVersionUID = 1842767588930372392L;
