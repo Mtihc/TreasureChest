@@ -169,25 +169,14 @@ public class SimpleCommand implements ICommand {
 				// execute nested command
 				nested.execute(sender, args);
 				return;
-			}
-			if(nested == null) {
+			} else {
 				// first argument is not a nested command
 				
 				// execute this command
 				onCommand(sender, args);
 				return;
 			}
-			else {
-				// first argument is nested command
-				try {
-					args = Arrays.copyOfRange(args, 1, args.length);
-				} catch(Exception e) {
-					args = new String[0];
-				}
-				
-				nested.execute(sender, args);
-				return;
-			}
+			//removed double "else" loop
 		}
 	}
 

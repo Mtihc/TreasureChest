@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.DoubleChestInventory;
@@ -112,7 +113,7 @@ public class BlockInventory implements IBlockInventory {
 		Map<String, Object> contentsSection = new LinkedHashMap<String, Object>();
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack item = contents[i];
-			if(item == null || item.getTypeId() == 0) {
+			if(item == null || item.getType() == Material.AIR) { //Upgraded from material IDs 
 				continue;
 			}
 			

@@ -3,8 +3,8 @@ package com.mtihc.minecraft.treasurechest.v8.util;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.logging.Logger;
+//removed unused import
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;

@@ -76,8 +76,7 @@ public class YamlFile {
 		
 		InputStream defConfigStream = plugin.getResource(fileName + ".yml");
 		if (defConfigStream != null) {
-			YamlConfiguration defConfig = YamlConfiguration
-				.loadConfiguration(defConfigStream);
+			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream); //no clue how to update this
 			config.options().copyDefaults(true);
 			config.setDefaults(defConfig);
 			save();

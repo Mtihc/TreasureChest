@@ -2,6 +2,7 @@ package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -84,12 +85,12 @@ public class BankRobberRewardFactory extends RewardFactory {
 		};
 	}
 	
-	public boolean hasRobber(String playerName) {
-		return robbers.containsKey(playerName);
+	public boolean hasRobber(UUID playerID) { //UUID Upgrade
+		return robbers.containsKey(playerID); 
 	}
 	
-	public BankRobber getRobber(String playerName) {
-		BankRobber robber = robbers.get(playerName);
+	public BankRobber getRobber(UUID playerID) { //UUID Upgrade
+		BankRobber robber = robbers.get(playerID);
 		if(robber == null) {
 			return null;
 		}
@@ -97,22 +98,21 @@ public class BankRobberRewardFactory extends RewardFactory {
 	}
 	
 	private final HashMap<String, BankRobber> robberByBank = new HashMap<String, BankRobber>();
-	private final HashMap<String, BankRobber> robbers = new HashMap<String, BankRobber>();
+	private final HashMap<UUID, BankRobber> robbers = new HashMap<UUID, BankRobber>(); //UUID Upgrade
 	
 	public class BankRobber {
 		
-		private Player player;
+		private UUID playerID; //store UUID rather than player pointer
 		private Location location;
 		private ITreasureChest tchest;
 		
-		private BankRobber(Player player, Location location,
-				ITreasureChest tchest) {
-			this.player = player;
+		private BankRobber(UUID playerID, Location location, ITreasureChest tchest) {
+			this.playerID = playerID;
 			this.location = location;
 			this.tchest = tchest;
 		}
 		
-		public Player getPlayer() { return player; }
+		public Player getPlayer() { return plugin.getServer().getPlayer(playerID); }
 		
 		public Location getLocation() { return location; }
 		
@@ -126,8 +126,8 @@ public class BankRobberRewardFactory extends RewardFactory {
 		String locString = loc.toString();
 		
 		BankRobber robber = robberByBank.get(locString);
-		if(robber != null && !robber.player.getName().equals(player.getName())) {
-			player.sendMessage(ChatColor.RED + "This was robbed by " + ChatColor.WHITE + robber.player.getDisplayName() + ChatColor.RED + ".");
+		if(robber != null && !robber.playerID.equals(player.getUniqueId())) {
+			player.sendMessage(ChatColor.RED + "This was robbed by " + ChatColor.WHITE + robber.getPlayer().getDisplayName() + ChatColor.RED + ".");
 			((Cancellable) event).setCancelled(true);
 			// TODO onAlreadyBankRobbed
 			return;
@@ -146,16 +146,16 @@ public class BankRobberRewardFactory extends RewardFactory {
 			return;
 		}
 		
-		robber = new BankRobber(player, loc, event.getTreasureChest());
+		robber = new BankRobber(player.getUniqueId(), loc, event.getTreasureChest());
 		
-		robbers.put(event.getPlayer().getName(), robber);
+		robbers.put(event.getPlayer().getUniqueId(), robber);
 		robberByBank.put(loc.toString(), robber);
 		// TODO onBankRob
 	}
 	
 	private void onTreasureDrop(OfflinePlayer player) {
 		
-		BankRobber robber = robbers.remove(player.getName());
+		BankRobber robber = robbers.remove(player.getUniqueId());
 		if(robber == null) {
 			return;
 		}
@@ -175,20 +175,20 @@ public class BankRobberRewardFactory extends RewardFactory {
 	}
 
 
-	private HashMap<String, ReconnectTimer> reconnecters = new HashMap<String, ReconnectTimer>();
+	private HashMap<UUID, ReconnectTimer> reconnecters = new HashMap<UUID, ReconnectTimer>(); //UUID
 	
 	void onPlayerJoin(PlayerJoinEvent event) {
-		ReconnectTimer timer = reconnecters.remove(event.getPlayer().getName());
+		ReconnectTimer timer = reconnecters.remove(event.getPlayer().getUniqueId()); //UUID
 		if(timer != null) {
 			timer.cancel();
 		}
 	}
 	
 	void onPlayerQuit(PlayerQuitEvent event) {
-		String name = event.getPlayer().getName();
-		if(robbers.containsKey(name)) {
-			ReconnectTimer timer = new ReconnectTimer(name);
-			reconnecters.put(name, timer);
+		UUID playerID = event.getPlayer().getUniqueId(); //UUID
+		if(robbers.containsKey(playerID)) {
+			ReconnectTimer timer = new ReconnectTimer(playerID);
+			reconnecters.put(playerID, timer);
 			timer.schedule();
 		}
 	}
@@ -204,17 +204,17 @@ public class BankRobberRewardFactory extends RewardFactory {
 	private class ReconnectTimer implements Runnable {
 
 		private int taskId = -1;
-		private String playerName;
+		private UUID playerID;
 
-		public ReconnectTimer(String playerName) {
-			this.playerName = playerName;
+		public ReconnectTimer(UUID playerID) {
+			this.playerID = playerID;
 		}
 		
 		@Override
 		public void run() {
 			cancel();
 			
-			onTreasureDrop(Bukkit.getOfflinePlayer(playerName));
+			onTreasureDrop(Bukkit.getOfflinePlayer(playerID));
 		}
 		
 		public boolean isRunning() {

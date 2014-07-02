@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -172,6 +173,7 @@ public class GroupCommand extends SimpleCommand {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Command(aliases = { "forget" }, args = "<name> [player]", desc = "Tell all treasures in a group, to forget that a player found them.", help = { "This is like executing the forget command, on every treasure in the group." })
 	public void groupForget(CommandSender sender, String[] args) throws CommandException {
 	
@@ -397,7 +399,7 @@ public class GroupCommand extends SimpleCommand {
 			ItemStack[] contents = chestTmp.getContainer().getContents();
 			int total = 0;
 			for (ItemStack item : contents) {
-				if(item == null || item.getTypeId() == 0) {
+				if(item == null || item.getType() == Material.AIR) { //Updated from material IDs
 					continue;
 				}
 				total++;

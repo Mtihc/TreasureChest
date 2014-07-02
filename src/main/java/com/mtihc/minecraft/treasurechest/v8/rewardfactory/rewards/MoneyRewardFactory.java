@@ -3,6 +3,7 @@ package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -92,12 +93,12 @@ public class MoneyRewardFactory extends RewardFactory {
 		}
 	}
 
-	void depositPlayer(String name, double money) throws RewardException {
+	void depositPlayer(OfflinePlayer player, double money) throws RewardException {
 		if(economy == null) {
 			throw new RewardException("No money reward. The Vault plugin is probably not installed.");
 		}
 		else {
-			economy.depositPlayer(name, money);
+			economy.depositPlayer(player, money);
 		}
 	}
 

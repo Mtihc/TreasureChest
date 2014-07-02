@@ -3,6 +3,7 @@ package com.mtihc.minecraft.treasurechest.v8.core;
 import java.util.Iterator;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Dispenser;
@@ -190,7 +191,7 @@ class TreasureChestListener implements Listener {
 		int n = inventory.getSize();
 		for (int i = 0; i < n; i++) {
 			ItemStack item = inventory.getItem(i);
-			if(item != null && item.getTypeId() != 0) {
+			if(item != null && item.getType() != Material.AIR) { //Upgrade from material IDs
 				return false;
 			}
 		}

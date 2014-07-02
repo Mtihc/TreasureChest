@@ -31,7 +31,7 @@ public abstract class SelectEntityTypePrompt extends ValidatingPrompt {
 					color = ChatColor.WHITE;
 				}
 				
-				mobs += ", " + type.getName() + color;
+				mobs += ", " + type.toString() + color;	//attempted update
 				i++;
 			}
 		}
@@ -64,8 +64,8 @@ public abstract class SelectEntityTypePrompt extends ValidatingPrompt {
 		} else if (input.equalsIgnoreCase("CANCEL")) {
 			return true;
 		} else {
-			EntityType type = EntityType.fromName(input);
-			Bukkit.getLogger().info("name " + EntityType.EXPERIENCE_ORB.getName() + " input " + input + " are equal " + EntityType.EXPERIENCE_ORB.getName().equals(input));
+			EntityType type = EntityType.valueOf(input); 	//attempted update
+			Bukkit.getLogger().info("name " + EntityType.EXPERIENCE_ORB.toString() + " input " + input + " are equal " + EntityType.EXPERIENCE_ORB.toString().equals(input));
 			if (type == null || !type.isSpawnable()) {
 				context.getForWhom().sendRawMessage(ChatColor.RED + 
 						"Not a valid type: \"" + input + "\"");

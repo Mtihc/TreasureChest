@@ -3,6 +3,7 @@ package com.mtihc.minecraft.treasurechest.v8.core;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,7 +24,7 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 	
 	public void setItemStack(ItemStack stack) {
 		if(stack == null) {
-			this.stack = new ItemStack(0);
+			this.stack = new ItemStack(Material.AIR); //Upgrade from material IDs
 		}
 		else {
 			this.stack = stack.clone();

@@ -46,7 +46,7 @@ public class MoneyReward implements IReward {
 
 	@Override
 	public void give(Player player) throws RewardException {
-		factory.depositPlayer(player.getName(), getMoney());
+		factory.depositPlayer(player, getMoney());
 	}
 
 }
