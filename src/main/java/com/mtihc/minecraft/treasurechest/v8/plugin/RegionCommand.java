@@ -125,7 +125,7 @@ public class RegionCommand extends SimpleCommand {
 			filter = args[1];
 		}
 		Player player = (Player) sender;
-		schudleFindContainerBlocks(player, TaskType.GROUP_ADD, filter);
+		schudleFindContainerBlocks(player, TaskType.GROUP_ADD, name, filter);
 	}
 	
 	@Command(aliases = { "group-remove" }, args = "<group name> [block,white-list]", desc = "Remove all treasure in the selected region from a group", help = { "" })

@@ -835,6 +835,9 @@ public class TreasureManager extends TreasureDataFacade {
 			while(ig.hasNext()) {
 				String group = ig.next();
 				ITreasureChestGroup tcgroup = getGroup(group);
+				if (tcgroup == null) {
+					continue;
+				}
 				Set<Location> locs = tcgroup.getLocations();
 				Iterator<Location> il = locs.iterator();
 				while(il.hasNext()) {
