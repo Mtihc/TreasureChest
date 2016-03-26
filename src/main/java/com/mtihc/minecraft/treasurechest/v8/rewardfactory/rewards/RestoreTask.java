@@ -1,33 +1,27 @@
 package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 
-import java.util.List;
-
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.data.ChunkStore;
-import com.sk89q.worldedit.data.MissingWorldException;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.snapshots.InvalidSnapshotException;
-import com.sk89q.worldedit.snapshots.Snapshot;
-import com.sk89q.worldedit.snapshots.SnapshotRestore;
+import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
+import com.sk89q.worldedit.world.snapshot.SnapshotRestore;
+import com.sk89q.worldedit.world.storage.ChunkStore;
+import com.sk89q.worldedit.world.storage.MissingWorldException;
+import java.util.List;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 abstract class RestoreTask implements Runnable {
 	
 	public static LocalWorld getLocalWorld(WorldEditPlugin worldEdit, String name) {
-		List<LocalWorld> worlds = worldEdit.getServerInterface().getWorlds();
-		for (LocalWorld w : worlds) {
-			if(w.getName().equals(name)) {
-				return w;
-			}
-		}
-		return null;
+            return BukkitUtil.getLocalWorld(Bukkit.getWorld(name));
 	}
 	
 	public static Vector getVector(org.bukkit.util.Vector vec) {
@@ -111,7 +105,7 @@ abstract class RestoreTask implements Runnable {
 			
 			if(snapshot != null) {
 				try {
-					this.chunkStore = snapshot._getChunkStore();
+					this.chunkStore = snapshot.getChunkStore();
 				} catch (Exception e) {
 					this.chunkStore = null;
 				} 
@@ -185,10 +179,10 @@ abstract class RestoreTask implements Runnable {
 	 */
 	public static void restoreRegionInstantly(ChunkStore chunkStore,
 			Region region) {
-		SnapshotRestore restore = new SnapshotRestore(chunkStore, region);
+		          SnapshotRestore restore = new SnapshotRestore(chunkStore, new EditSession(BukkitUtil.getLocalWorld(Bukkit.getWorld(region.getWorld().getName())), -1), region);
 		
 		try {
-			restore.restore(new EditSession(region.getWorld(), -1));
+                    restore.restore();
 		} catch (NullPointerException e) {
 			
 		} catch (MaxChangedBlocksException e) {

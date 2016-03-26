@@ -8,6 +8,9 @@
 bin/
 tmp/
 doc/
+backup/
+nbproject/
+
 *.tmp
 *.bak
 *.swp

@@ -1,5 +1,8 @@
 package com.mtihc.minecraft.treasurechest.v8.util.prompts;
 
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -8,9 +11,6 @@ import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.ValidatingPrompt;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.snapshots.InvalidSnapshotException;
-import com.sk89q.worldedit.snapshots.Snapshot;
 
 public abstract class SelectSnapshotPrompt extends ValidatingPrompt {
 

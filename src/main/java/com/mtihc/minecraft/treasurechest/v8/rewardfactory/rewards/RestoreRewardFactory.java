@@ -1,5 +1,14 @@
 package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactory;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
+import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.RestoreTaskQueue.Observer;
+import com.mtihc.minecraft.treasurechest.v8.util.prompts.SelectRegionPrompt;
+import com.mtihc.minecraft.treasurechest.v8.util.prompts.SelectSnapshotPrompt;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.world.snapshot.Snapshot;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -10,16 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
-
-import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
-import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
-import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactory;
-import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
-import com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards.RestoreTaskQueue.Observer;
-import com.mtihc.minecraft.treasurechest.v8.util.prompts.SelectRegionPrompt;
-import com.mtihc.minecraft.treasurechest.v8.util.prompts.SelectSnapshotPrompt;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.snapshots.Snapshot;
 
 public class RestoreRewardFactory extends RewardFactory implements Observer {
 
