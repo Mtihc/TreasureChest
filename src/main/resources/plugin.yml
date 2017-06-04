@@ -73,10 +73,10 @@ permissions:
             treasurechest.access.unlimited: true
     treasurechest.access.treasure:
         description: Allows opening treasure chests
-        default: false
+        default: true
     treasurechest.access.unlimited:
         description: Allows opening unlimited chests
-        default: false
+        default: true
     
     treasurechest.count:
         description: Allows you to count how many chests you have found
