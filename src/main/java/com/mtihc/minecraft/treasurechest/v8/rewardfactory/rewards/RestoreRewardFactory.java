@@ -16,7 +16,6 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
@@ -32,14 +31,8 @@ public class RestoreRewardFactory extends RewardFactory implements Observer {
 		this.plugin = plugin;
 		this.subregionTicks = subregionTicks;
 		this.subregionSize = subregionSize;
-		
-		Plugin we = plugin.getServer().getPluginManager().getPlugin("WorldEdit");
-		if(we != null && we instanceof WorldEditPlugin) {
-			this.worldEdit = (WorldEditPlugin) we;
 
-			this.queue = new RestoreTaskQueue(worldEdit, this);
-		}
-		
+		this.queue = new RestoreTaskQueue(this);
 		
 	}
 	

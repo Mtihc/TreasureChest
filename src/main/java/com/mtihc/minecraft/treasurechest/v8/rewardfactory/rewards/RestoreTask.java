@@ -1,11 +1,9 @@
 package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalWorld;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
@@ -13,15 +11,22 @@ import com.sk89q.worldedit.world.snapshot.Snapshot;
 import com.sk89q.worldedit.world.snapshot.SnapshotRestore;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import com.sk89q.worldedit.world.storage.MissingWorldException;
+
 import java.util.List;
-import org.bukkit.Bukkit;
+
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 abstract class RestoreTask implements Runnable {
 	
-	public static LocalWorld getLocalWorld(WorldEditPlugin worldEdit, String name) {
-            return BukkitUtil.getLocalWorld(Bukkit.getWorld(name));
+	public static com.sk89q.worldedit.world.World getLocalWorld(WorldEdit worldEdit, String worldName) {
+		List<? extends com.sk89q.worldedit.world.World> worlds = worldEdit.getServer().getWorlds();
+		for (com.sk89q.worldedit.world.World world : worlds) {
+			if (world.getName().toLowerCase() == worldName.toLowerCase()) {
+				return world;
+			}
+		}
+		return null;
 	}
 	
 	public static Vector getVector(org.bukkit.util.Vector vec) {
@@ -30,23 +35,22 @@ abstract class RestoreTask implements Runnable {
 	
 	//private RestoreRepository repo;
 	private JavaPlugin plugin;
-	private CuboidRegion region;
 	private long delay;
 	private int subregionSize;
 	private int taskId;
 	private ChunkStore chunkStore;
 	private String snapshotName;
-	private WorldEditPlugin worldEdit;
 	private String worldName;
+	private org.bukkit.util.Vector min;
+	private org.bukkit.util.Vector max;
 	private RegionIterator iterator;
-	private LocalWorld localWorld;
 
-	RestoreTask(WorldEditPlugin worldEdit, JavaPlugin plugin, String snapshotName, String worldName, org.bukkit.util.Vector min, org.bukkit.util.Vector max, long subregionTicks, int subregionSize) {
-		this.worldEdit = worldEdit;
+	RestoreTask(JavaPlugin plugin, String snapshotName, String worldName, org.bukkit.util.Vector min, org.bukkit.util.Vector max, long subregionTicks, int subregionSize) {
 		this.plugin = plugin;
 		this.snapshotName = snapshotName;
 		this.worldName = worldName;
-		this.region = getRegion(worldName, min, max);
+		this.min = min;
+		this.max = max;
 		this.delay = Math.max(delay, 2);
 		this.subregionSize = Math.max(subregionSize, 10);
 		this.taskId = -1;
@@ -55,17 +59,6 @@ abstract class RestoreTask implements Runnable {
 	
 	public abstract String getId();
 
-	private CuboidRegion getRegion(String worldName, org.bukkit.util.Vector min, org.bukkit.util.Vector max) {
-		return new CuboidRegion(
-				getLocalWorld(worldEdit, worldName), 
-				getVector(min), 
-				getVector(max));
-	}
-	
-	public CuboidRegion getRegion() {
-		return region;
-	}
-	
 	public boolean isRunning() {
 		return taskId != -1;
 	}
@@ -74,15 +67,8 @@ abstract class RestoreTask implements Runnable {
 		if(!isRunning()) {
 			onStart();
 			
-			Vector min = region.getMinimumPoint();
-			Vector max = region.getMaximumPoint();
-			iterator = new RegionIterator(min, max, subregionSize);
+			iterator = new RegionIterator(getVector(min), getVector(max), subregionSize);
 			
-			localWorld = getLocalWorld(worldEdit, worldName);
-			if(localWorld == null) {
-				run();
-				return;
-			}
 			// toggle isRunning
 			taskId = 0;
 			
@@ -90,14 +76,14 @@ abstract class RestoreTask implements Runnable {
 			Snapshot snapshot;
 			if(snapshotName != null) {
 				try {
-					snapshot = worldEdit.getLocalConfiguration().snapshotRepo.getSnapshot(snapshotName);
+					snapshot = WorldEdit.getInstance().getConfiguration().snapshotRepo.getSnapshot(snapshotName);
 				} catch (InvalidSnapshotException e) {
 					snapshot = null;
 				}
 			}
 			else {
 				try {
-					snapshot = worldEdit.getLocalConfiguration().snapshotRepo.getDefaultSnapshot(worldName);
+					snapshot = WorldEdit.getInstance().getConfiguration().snapshotRepo.getDefaultSnapshot(worldName);
 				} catch (MissingWorldException e) {
 					snapshot = null;
 				}
@@ -152,12 +138,14 @@ abstract class RestoreTask implements Runnable {
 				return;
 			}
 			else {
-				region.setWorld(localWorld);
+				region.setWorld(getLocalWorld(WorldEdit.getInstance(), worldName));
 			}
 			restoreRegionInstantly(chunkStore, region);
 		}
-		else if(isRunning()) {
-			stop();
+		else {
+			if (isRunning()) {
+				stop();
+			}
 			onFinish();
 		}
 	}
@@ -179,7 +167,8 @@ abstract class RestoreTask implements Runnable {
 	 */
 	public static void restoreRegionInstantly(ChunkStore chunkStore, Region region) {		
 		try {
-			SnapshotRestore restore = new SnapshotRestore(chunkStore, new EditSession(region.getWorld(), -1), region);
+			EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(region.getWorld(), -1);
+			SnapshotRestore restore = new SnapshotRestore(chunkStore, session, region);
 			restore.restore();
 		} catch (NullPointerException e) {
 			

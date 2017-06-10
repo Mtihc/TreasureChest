@@ -18,6 +18,7 @@ import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChestGroup;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureChestGroup;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureException;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
+import com.mtihc.minecraft.treasurechest.v8.util.BukkitUtil;
 import com.mtihc.minecraft.treasurechest.v8.util.commands.Command;
 import com.mtihc.minecraft.treasurechest.v8.util.commands.CommandException;
 import com.mtihc.minecraft.treasurechest.v8.util.commands.ICommand;
@@ -173,7 +174,6 @@ public class GroupCommand extends SimpleCommand {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Command(aliases = { "forget" }, args = "<name> [player]", desc = "Tell all treasures in a group, to forget that a player found them.", help = { "This is like executing the forget command, on every treasure in the group." })
 	public void groupForget(CommandSender sender, String[] args) throws CommandException {
 	
@@ -187,10 +187,16 @@ public class GroupCommand extends SimpleCommand {
 		
 		String name = args[0];
 		String playerName;
-		OfflinePlayer p;
+		OfflinePlayer p = null;
+		
 		try {
 			playerName = args[1];
-			p = manager.getPlugin().getServer().getOfflinePlayer(playerName);
+			p = BukkitUtil.findOfflinePlayer(playerName);
+			
+			if (p == null || !p.hasPlayedBefore()) {
+				throw new CommandException ("Player \""+playerName+"\" does not exist.");
+			}
+			playerName = p.getName();
 		}
 		catch(IndexOutOfBoundsException e) {
 			// player name argument is optional... if sender is a player
@@ -201,11 +207,6 @@ public class GroupCommand extends SimpleCommand {
 			else {
 				throw new CommandException("Expected a group name and a player name.");
 			}
-		}
-
-		
-		if(p == null || !p.hasPlayedBefore()) {
-			throw new CommandException("Player \"" + playerName + "\" does not exist.");
 		}
 		
 		if (!manager.hasGroup(name)) {
@@ -399,7 +400,7 @@ public class GroupCommand extends SimpleCommand {
 			ItemStack[] contents = chestTmp.getContainer().getContents();
 			int total = 0;
 			for (ItemStack item : contents) {
-				if(item == null || item.getType() == Material.AIR) { //Updated from material IDs
+				if(item == null || item.getType() == Material.AIR) {
 					continue;
 				}
 				total++;

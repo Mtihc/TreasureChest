@@ -113,7 +113,7 @@ public class BlockInventory implements IBlockInventory {
 		Map<String, Object> contentsSection = new LinkedHashMap<String, Object>();
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack item = contents[i];
-			if(item == null || item.getType() == Material.AIR) { //Upgraded from material IDs 
+			if(item == null || item.getType() == Material.AIR) { 
 				continue;
 			}
 			

@@ -19,7 +19,7 @@ public abstract class SelectBlockPrompt extends ValidatingPrompt {
 	private String worldName;
 	private Vector min;
 	private Vector max;
-	private HashSet<Byte> invisible;
+	private HashSet<Material> invisible;
 
 	public SelectBlockPrompt(Material type, String worldName, Vector min, Vector max) {
 		this.type = type;
@@ -27,12 +27,12 @@ public abstract class SelectBlockPrompt extends ValidatingPrompt {
 		this.min = min;
 		this.max = max;
 		
-		invisible = new HashSet<Byte>();
-		invisible.add((byte) Material.AIR.getId());
-		invisible.add((byte) Material.WATER.getId());
-		invisible.add((byte) Material.STATIONARY_WATER.getId());
-		invisible.add((byte) Material.LAVA.getId());
-		invisible.add((byte) Material.STATIONARY_LAVA.getId());
+		invisible = new HashSet<Material>();
+		invisible.add(Material.AIR);
+		invisible.add(Material.WATER);
+		invisible.add(Material.STATIONARY_WATER);
+		invisible.add(Material.LAVA);
+		invisible.add(Material.STATIONARY_LAVA);
 	}
 	
 	
@@ -74,7 +74,7 @@ public abstract class SelectBlockPrompt extends ValidatingPrompt {
 		else if(input.equalsIgnoreCase("OK")) {
 			Player player = (Player) context.getForWhom();
 			Block block = player.getTargetBlock(invisible, 8);
-			if(block == null || block.getTypeId() == 0) {
+			if(block == null || block.getType() == Material.AIR) {
 				player.sendRawMessage(ChatColor.RED + "You're not looking at a block.");
 				return false;
 			}

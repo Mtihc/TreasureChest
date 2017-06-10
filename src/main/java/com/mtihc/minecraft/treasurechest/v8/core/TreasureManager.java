@@ -728,26 +728,24 @@ public class TreasureManager extends TreasureDataFacade {
 		
 	}
 	
-	private static HashSet<Byte> invisibleBlocks;
+	private static HashSet<Material> invisibleBlocks;
 	
-	@SuppressWarnings("deprecation")
-	private static HashSet<Byte> getInvisibleBlocks() {
+	private static HashSet<Material> getInvisibleBlocks() {
 		if(invisibleBlocks == null) {
-			invisibleBlocks  = new HashSet<Byte>();
+			invisibleBlocks  = new HashSet<Material>();
 			Material[] mats = Material.values();
 			for (Material mat : mats) {
 				if(mat.isTransparent()) {
-					invisibleBlocks.add((byte) mat.getId()); //couldn't find a fix that works to "getTargetBlock()"
+					invisibleBlocks.add(mat);
 				}
 			}
 		}
 		
 		return invisibleBlocks;
 	}
-
-	@SuppressWarnings("deprecation")
+	
 	public static Block getTargetedContainerBlock(Player player) {
-		Block block = player.getTargetBlock(getInvisibleBlocks(), 8);	//couldn't find a fix that works to "getTargetBlock()"
+		Block block = player.getTargetBlock(getInvisibleBlocks(), 8);
 		if(block == null || !(block.getState() instanceof InventoryHolder)) {
 			return null;
 		}

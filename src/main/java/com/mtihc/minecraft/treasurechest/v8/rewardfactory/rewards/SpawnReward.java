@@ -38,13 +38,22 @@ public class SpawnReward implements IReward {
 	}
 	
 	public EntityType getEntityType() {
-		return EntityType.fromId((Integer) info.getData("type"));
+		return (EntityType) info.getData("type");
 	}
 	
 	public void setEntityType(EntityType type) {
-		info.setData("type", (int) type.getTypeId());
+		info.setData("type", type);
 	}
 
+	@Deprecated
+	public int getEntityTypeId () {
+		return (Integer) info.getData("type");
+	}
+	@Deprecated
+	public void setEntityTypeId(int value) {
+		info.setData("type", value);
+	}
+	
 	@Override
 	public String getDescription() {
 		Vector min = getMin();

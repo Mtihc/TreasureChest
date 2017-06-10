@@ -24,7 +24,7 @@ public class ItemStackWrapper implements ConfigurationSerializable {
 	
 	public void setItemStack(ItemStack stack) {
 		if(stack == null) {
-			this.stack = new ItemStack(Material.AIR); //Upgrade from material IDs
+			this.stack = new ItemStack(Material.AIR);
 		}
 		else {
 			this.stack = stack.clone();

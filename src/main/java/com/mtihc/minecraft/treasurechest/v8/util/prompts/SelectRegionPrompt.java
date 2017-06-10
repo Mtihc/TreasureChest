@@ -161,7 +161,7 @@ public abstract class SelectRegionPrompt extends ValidatingPrompt {
 
 	private Block getTargetBlock(Player player) {
 		Block block = player.getTargetBlock((Set<Material>) null, 8);
-		if (block == null || block.getTypeId() == 0) {
+		if (block == null || block.getType() == Material.AIR) {
 			return null;
 		}
 		return block;

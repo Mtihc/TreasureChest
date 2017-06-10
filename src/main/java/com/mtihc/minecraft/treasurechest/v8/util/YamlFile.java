@@ -4,6 +4,7 @@ package com.mtihc.minecraft.treasurechest.v8.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.logging.Level;
 
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -76,7 +77,8 @@ public class YamlFile {
 		
 		InputStream defConfigStream = plugin.getResource(fileName + ".yml");
 		if (defConfigStream != null) {
-			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream); //no clue how to update this
+			YamlConfiguration defConfig = YamlConfiguration
+				.loadConfiguration(new InputStreamReader(defConfigStream));
 			config.options().copyDefaults(true);
 			config.setDefaults(defConfig);
 			save();

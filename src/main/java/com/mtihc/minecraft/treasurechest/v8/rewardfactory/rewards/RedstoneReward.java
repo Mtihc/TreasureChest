@@ -17,6 +17,7 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 
+@SuppressWarnings("deprecation")
 public class RedstoneReward implements IReward {
 
 	private RewardInfo info;

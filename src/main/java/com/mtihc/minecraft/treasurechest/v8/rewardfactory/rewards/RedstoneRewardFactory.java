@@ -16,6 +16,7 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 import com.mtihc.minecraft.treasurechest.v8.util.prompts.SelectBlockPrompt;
 
+@SuppressWarnings("deprecation")
 public class RedstoneRewardFactory extends RewardFactory {
 
 	private JavaPlugin plugin;

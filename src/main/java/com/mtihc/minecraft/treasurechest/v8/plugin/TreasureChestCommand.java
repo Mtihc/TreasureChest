@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -11,12 +12,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mtihc.minecraft.treasurechest.v8.core.ITreasureChest;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureException;
 import com.mtihc.minecraft.treasurechest.v8.core.TreasureManager;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactoryManager;
+import com.mtihc.minecraft.treasurechest.v8.util.BukkitUtil;
 import com.mtihc.minecraft.treasurechest.v8.util.commands.Command;
 import com.mtihc.minecraft.treasurechest.v8.util.commands.CommandException;
 import com.mtihc.minecraft.treasurechest.v8.util.commands.ICommand;
@@ -121,9 +122,8 @@ public class TreasureChestCommand extends SimpleCommand {
 			throw new CommandException("You don't have permission to see how many treasures other players have found.");
 		}
 		
-		JavaPlugin plugin = manager.getPlugin();
-		
-		OfflinePlayer player = plugin.getServer().getOfflinePlayer(playerName);
+		OfflinePlayer player = null;
+		player = BukkitUtil.findOfflinePlayer(playerName);
 		if(player == null || !player.hasPlayedBefore()) {
 			throw new CommandException("Player \"" + playerName + "\" does not exist.");
 		}
@@ -443,7 +443,7 @@ public class TreasureChestCommand extends SimpleCommand {
 		ItemStack[] contents = tchest.getContainer().getContents();
 		int total = 0;
 		for (ItemStack item : contents) {
-			if(item == null || item.getTypeId() == 0) {
+			if(item == null || item.getType() == Material.AIR) {
 				continue;
 			}
 			total++;
@@ -722,7 +722,8 @@ public class TreasureChestCommand extends SimpleCommand {
 			throw new CommandException("You don't have permission to make a treasure forget that a player has found it.");
 		}
 		
-		OfflinePlayer p = manager.getPlugin().getServer().getOfflinePlayer(playerName);
+		OfflinePlayer p = null;
+		p = BukkitUtil.findOfflinePlayer(playerName);
 		if(p == null || !p.hasPlayedBefore()) {
 			throw new CommandException("Player \"" + playerName + "\" does not exist.");
 		}

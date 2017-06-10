@@ -176,7 +176,6 @@ public class SimpleCommand implements ICommand {
 				onCommand(sender, args);
 				return;
 			}
-			//removed double "else" loop
 		}
 	}
 

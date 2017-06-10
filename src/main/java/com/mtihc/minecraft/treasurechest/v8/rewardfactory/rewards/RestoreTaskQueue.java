@@ -9,8 +9,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-
 public class RestoreTaskQueue {
 
 	public interface Observer {
@@ -26,19 +24,13 @@ public class RestoreTaskQueue {
 	
 	private Set<Observer> observers = new LinkedHashSet<Observer>();
 	
-	private WorldEditPlugin worldEdit;
-	
-	public RestoreTaskQueue(WorldEditPlugin worldEdit) {
-		this.worldEdit = worldEdit;
+	public RestoreTaskQueue() {
+		
 	}
 	
-	public RestoreTaskQueue(WorldEditPlugin worldEdit, Observer observer) {
-		this(worldEdit);
+	public RestoreTaskQueue(Observer observer) {
+		this();
 		addObserver(observer);
-	}
-	
-	public WorldEditPlugin getWorldEdit() {
-		return worldEdit;
 	}
 	
 	
@@ -59,7 +51,7 @@ public class RestoreTaskQueue {
 	
 	public void add(final String id, JavaPlugin plugin, String snapshotName, String worldName, Vector min, Vector max, long subregionTicks, int subregionSize) {
 		
-		RestoreTask restore = new RestoreTask(worldEdit, plugin, snapshotName, worldName, min, max, subregionTicks, subregionSize) {
+		RestoreTask restore = new RestoreTask(plugin, snapshotName, worldName, min, max, subregionTicks, subregionSize) {
 
 			@Override
 			public String getId() {

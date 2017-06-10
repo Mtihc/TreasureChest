@@ -191,7 +191,7 @@ class TreasureChestListener implements Listener {
 		int n = inventory.getSize();
 		for (int i = 0; i < n; i++) {
 			ItemStack item = inventory.getItem(i);
-			if(item != null && item.getType() != Material.AIR) { //Upgrade from material IDs
+			if(item != null && item.getType() != Material.AIR) {
 				return false;
 			}
 		}

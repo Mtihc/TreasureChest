@@ -293,7 +293,7 @@ public class RegionCommand extends SimpleCommand {
 						Iterator<Material> i = filterList.iterator();
 						while (i.hasNext()) {
 							Material checkMaterial = i.next();
-							if (world.getBlockAt(x,y,z).getType() == checkMaterial) { //Updated from material IDs
+							if (world.getBlockAt(x,y,z).getType() == checkMaterial) {
 								found.add(new Location(world,x,y,z));
 								break;
 							}

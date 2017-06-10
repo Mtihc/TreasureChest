@@ -3,6 +3,7 @@ package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
@@ -43,9 +44,10 @@ public class HealthReward implements IReward {
 
 	@Override
 	public void give(Player player) throws RewardException {
-		double health = player.getHealth() + getHealth() * player.getMaxHealth() / 100;
-		if(health > player.getMaxHealth()) {
-			health = player.getMaxHealth();
+		double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+		double health = player.getHealth() + getHealth() * maxHealth / 100;
+		if(health > maxHealth) {
+			health = maxHealth;
 		}
 		else if(health < 0) {
 			health = 0;
