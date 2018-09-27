@@ -14,19 +14,19 @@ public interface IReward {
 	 * The serializable reward info
 	 * @return the reward info
 	 */
-	public RewardInfo getInfo();
+    RewardInfo getInfo();
 	
 	/**
 	 * Returns a description of this reward in the current state
 	 * @return a description of this reward in the current state
 	 */
-	public String getDescription();
+    String getDescription();
 	
 	/**
 	 * Give this reward to the specified online player.
 	 * @param player the online player
 	 * @throws RewardException thrown when the reward could not be given to the player
 	 */
-	public void give(Player player) throws RewardException;
+    void give(Player player) throws RewardException;
 	
 }

@@ -18,7 +18,7 @@ public interface ITreasureChestGroup extends ConfigurationSerializable {
 	 * @param value the treasure
 	 * @throws Exception thrown when the treasure could not be added to this group
 	 */
-	public void addChest(ITreasureChest value) throws Exception;
+    void addChest(ITreasureChest value) throws Exception;
 
 	/**
 	 * Remove a treasure from this group
@@ -26,11 +26,11 @@ public interface ITreasureChestGroup extends ConfigurationSerializable {
 	 * @return true if the treasure was removed from the group
 	 * @throws Exception thrown when the treasure could not be removed from this group
 	 */
-	public boolean removeChest(ITreasureChest value) throws Exception;
+    boolean removeChest(ITreasureChest value) throws Exception;
 	
 	/**
 	 * Returns the locations of the treasures that are in this group.
 	 * @return the locations of the treasures that are in this group.
 	 */
-	public Set<Location> getLocations();
+    Set<Location> getLocations();
 }

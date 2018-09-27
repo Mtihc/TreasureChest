@@ -18,14 +18,14 @@ public interface ITreasureManagerConfiguration {
 	 * @param messageId enum value that indicates which message
 	 * @return the message string
 	 */
-	public String getDefaultMessage(Message messageId);
+    String getDefaultMessage(Message messageId);
 
 	/**
 	 * Returns the default value for the ignore protection setting.
 	 * 
 	 * @return true if protection is ignored, false if protected
 	 */
-	public boolean getDefaultIgnoreProtection();
+    boolean getDefaultIgnoreProtection();
 
 	/**
 	 * Returns how wide/high/long the sub-regions are, when we need to iterate over the blocks in a region.

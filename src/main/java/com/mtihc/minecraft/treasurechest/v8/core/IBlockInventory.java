@@ -17,30 +17,30 @@ public interface IBlockInventory extends ConfigurationSerializable {
 	 * Returns the location
 	 * @return the location
 	 */
-	public Location getLocation();
+	Location getLocation();
 	
 	/**
 	 * Returns the inventory type
 	 * @return the inventory type
 	 */
-	public InventoryType getType();
+	InventoryType getType();
 	
 	/**
 	 * Returns the inventory size
 	 * @return the inventory size
 	 */
-	public int getSize();
+	int getSize();
 	
 	/**
 	 * Gets the inventory contents
 	 * @return the inventory contents
 	 */
-	public ItemStack[] getContents();
+	ItemStack[] getContents();
 	
 	/**
 	 * Sets the inventory contents
 	 * @param contents the inventory contents
 	 */
-	public void setContents(ItemStack[] contents);
+	void setContents(ItemStack[] contents);
 	
 }

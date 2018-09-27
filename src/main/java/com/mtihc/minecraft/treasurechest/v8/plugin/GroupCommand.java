@@ -52,7 +52,7 @@ public class GroupCommand extends SimpleCommand {
 			throw new CommandException("Command must be executed by a player, in game.");
 		}
 
-		if(!sender.hasPermission(Permission.SET.getNode())) {
+		if(!sender.hasPermission(com.mtihc.minecraft.treasurechest.v8.plugin.Permission.SET.getNode())) {
 			throw new CommandException("You don't have permission to create treasure groups.");
 		}	
 		
