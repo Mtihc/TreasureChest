@@ -30,9 +30,9 @@ public abstract class SelectBlockPrompt extends ValidatingPrompt {
 		invisible = new HashSet<Material>();
 		invisible.add(Material.AIR);
 		invisible.add(Material.WATER);
-		invisible.add(Material.STATIONARY_WATER);
+		invisible.add(Material.LEGACY_STATIONARY_WATER);
 		invisible.add(Material.LAVA);
-		invisible.add(Material.STATIONARY_LAVA);
+		invisible.add(Material.LEGACY_STATIONARY_LAVA);
 	}
 	
 	

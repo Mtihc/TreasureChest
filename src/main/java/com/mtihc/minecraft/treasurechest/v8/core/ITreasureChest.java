@@ -20,7 +20,7 @@ public interface ITreasureChest extends ConfigurationSerializable {
 	 * @author Mitch
 	 *
 	 */
-	public enum Message {
+    enum Message {
 		FOUND,
 		FOUND_ALREADY,
 		UNLIMITED;
@@ -30,88 +30,88 @@ public interface ITreasureChest extends ConfigurationSerializable {
 	 * Returns the interface that represents the actual block and inventory holder
 	 * @return the interface that represents the actual block and inventory holder
 	 */
-	public IBlockInventory getContainer();
+    IBlockInventory getContainer();
 	
 	/**
 	 * Returns one of the messages
 	 * @param id the Message enum value
 	 * @return the message string
 	 */
-	public String getMessage(Message id);
+    String getMessage(Message id);
 	
 	/**
 	 * Set one of the messages
 	 * @param id the Message enum value
 	 * @param message the message string
 	 */
-	public void setMessage(Message id, String message);
+    void setMessage(Message id, String message);
 	
 	/**
 	 * Get the ranks that can access this treasure
 	 * 
 	 * @return the list of rank names
 	 */
-	public List<String> getRanks();
+    List<String> getRanks();
 	
 	/**
 	 * Set the ranks that can access this treasure
 	 * 
 	 * @param ranks the list of rank names
 	 */
-	public void setRanks(List<String> ranks);
+    void setRanks(List<String> ranks);
 	
 	/**
 	 * Returns whether one of the messages is defined
 	 * @param id the Message enum value
 	 * @return whether the message is defined
 	 */
-	public boolean hasMessage(Message id);
+    boolean hasMessage(Message id);
 	
 	/**
 	 * @return the isUnlimited
 	 */
-	public boolean isUnlimited();
+    boolean isUnlimited();
 
 	/**
 	 * @param isUnlimited the isUnlimited to set
 	 */
-	public void setUnlimited(boolean isUnlimited);
+    void setUnlimited(boolean isUnlimited);
 
 	/**
 	 * @return the randomness
 	 */
-	public int getAmountOfRandomlyChosenStacks();
+    int getAmountOfRandomlyChosenStacks();
 
 	/**
 	 * @param amount the randomness to set
 	 */
-	public void setAmountOfRandomlyChosenStacks(int amount);
+    void setAmountOfRandomlyChosenStacks(int amount);
 
 	/**
 	 * Returns the forget time in milliseconds
 	 * <p>Players can access the treasure after this amount of time has passed since last time.</p>
 	 * @return the forget time in milliseconds
 	 */
-	public long getForgetTime();
+    long getForgetTime();
 
 	/**
 	 * Set the forget time.
 	 * <p>Players can access the treasure after this amount of time has passed since last time.</p>
 	 * @param forgetTime the forget time in milliseconds
 	 */
-	public void setForgetTime(long forgetTime);
+    void setForgetTime(long forgetTime);
 
 	/**
 	 * Returns whether third part protection is ignored
 	 * @return true if third party protection is ignored, false if protected
 	 */
-	public boolean ignoreProtection();
+    boolean ignoreProtection();
 
 	/**
 	 * Set whether third party protection is ignored
 	 * @param value whether third party protection is ignored
 	 */
-	public void ignoreProtection(boolean value);
+    void ignoreProtection(boolean value);
 
 	/**
 	 * Returns whether this treasure has any rewards
@@ -123,19 +123,19 @@ public interface ITreasureChest extends ConfigurationSerializable {
 	 * Returns the list of serializable reward info
 	 * @return the list of serializable reward info
 	 */
-	public List<RewardInfo> getRewards();
+    List<RewardInfo> getRewards();
 	
 	/**
 	 * Set the list of reward info
 	 * @param values the list of reward info
 	 */
-	public void setRewards(List<RewardInfo> values);
+    void setRewards(List<RewardInfo> values);
 	
 	/**
 	 * Returns the amount of rewards this treasure has
 	 * @return the amount of rewards this treasure has
 	 */
-	public int getRewardTotal();
+    int getRewardTotal();
 	
 	/**
 	 * Returns whether this treasure uses a shared inventory.

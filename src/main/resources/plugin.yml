@@ -1,12 +1,13 @@
 name: TreasureChest
-author: Mtihc
+authors: [Mtihc, Aljosha]
 description: Place chest that adds some items everytime someone opens it for the first time.
 main: com.mtihc.minecraft.treasurechest.v8.plugin.TreasureChestPlugin
 startup: postworld
 url: http://dev.bukkit.org/server-mods/treasurechest/
 depend: []
 softdepend: [Vault, WorldEdit]
-version: 8.4.5
+version: 8.4.6
+api-version: 1.13
 commands:
     treasurechest:
         aliases: [tchest]

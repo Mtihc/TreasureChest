@@ -64,11 +64,11 @@ public class RedstoneRewardFactory extends RewardFactory {
 		}
 		
 		new ConversationFactory(plugin)
-		.withFirstPrompt(new SelectBlockPrompt(Material.REDSTONE_TORCH_ON, null, null, null) {
+		.withFirstPrompt(new SelectBlockPrompt(Material.LEGACY_REDSTONE_TORCH_ON, null, null, null) {
 			
 			@Override
 			protected Prompt onFinish(ConversationContext context, Block block) {
-				RedstoneTorch torch = (RedstoneTorch) Material.REDSTONE_TORCH_ON.getNewData(block.getData());
+				RedstoneTorch torch = (RedstoneTorch) Material.LEGACY_REDSTONE_TORCH_ON.getNewData(block.getData());
 				RedstoneReward reward = new RedstoneReward(block.getRelative(torch.getAttachedFace()), torch.getFacing());
 				callback.onCreate(sender, args, reward);
 				return END_OF_CONVERSATION;

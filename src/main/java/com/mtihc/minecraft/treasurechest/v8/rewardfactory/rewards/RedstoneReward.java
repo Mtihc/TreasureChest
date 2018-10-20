@@ -52,11 +52,12 @@ public class RedstoneReward implements IReward {
 	}
 	
 	public Material getAttachedBlockType() {
-		return Material.getMaterial((Integer) info.getData("block-type"));
+
+		return (Material) info.getData("block-type");
 	}
 	
 	public void setAttachedBlockType(Material type) {
-		info.setData("block-type", type.getId());
+		info.setData("block-type", type);
 	}
 	                                                                
 	public BlockFace getFacingDirection() {
@@ -81,8 +82,7 @@ public class RedstoneReward implements IReward {
 		torch.setFacingDirection(facing);
 		Block attachedBlock = loc.getBlock();
 		attachedBlock.setType(getAttachedBlockType());
-		attachedBlock.getRelative(facing).setTypeIdAndData(torch.getItemTypeId(), torch.getData(), false);
-		
+		attachedBlock.getRelative(facing).setType(torch.getItemType());
 	}
 
 }
