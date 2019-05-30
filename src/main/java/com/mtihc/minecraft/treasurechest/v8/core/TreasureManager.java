@@ -17,6 +17,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.DoubleChest;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Chest;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -94,15 +96,15 @@ public class TreasureManager extends TreasureDataFacade {
 		}
 	}
 	
-	private JavaPlugin plugin;
+	private final JavaPlugin plugin;
 	private ITreasureManagerConfiguration config;
 	
-	private LinkedHashMap<String, TreasureInventory> inventories = new LinkedHashMap<String, TreasureInventory>();
-	private String permAccessNormal;
-	private String permAccessUnlimited;
-	private String permRank;
+	private final LinkedHashMap<String, TreasureInventory> inventories = new LinkedHashMap();
+	private final String permAccessNormal;
+	private final String permAccessUnlimited;
+	private final String permRank;
 	
-	private RewardFactoryManager rewardManager;
+	private final RewardFactoryManager rewardManager;
 	
 	
 	
@@ -455,61 +457,6 @@ public class TreasureManager extends TreasureDataFacade {
 		return getTreasure(location);
 	}
 	
-	public boolean isBlock(Block block) {
-		
-		// returns whether the given block would prevent a chest from opening
-		// based on:
-		// http://www.minecraftwiki.net/wiki/Chest
-		
-		if(block == null || block.getType().isTransparent()) {
-			// translucent/transparent, or non-block
-			return false;
-		}
-		switch (block.getType()) {
-			// water and lava
-		case LAVA:
-		case WATER:
-		case STATIONARY_LAVA:
-		case STATIONARY_WATER:
-
-			// plants
-		case LEAVES:
-		case CACTUS:
-			
-			// translucent blocks
-		case GLASS:
-		case MOB_SPAWNER:
-		case SNOW:
-		case ICE:
-		case FENCE:
-		case CAKE:
-		case BED:
-		case GLOWSTONE:
-		case ANVIL:
-		case BEACON:
-		case CHEST:
-		case SIGN:
-		case SIGN_POST:
-			// slabs
-		case STEP:
-		case WOOD_STEP:
-			// stairs
-		case WOOD_STAIRS:
-		case COBBLESTONE_STAIRS:
-		case BRICK_STAIRS:
-		case SMOOTH_STAIRS:
-		case NETHER_BRICK_STAIRS:
-		case SANDSTONE_STAIRS:
-		case SPRUCE_WOOD_STAIRS:
-		case BIRCH_WOOD_STAIRS:
-		case JUNGLE_WOOD_STAIRS:
-		case QUARTZ_STAIRS:
-			return false;
-		default:
-			return true;
-		}
-	}
-	
 	public boolean isBlockedByBlockAbove(Block block) {
 		if(!(block.getState() instanceof InventoryHolder)) {
 			return false;
@@ -517,23 +464,46 @@ public class TreasureManager extends TreasureDataFacade {
 		if(block.getType() != Material.CHEST && block.getType() != Material.ENDER_CHEST && block.getType() != Material.TRAPPED_CHEST) {
 			return false;
 		}
-		InventoryHolder holder = (InventoryHolder) block.getState();
-		Block above = block.getRelative(BlockFace.UP);
-		if(holder.getInventory() instanceof DoubleChestInventory) {
-			DoubleChest dchest = (DoubleChest) holder.getInventory().getHolder();
-			
-			Block rightSide = ((BlockState)dchest.getRightSide()).getBlock();
-			Block rightAbove = rightSide.getRelative(BlockFace.UP);
-			if(isBlock(rightAbove)) {
-				return true;
-			}
-			Block leftSide = ((BlockState)dchest.getLeftSide()).getBlock();
-			above = leftSide.getRelative(BlockFace.UP);
-		}
-		
-		return isBlock(above);
+		Block rightSide;
+		return block.getRelative(BlockFace.UP).getType().isSolid()
+				|| ((rightSide = findAdjacentDoubleChest(block)) != null && rightSide.getRelative(BlockFace.UP).getType().isSolid());
 	}
 	
+    /**
+     * Look for a double chest adjacent to a chest
+     *
+     * @param block
+     * @return
+     */
+    public static Block findAdjacentDoubleChest(Block block) {
+        final BlockData d = block.getBlockData();
+        if (d instanceof Chest) {
+            final Chest c = (Chest) d;
+            if(c.getType() != Chest.Type.SINGLE) {
+                // this is a double chest - check the other chest for registration data
+                Block other = null;
+                switch(c.getFacing()) {
+                    case SOUTH:
+                        other = block.getRelative(c.getType() != Chest.Type.RIGHT ? BlockFace.WEST : BlockFace.EAST);
+                        break;
+                    case NORTH:
+                        other = block.getRelative(c.getType() != Chest.Type.RIGHT ? BlockFace.EAST : BlockFace.WEST);
+                        break;
+                    case EAST:
+                        other = block.getRelative(c.getType() != Chest.Type.RIGHT ? BlockFace.SOUTH : BlockFace.NORTH);
+                        break;
+                    case WEST:
+                        other = block.getRelative(c.getType() != Chest.Type.RIGHT ? BlockFace.NORTH : BlockFace.SOUTH);
+                }
+                // double-check
+                if (other != null && other.getType() == block.getType()) {
+                    return other;
+                }
+            }
+        }
+        return null;
+    }
+
 	public Set<String> getRanks(ITreasureChest tchest) {
 		HashSet<String> result = new HashSet<String>();
 		List<String> chestRanks = tchest.getRanks();
@@ -659,7 +629,7 @@ public class TreasureManager extends TreasureDataFacade {
 		
 		// copy inventory to result
 		ItemStack[] result = new ItemStack[inventory.length];
-		for (int i = 0; i < inventory.length; i++) {
+		for (int i = 0; i < inventory.length; ++i) {
 			result[i] = inventory[i];
 		}
 		
@@ -669,7 +639,7 @@ public class TreasureManager extends TreasureDataFacade {
 		
 		// find indices of non-empty inventory slots
 		List<Integer> nonNulls = new ArrayList<Integer>();
-		for (int i = 0; i < inventory.length; i++) {
+		for (int i = 0; i < inventory.length; ++i) {
 			if(inventory[i] != null) {
 				nonNulls.add(i);
 			}
@@ -719,7 +689,7 @@ public class TreasureManager extends TreasureDataFacade {
 		}
 		else {
 			// add items at correct positions
-			for (int i = 0; i < tchest.length; i++) {
+			for (int i = 0; i < tchest.length; ++i) {
 				result[i] = tchest[i];
 			}
 		}
@@ -732,7 +702,7 @@ public class TreasureManager extends TreasureDataFacade {
 	
 	private static HashSet<Material> getInvisibleBlocks() {
 		if(invisibleBlocks == null) {
-			invisibleBlocks  = new HashSet<Material>();
+			invisibleBlocks  = new HashSet();
 			Material[] mats = Material.values();
 			for (Material mat : mats) {
 				if(mat.isTransparent()) {
@@ -933,11 +903,11 @@ public class TreasureManager extends TreasureDataFacade {
 	
 	abstract class TreasureInventory implements Runnable {
 
-		private JavaPlugin plugin;
-	    private long delay;
+		private final JavaPlugin plugin;
+	    private final long delay;
 	    private int taskId;
 
-	    private Inventory inventory;
+	    private final Inventory inventory;
 
 	    TreasureInventory(JavaPlugin plugin, long delay, Inventory inventory) {
 	        this.plugin = plugin;

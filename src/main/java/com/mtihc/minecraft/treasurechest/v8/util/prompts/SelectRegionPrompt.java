@@ -1,7 +1,8 @@
 package com.mtihc.minecraft.treasurechest.v8.util.prompts;
 
+import com.mtihc.minecraft.treasurechest.v8.util.commands.CommandException;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import java.util.Set;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -13,9 +14,10 @@ import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.ValidatingPrompt;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
+
 
 public abstract class SelectRegionPrompt extends ValidatingPrompt {
 
@@ -73,17 +75,26 @@ public abstract class SelectRegionPrompt extends ValidatingPrompt {
 
 			Player player = (Player) context.getForWhom();
 			if (hasWorldEdit()) {
-				Selection sel = worldEdit.getSelection(player);
-				if (sel == null || sel.getMaximumPoint() == null
-						|| sel.getMinimumPoint() == null) {
-					player.sendRawMessage(ChatColor.RED
-							+ "You didn't select a region.");
-					return false;
+				
+				Region sel = null;
+				try {
+					sel = worldEdit.getSession(player).getSelection(BukkitAdapter.adapt(player.getWorld()));
+				} catch (com.sk89q.worldedit.IncompleteRegionException ex) {
 				}
 
+				if (sel == null || sel.getMaximumPoint() == null
+						|| sel.getMinimumPoint() == null) {
+					player.sendRawMessage(ChatColor.RED + "You didn't select a region.");
+					return false;
+				}
+				
 				context.setSessionData("world", sel.getWorld());
-				context.setSessionData("min", sel.getMinimumPoint().toVector());
-				context.setSessionData("max", sel.getMaximumPoint().toVector());
+				BlockVector3 point = sel.getMinimumPoint();
+				Vector min = new Vector(point.getX(), point.getY(), point.getZ());
+				context.setSessionData("min", min);
+				point = sel.getMaximumPoint();
+				Vector max = new Vector(point.getX(), point.getY(), point.getZ());
+				context.setSessionData("max", max);
 
 				return true;
 			} else {
