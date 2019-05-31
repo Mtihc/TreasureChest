@@ -2,8 +2,9 @@ package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.snapshot.InvalidSnapshotException;
@@ -11,38 +12,23 @@ import com.sk89q.worldedit.world.snapshot.Snapshot;
 import com.sk89q.worldedit.world.snapshot.SnapshotRestore;
 import com.sk89q.worldedit.world.storage.ChunkStore;
 import com.sk89q.worldedit.world.storage.MissingWorldException;
-
-import java.util.List;
+import org.bukkit.Bukkit;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 abstract class RestoreTask implements Runnable {
 	
-	public static com.sk89q.worldedit.world.World getLocalWorld(WorldEdit worldEdit, String worldName) {
-		List<? extends com.sk89q.worldedit.world.World> worlds = worldEdit.getServer().getWorlds();
-		for (com.sk89q.worldedit.world.World world : worlds) {
-			if (world.getName().toLowerCase() == worldName.toLowerCase()) {
-				return world;
-			}
-		}
-		return null;
-	}
-	
-	public static Vector getVector(org.bukkit.util.Vector vec) {
-		return new Vector(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
-	}
-	
 	//private RestoreRepository repo;
-	private JavaPlugin plugin;
+	private final JavaPlugin plugin;
 	private long delay;
-	private int subregionSize;
+	private final int subregionSize;
 	private int taskId;
 	private ChunkStore chunkStore;
-	private String snapshotName;
-	private String worldName;
-	private org.bukkit.util.Vector min;
-	private org.bukkit.util.Vector max;
+	private final String snapshotName;
+	private final String worldName;
+	private final org.bukkit.util.Vector min;
+	private final org.bukkit.util.Vector max;
 	private RegionIterator iterator;
 
 	RestoreTask(JavaPlugin plugin, String snapshotName, String worldName, org.bukkit.util.Vector min, org.bukkit.util.Vector max, long subregionTicks, int subregionSize) {
@@ -67,7 +53,9 @@ abstract class RestoreTask implements Runnable {
 		if(!isRunning()) {
 			onStart();
 			
-			iterator = new RegionIterator(getVector(min), getVector(max), subregionSize);
+			iterator = new RegionIterator(
+					BlockVector3.at(min.getX(), min.getY(), min.getZ()), 
+					BlockVector3.at(max.getX(), max.getY(), max.getZ()), subregionSize);
 			
 			// toggle isRunning
 			taskId = 0;
@@ -138,7 +126,7 @@ abstract class RestoreTask implements Runnable {
 				return;
 			}
 			else {
-				region.setWorld(getLocalWorld(WorldEdit.getInstance(), worldName));
+				region.setWorld(BukkitAdapter.adapt(Bukkit.getWorld(worldName)));
 			}
 			restoreRegionInstantly(chunkStore, region);
 		}

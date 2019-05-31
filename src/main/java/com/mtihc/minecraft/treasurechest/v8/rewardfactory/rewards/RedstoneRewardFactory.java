@@ -7,7 +7,6 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
-import org.bukkit.material.RedstoneTorch;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.IReward;
@@ -15,6 +14,7 @@ import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardException;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardFactory;
 import com.mtihc.minecraft.treasurechest.v8.rewardfactory.RewardInfo;
 import com.mtihc.minecraft.treasurechest.v8.util.prompts.SelectBlockPrompt;
+import org.bukkit.block.data.Directional;
 
 @SuppressWarnings("deprecation")
 public class RedstoneRewardFactory extends RewardFactory {
@@ -64,12 +64,12 @@ public class RedstoneRewardFactory extends RewardFactory {
 		}
 		
 		new ConversationFactory(plugin)
-		.withFirstPrompt(new SelectBlockPrompt(Material.REDSTONE_TORCH_ON, null, null, null) {
+		.withFirstPrompt(new SelectBlockPrompt(Material.REDSTONE_WALL_TORCH, null, null, null) {
 			
 			@Override
 			protected Prompt onFinish(ConversationContext context, Block block) {
-				RedstoneTorch torch = (RedstoneTorch) Material.REDSTONE_TORCH_ON.getNewData(block.getData());
-				RedstoneReward reward = new RedstoneReward(block.getRelative(torch.getAttachedFace()), torch.getFacing());
+				Directional dir = (Directional) block.getBlockData();
+				RedstoneReward reward = new RedstoneReward(block.getRelative(dir.getFacing().getOppositeFace()), dir.getFacing());
 				callback.onCreate(sender, args, reward);
 				return END_OF_CONVERSATION;
 			}

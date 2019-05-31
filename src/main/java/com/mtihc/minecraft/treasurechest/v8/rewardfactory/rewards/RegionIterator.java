@@ -1,7 +1,8 @@
 package com.mtihc.minecraft.treasurechest.v8.rewardfactory.rewards;
 
-import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
+
 
 public class RegionIterator {
 
@@ -10,10 +11,10 @@ public class RegionIterator {
 	private int z;
 	
 	private int size;
-	private Vector min;
-	private Vector max;
+	private BlockVector3 min;
+	private BlockVector3 max;
 
-	public RegionIterator(Vector min, Vector max, int subregionSize) {
+	public RegionIterator(BlockVector3 min, BlockVector3 max, int subregionSize) {
 		this.size = subregionSize;
 		this.min = min;
 		this.max = max;
@@ -68,7 +69,7 @@ public class RegionIterator {
 		int newY = y;
 		int newZ = z;
 		
-		Vector minimum = new Vector(newX, newY, newZ);
+		BlockVector3 minimum = BlockVector3.at(newX, newY, newZ);
 		
 		newX += size;
 		newY += size;
@@ -84,7 +85,7 @@ public class RegionIterator {
 			newZ = max.getBlockZ();
 		}
 		
-		Vector maximum = new Vector(newX, newY, newZ);
+		BlockVector3 maximum = BlockVector3.at(newX, newY, newZ);
 		
 		return new CuboidRegion(minimum, maximum);
 	}

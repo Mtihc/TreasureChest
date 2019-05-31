@@ -27,12 +27,10 @@ public abstract class SelectBlockPrompt extends ValidatingPrompt {
 		this.min = min;
 		this.max = max;
 		
-		invisible = new HashSet<Material>();
+		invisible = new HashSet();
 		invisible.add(Material.AIR);
 		invisible.add(Material.WATER);
-		invisible.add(Material.STATIONARY_WATER);
 		invisible.add(Material.LAVA);
-		invisible.add(Material.STATIONARY_LAVA);
 	}
 	
 	
